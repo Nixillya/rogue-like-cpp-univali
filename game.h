@@ -79,33 +79,30 @@ int VA(int number){
 
 int player_input(GAME &game){
     if(kbhit()){
-        if(game.player.keyInput==0){
-            game.player.keyInput = getch();
-            if(game.player.keyInput==119){
-                if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==FREEBLOCK){
-                    game.player.pos.Y--;
-                }
+        game.player.keyInput = getch();
+        POS targetPos = {0,0};
+        if(game.player.keyInput==119){
+            if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==FREEBLOCK){
+                targetPos.Y--;
             }
-            if(game.player.keyInput==115){
-                if(game.map.tiles[game.player.pos.Y+1][game.player.pos.X]==FREEBLOCK){
-                    game.player.pos.Y++;
-                }
-            }
-            if(game.player.keyInput==97){
-                if(game.map.tiles[game.player.pos.Y][game.player.pos.X-1]==FREEBLOCK){
-                    game.player.pos.X--;
-                }
-            }
-            if(game.player.keyInput==100){
-                if(game.map.tiles[game.player.pos.Y][game.player.pos.X+1]==FREEBLOCK){
-                    game.player.pos.X++;
-                }
-            }
-        }else{
-            game.player.keyInput = getch();
         }
-    }else{
-        game.player.keyInput = 0;
+        if(game.player.keyInput==115){
+            if(game.map.tiles[game.player.pos.Y+1][game.player.pos.X]==FREEBLOCK){
+                targetPos.Y++;
+            }
+        }
+        if(game.player.keyInput==97){
+            if(game.map.tiles[game.player.pos.Y][game.player.pos.X-1]==FREEBLOCK){
+                targetPos.X--;
+            }
+        }
+        if(game.player.keyInput==100){
+            if(game.map.tiles[game.player.pos.Y][game.player.pos.X+1]==FREEBLOCK){
+                targetPos.X++;
+            }
+        }
+        game.player.pos.Y+=targetPos.Y;
+        game.player.pos.X+=targetPos.X;
     }
     return 0;
 }
@@ -144,13 +141,17 @@ void create_map(GAME &game){
         for(int y=-tamY;y<tamY;y++){
             for(int x=-tamX;x<tamX;x++){
                 if(Y+y>=0 && Y+y<MAPSIZEY && X+x>=0 && X+x<MAPSIZEX){
-                    if(game.map.tiles[Y+y][X+x]==EMPTY){
+                    if(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1){
+
+                    }else{
                         game.map.tiles[Y+y][X+x] = FREEBLOCK;
+                    }
+                    if(game.map.tiles[Y+y][X+x]==EMPTY){
                         if(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1){
                             game.map.tiles[Y+y][X+x] = SOLIDBLOCK;
                         }
                     }
-                } 
+                }
             }
         }
         if(i==game.map.level*2){

@@ -1,7 +1,5 @@
 #include "game.h"
 
-// Teste
-
 int menu(GAME &game){
     return 0;
 }
