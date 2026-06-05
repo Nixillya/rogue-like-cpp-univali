@@ -50,12 +50,14 @@ struct MAP{
 };
 
 struct MENU{
-    int option = 0;
+    int menuPrincipal = 2;
+    int optionVertical = 0;
+    int optionHorizontal = 0;
 };
 
 struct GAME{
     int exit = 0;
-    int play = 1;
+    int play = 0;
     int pause = 0;
     PLAYER player;
     MAP map;
@@ -68,6 +70,66 @@ void new_line(string x, string y, string z,int size){
         cout<<y;
     }
     cout<<z<<endl;
+}
+
+int menu_render (GAME &game) {
+        cout << "\e[?25l\e[H";
+        cout << "\nTemplate menu \n";
+        if (game.menu.optionVertical == 2) {
+            cout << "   [JOGAR]  \n";
+        } else {
+            cout << " [JOGAR]  \n";
+        }
+        if (game.menu.optionVertical == 3) {
+            cout << "   [CODEX]  \n";
+        } else {
+            cout << " [CODEX]  \n";
+        }
+        if (game.menu.optionVertical == 4) {
+            cout << "   [CRÉDITOS]  \n";
+        } else {
+            cout << " [CRÉDITOS]  \n";
+        }
+        if (game.menu.optionVertical == 5) {
+            cout << "   [SAIR]  \n";
+        } else {
+            cout << " [SAIR]  \n";
+        }
+
+        int key = getch();
+        switch(key){
+            case 119: // Ir para cima
+                game.menu.optionVertical--;
+                if (game.menu.optionVertical < 2) {
+                    game.menu.optionVertical = 5;
+                }
+                break;
+            case 115: // Ir para baixo
+                    game.menu.optionVertical++;
+                    if (game.menu.optionVertical > 5) {
+                        game.menu.optionVertical = 2;
+                    }
+                    break;
+            case 13: // Input (ENTER)
+            if (game.menu.optionVertical == 2) {
+                cout << "\nTemplate jogo.";
+                cout << "\e[?25l\e[H";
+            }
+            if (game.menu.optionVertical == 3) {
+                cout << "\nTemplate de Codex.";
+                cout << "\e[?25l\e[H";
+            }
+            if (game.menu.optionVertical == 4) {
+                cout << "\nTemplate de Créditos.";
+                cout << "\e[?25l\e[H";
+            }
+            if (game.menu.optionVertical == 5) {
+                cout << "\nTemplate de sair.";
+                cout << "\e[?25l\e[H";
+            }
+        }
+
+    return 0;
 }
 
 int VA(int number){

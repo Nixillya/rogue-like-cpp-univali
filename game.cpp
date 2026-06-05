@@ -1,6 +1,7 @@
 #include "game.h"
 
 int menu(GAME &game){
+        menu_render(game);
     return 0;
 }
 
