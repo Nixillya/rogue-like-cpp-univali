@@ -50,8 +50,7 @@ struct MAP{
 };
 
 struct MENU{
-    int menuPrincipal = 2;
-    int optionVertical = 0;
+    int optionVertical = 2;
     int optionHorizontal = 0;
 };
 
@@ -113,19 +112,22 @@ int menu_render (GAME &game) {
             case 13: // Input (ENTER)
             if (game.menu.optionVertical == 2) {
                 cout << "\nTemplate jogo.";
-                cout << "\e[?25l\e[H";
+                game.play = 1;
             }
             if (game.menu.optionVertical == 3) {
                 cout << "\nTemplate de Codex.";
                 cout << "\e[?25l\e[H";
+                getch();
+                cout << "\ec";
             }
             if (game.menu.optionVertical == 4) {
                 cout << "\nTemplate de Créditos.";
                 cout << "\e[?25l\e[H";
+                getch();
+                cout << "\ec";
             }
             if (game.menu.optionVertical == 5) {
-                cout << "\nTemplate de sair.";
-                cout << "\e[?25l\e[H";
+                game.exit = 1;
             }
         }
 
