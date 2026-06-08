@@ -150,7 +150,7 @@ int VA(int number){
     return number;
 }
 
-int player_input(GAME &game){
+void player_input(GAME &game){
     if((clock()-game.player.clockSpeed)>100){
         game.player.clockSpeed = clock();
         if(kbhit()){
@@ -179,7 +179,6 @@ int player_input(GAME &game){
             game.player.pos.Y+=targetPos.Y;
             game.player.pos.X+=targetPos.X;
         }
-        return 0;
     }
 }
 
@@ -298,7 +297,7 @@ void create_map(GAME &game){
                 game.monsters[monster].pos.Y = posY;
                 game.monsters[monster].pos.X = posX;
                 game.monsters[monster].alive = true;
-            }   
+            }
         }else{
             continue;
         }
