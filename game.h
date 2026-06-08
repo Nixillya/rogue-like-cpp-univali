@@ -151,9 +151,9 @@ int VA(int number){
 }
 
 void player_input(GAME &game){
-    if((clock()-game.player.clockSpeed)>100){
-        game.player.clockSpeed = clock();
-        if(kbhit()){
+    if(kbhit()){
+        if((clock()-game.player.clockSpeed)>100){
+            game.player.clockSpeed = clock();
             game.player.keyInput = getch();
             POS targetPos = {0,0};
             if(game.player.keyInput==119){
@@ -178,24 +178,10 @@ void player_input(GAME &game){
             }
             game.player.pos.Y+=targetPos.Y;
             game.player.pos.X+=targetPos.X;
+        }else{
+            game.player.keyInput = getch();
         }
     }
-}
-
-int simulate_vision(GAME &game,int y,int x,int i=0){
-    if(i>=1){
-        y += (y!=0) ? y/VA(y) : 0;
-        x += (x!=0) ? x/VA(x) : 0;
-    }
-    if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]!=SOLIDBLOCK){
-        i++;
-        game.map.memory[game.player.pos.Y+y][game.player.pos.X+x] = 1;
-        if(i<30){
-            simulate_vision(game,y,x,i);
-        }
-    }
-    game.map.memory[game.player.pos.Y+y][game.player.pos.X+x] = 1;
-    return 0;
 }
 
 void create_map(GAME &game){
@@ -307,14 +293,14 @@ void create_map(GAME &game){
 void render_map(GAME &game){
     cout << "\e[?25l\e[H";
     cout << "\e[1;1H";
-    int vision = 14;
+    int vision = 15;
     for(int y=-1;y<=1;y++){
         for(int x=-1;x<=1;x++){
-            simulate_vision(game,y,x);
+            game.map.memory[game.player.pos.Y+y][game.player.pos.X+x] = 1;
         }
     }
     new_line("┏","━","┓",vision*2);
-    for(int y=-vision/1.75;y<vision/1.75;y++){
+    for(int y=-vision;y<vision;y++){
         cout<<"┃";
         for(int x=-vision;x<vision;x++){
             if(game.map.memory[game.player.pos.Y+y][game.player.pos.X+x]==1){
