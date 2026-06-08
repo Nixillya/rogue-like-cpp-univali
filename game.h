@@ -38,6 +38,7 @@ struct PLAYER{
     int points = 0;
     int exp = 0;
     int keyInput = 0;
+    int clockSpeed = clock();
     STATUS status;
     ATTRIBUTES attributes;
 };
@@ -79,7 +80,7 @@ void new_line(string x, string y, string z,int size){
     cout<<z<<endl;
 }
 
-int menu_render (GAME &game) {
+int menu_render(GAME &game) {
         cout << "\e[?25l\e[H";
         cout << "\nTemplate menu \n";
         if (game.menu.optionVertical == 2) {
@@ -150,33 +151,36 @@ int VA(int number){
 }
 
 int player_input(GAME &game){
-    if(kbhit()){
-        game.player.keyInput = getch();
-        POS targetPos = {0,0};
-        if(game.player.keyInput==119){
-            if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==FREEBLOCK){
-                targetPos.Y--;
+    if((clock()-game.player.clockSpeed)>100){
+        game.player.clockSpeed = clock();
+        if(kbhit()){
+            game.player.keyInput = getch();
+            POS targetPos = {0,0};
+            if(game.player.keyInput==119){
+                if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==FREEBLOCK){
+                    targetPos.Y--;
+                }
             }
-        }
-        if(game.player.keyInput==115){
-            if(game.map.tiles[game.player.pos.Y+1][game.player.pos.X]==FREEBLOCK){
-                targetPos.Y++;
+            if(game.player.keyInput==115){
+                if(game.map.tiles[game.player.pos.Y+1][game.player.pos.X]==FREEBLOCK){
+                    targetPos.Y++;
+                }
             }
-        }
-        if(game.player.keyInput==97){
-            if(game.map.tiles[game.player.pos.Y][game.player.pos.X-1]==FREEBLOCK){
-                targetPos.X--;
+            if(game.player.keyInput==97){
+                if(game.map.tiles[game.player.pos.Y][game.player.pos.X-1]==FREEBLOCK){
+                    targetPos.X--;
+                }
             }
-        }
-        if(game.player.keyInput==100){
-            if(game.map.tiles[game.player.pos.Y][game.player.pos.X+1]==FREEBLOCK){
-                targetPos.X++;
+            if(game.player.keyInput==100){
+                if(game.map.tiles[game.player.pos.Y][game.player.pos.X+1]==FREEBLOCK){
+                    targetPos.X++;
+                }
             }
+            game.player.pos.Y+=targetPos.Y;
+            game.player.pos.X+=targetPos.X;
         }
-        game.player.pos.Y+=targetPos.Y;
-        game.player.pos.X+=targetPos.X;
+        return 0;
     }
-    return 0;
 }
 
 int simulate_vision(GAME &game,int y,int x,int i=0){
@@ -269,8 +273,8 @@ void create_map(GAME &game){
         }
         i++;
     }
-    for(int monster=0;monster<50;monster++){
-        if(rand()%(game.map.level*10)){
+    for(int monster=0;monster<game.monsterQuantity;monster++){
+        if(rand()%(game.map.level*10)==0){
             int posY;
             int posX;
             bool success = false;
@@ -282,11 +286,19 @@ void create_map(GAME &game){
                     break;
                 }
             }
+            for(int otherMonster=0;otherMonster<game.monsterQuantity;otherMonster++){
+                if(otherMonster==monster){
+                    continue;
+                }
+                if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
+                    success = false;
+                }
+            }
             if(success){
                 game.monsters[monster].pos.Y = posY;
                 game.monsters[monster].pos.X = posX;
                 game.monsters[monster].alive = true;
-            }
+            }   
         }else{
             continue;
         }
