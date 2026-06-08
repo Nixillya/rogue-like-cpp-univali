@@ -62,9 +62,9 @@ struct MENU{
 };
 
 struct GAME{
-    int exit = 0;
-    int play = 1;
-    int pause = 0;
+    bool exit = false;
+    bool play = false;
+    bool pause = false;
     PLAYER player;
     int monsterQuantity = 50;
     MONSTER monsters[50];
@@ -82,7 +82,6 @@ void new_line(string x, string y, string z,int size){
 
 int menu_render(GAME &game) {
         cout << "\e[?25l\e[H";
-        cout << "\nTemplate menu \n";
         if (game.menu.optionVertical == 2) {
             cout << "   [JOGAR]  \n";
         } else {
@@ -119,25 +118,25 @@ int menu_render(GAME &game) {
                     }
                     break;
             case 13: // Input (ENTER)
-            if (game.menu.optionVertical == 2) {
-                cout << "\nTemplate jogo.";
-                game.play = 1;
-            }
-            if (game.menu.optionVertical == 3) {
-                cout << "\nTemplate de Codex.";
-                cout << "\e[?25l\e[H";
-                getch();
-                cout << "\ec";
-            }
-            if (game.menu.optionVertical == 4) {
-                cout << "\nTemplate de Créditos.";
-                cout << "\e[?25l\e[H";
-                getch();
-                cout << "\ec";
-            }
-            if (game.menu.optionVertical == 5) {
-                game.exit = 1;
-            }
+                if (game.menu.optionVertical == 2) {
+                    game.play = true;
+                }
+                if (game.menu.optionVertical == 3) {
+                    cout << "\nTemplate de Codex.";
+                    cout << "\e[?25l\e[H";
+                    getch();
+                    cout << "\ec";
+                }
+                if (game.menu.optionVertical == 4) {
+                    cout << "\nTemplate de Créditos.";
+                    cout << "\e[?25l\e[H";
+                    getch();
+                    cout << "\ec";
+                }
+                if (game.menu.optionVertical == 5) {
+                    game.exit = true;
+                }
+                break;
         }
 
     return 0;
@@ -149,6 +148,8 @@ int VA(int number){
     }
     return number;
 }
+
+void player_verifiers(GAME &game){}
 
 void player_input(GAME &game){
     if(kbhit()){
@@ -274,9 +275,10 @@ void create_map(GAME &game){
             for(int otherMonster=0;otherMonster<game.monsterQuantity;otherMonster++){
                 if(otherMonster==monster){
                     continue;
-                }
-                if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
-                    success = false;
+                }else{
+                    if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
+                        success = false;
+                    }
                 }
             }
             if(success){
@@ -337,7 +339,11 @@ void render_map(GAME &game){
                     }
                 }
             }else{
-                cout<<"\e[0m ";
+                if(!game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
+                    cout<<"\e[0m?";
+                }else{
+                    cout<<"\e[0m ";
+                } 
             }
         }
         cout<<"\e[0m┃\n";

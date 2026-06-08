@@ -7,8 +7,9 @@ int menu(GAME &game){
 
 int play(GAME &game){
     create_map(game);
-    while(game.play==1){
+    while(game.play==true){
         render_map(game);
+        player_verifiers(game);
         player_input(game);
     }
     return 0;
@@ -17,11 +18,11 @@ int main(){
     SetConsoleOutputCP(CP_UTF8);
     GAME game;
     srand(time(0)); 
-    while(game.exit==0){
-        if(game.play==0){
+    while(game.exit==false){
+        if(game.play==false){
             menu(game);
         }
-        if(game.play==1){
+        if(game.play==true){
             play(game);
         }
     }
