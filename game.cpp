@@ -11,6 +11,7 @@ void menu(GAME &game){
 }
 
 void play(GAME &game){
+    srand(time(0)); 
     create_map(game);
     game.next = false;
     while(game.play==true && game.next==false){
@@ -22,7 +23,7 @@ void play(GAME &game){
 int main(){
     SetConsoleOutputCP(CP_UTF8);
     GAME game;
-    srand(time(0)); 
+    
     while(game.exit==false){
         if(game.play==false){
             menu(game);

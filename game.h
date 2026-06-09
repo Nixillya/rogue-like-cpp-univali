@@ -239,6 +239,9 @@ void player_verifiers(GAME &game){
     if(game.map.tiles[game.player.pos.Y][game.player.pos.X]==EMPTY){
         game.next = true;
         game.map.level++;
+        cout<<"\ec";
+        cout<<"CAINDO...";
+        while((clock()-game.player.clockSpeed)<1500){}
     }
 }
 
