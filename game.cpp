@@ -3,6 +3,7 @@
 void menu(GAME &game){
     menu_render(game);
     if (game.codex == true) {
+        game.menu.optionVertical = 4;
         while (game.codex == true) {
             codex_render(game);
         }

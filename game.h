@@ -164,12 +164,12 @@ void menu_render(GAME &game) {
 void codex_render(GAME &game) {
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",15);
-    new_line("┃   ","CODEX","   ┃",1);
+    new_line("┃     ","CODEX","     ┃",1);
     new_line("┣","━","┫",15);
     if (game.menu.optionVertical == 4) {
-        cout << "┃ > [COMO JOGAR]   ┃\n";
+        cout << "┃ > [COMO JOGAR]┃\n";
     } else {
-        cout << "┃ [COMO JOGAR]     ┃\n";
+        cout << "┃ [COMO JOGAR]  ┃\n";
     }
     if (game.menu.optionVertical == 5) {
         cout << "┃ > [ITENS]     ┃\n";
@@ -182,9 +182,9 @@ void codex_render(GAME &game) {
         cout << "┃ [INIMIGOS]    ┃\n";
     }
     if (game.menu.optionVertical == 7) {
-        cout << "┃ > [VOLTAR]      ┃\n";
+        cout << "┃ > [VOLTAR]    ┃\n";
     } else {
-        cout << "┃ [VOLTAR]           ┃\n";
+        cout << "┃ [VOLTAR]      ┃\n";
     }
     new_line("┗","━","┛",15);
 
@@ -220,6 +220,7 @@ void codex_render(GAME &game) {
             }
             if (game.menu.optionVertical == 7) {
                 cout << "\ec";
+                game.menu.optionVertical = 4;
                 game.codex = false;
             }
             break;
