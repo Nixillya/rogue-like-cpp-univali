@@ -21,7 +21,7 @@ struct POS{
 };
 
 struct ATTRIBUTES{
-    int strenght = 1;
+    int strength = 1;
     int intelligence = 1;
     int dexterity = 1;
 };
@@ -34,17 +34,18 @@ struct STATUS{
 };
 
 struct PLAYER{
-    POS pos;
     int attPoints = 5;
     int points = 0;
     int exp = 0;
     int keyInput = 0;
     int clockSpeed = clock();
+    POS pos;
     STATUS status;
     ATTRIBUTES attributes;
 };
 
 struct MONSTER{
+    int id = 0;
     bool alive = false;
     POS pos;
     STATUS status;
@@ -63,13 +64,13 @@ struct MENU{
 };
 
 struct GAME{
+    int monsterQuantity = 50;
     bool exit = false;
     bool play = false;
     bool pause = false;
     bool next = false;
     bool codex = false;
     PLAYER player;
-    int monsterQuantity = 50;
     MONSTER monsters[50];
     MAP map;
     MENU menu;
@@ -85,30 +86,30 @@ void new_line(string x, string y, string z,int size){
 
 void menu_render(GAME &game) {
     cout << "\e[?25l\e[H";
-    new_line("┏","━","┓",15);
-    new_line("┃   ","ROGUE-LIKE","  ┃",1);
-    new_line("┣","━","┫",15);
+    new_line("┏","━","┓",16);
+    new_line("┃   ","ROGUE-LIKE","   ┃",1);
+    new_line("┣","━","┫",16);
     if (game.menu.optionVertical == 4) {
-        cout << "┃ > [JOGAR]     ┃\n";
+        cout << "┃ > [JOGAR]      ┃\n";
     } else {
-        cout << "┃ [JOGAR]       ┃\n";
+        cout << "┃ [JOGAR]        ┃\n";
     }
     if (game.menu.optionVertical == 5) {
-        cout << "┃ > [CODEX]     ┃\n";
+        cout << "┃ > [CODEX]      ┃\n";
     } else { 
-        cout << "┃ [CODEX]       ┃\n";
+        cout << "┃ [CODEX]        ┃\n";
     }
     if (game.menu.optionVertical == 6) {
-        cout << "┃ > [CRÉDITOS]  ┃\n";
+        cout << "┃ > [CRÉDITOS]   ┃\n";
     } else {
-        cout << "┃ [CRÉDITOS]    ┃\n";
+        cout << "┃ [CRÉDITOS]     ┃\n";
     }
     if (game.menu.optionVertical == 7) {
-        cout << "┃ > [SAIR]      ┃\n";
+        cout << "┃ > [SAIR]       ┃\n";
     } else {
-        cout << "┃ [SAIR]        ┃\n";
+        cout << "┃ [SAIR]         ┃\n";
     }
-    new_line("┗","━","┛",15);
+    new_line("┗","━","┛",16);
 
     int key = getch();
     switch(key){
@@ -398,51 +399,35 @@ void render_map(GAME &game){
         cout<<"┃";
         for(int x=-vision;x<vision;x++){
             if(game.map.memory[game.player.pos.Y+y][game.player.pos.X+x]==1){
-                bool render = true;
-                if(render){
-                    for(int monster=0;monster<50;monster++){
-                        if(game.monsters[monster].alive){
-                            if(game.monsters[monster].pos.Y==game.player.pos.Y+y && game.monsters[monster].pos.X==game.player.pos.X+x){
-                                cout<<"\e[48;5;160m ";
-                                render = false;
-                                continue;
-                            }
+                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
+                    cout<<"\e[0m ";
+                }
+                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==FREEBLOCK){
+                    cout<<"\e[48;5;246m ";
+                }
+                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==SOLIDBLOCK){
+                    cout<<"\e[48;5;242m ";
+                }
+                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==STAIRBLOCK){
+                    cout<<"\e[48;5;220m ";
+                }
+                if(y==0 && x==0){
+                    cout<<"\e[1D";
+                    cout<<"\e[38;5;255m@";
+                }
+                for(int monster=0;monster<50;monster++){   
+                    if(game.monsters[monster].alive){
+                        if(game.monsters[monster].pos.Y==game.player.pos.Y+y && game.monsters[monster].pos.X==game.player.pos.X+x){
+                            cout<<"\e[1D";
+                            cout<<"\e[38;5;160mO";
                         }
                     }
                 }
-                if(render){
-                    if(y==0 && x==0){
-                        cout<<"\e[48;5;255m ";
-                        render = false;
-                    }
-                }
-                if(render){
-                    if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
-                        cout<<"\e[0m ";
-                    }
-                    if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==FREEBLOCK){
-                        cout<<"\e[48;5;246m ";
-                    }
-                    if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==SOLIDBLOCK){
-                        cout<<"\e[48;5;242m ";
-                    }
-                    if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==STAIRBLOCK){
-                        cout<<"\e[48;5;220m ";
-                    }
-                }
             }else{
-                if(rand()%10==0){
-                    if(!game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
-                        cout<<"\e[0m?";
-                    }else{
-                        cout<<"\e[0m ";
-                    }
+                if(!game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
+                    cout<<"\e[0m?";
                 }else{
-                    if(rand()%1000==0){
-                        cout<<"\e[0m?";
-                    }else{
-                        cout<<"\e[0m ";
-                    }
+                    cout<<"\e[0m ";
                 }
             }
         }
