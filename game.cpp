@@ -1,18 +1,17 @@
 #include "game.h"
 
-int menu(GAME &game){
+void menu(GAME &game){
         menu_render(game);
-    return 0;
 }
 
-int play(GAME &game){
+void play(GAME &game){
     create_map(game);
-    while(game.play==true){
+    game.next = false;
+    while(game.play==true && game.next==false){
         render_map(game);
         player_verifiers(game);
         player_input(game);
     }
-    return 0;
 }
 int main(){
     SetConsoleOutputCP(CP_UTF8);

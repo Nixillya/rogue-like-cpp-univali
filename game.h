@@ -28,6 +28,7 @@ struct ATTRIBUTES{
 
 struct STATUS{
     int hp = 1;
+    int hpMax = 1;
     int defense = 1;
     int multiplier = 10;
 };
@@ -65,6 +66,7 @@ struct GAME{
     bool exit = false;
     bool play = false;
     bool pause = false;
+    bool next = false;
     PLAYER player;
     int monsterQuantity = 50;
     MONSTER monsters[50];
@@ -203,9 +205,7 @@ void create_map(GAME &game){
         for(int y=-tamY;y<tamY;y++){
             for(int x=-tamX;x<tamX;x++){
                 if(Y+y>=0 && Y+y<MAPSIZEY && X+x>=0 && X+x<MAPSIZEX){
-                    if(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1){
-
-                    }else{
+                    if(!(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1)){
                         game.map.tiles[Y+y][X+x] = FREEBLOCK;
                     }
                     if(game.map.tiles[Y+y][X+x]==EMPTY){
@@ -271,13 +271,13 @@ void create_map(GAME &game){
                     success = true;
                     break;
                 }
-            }
-            for(int otherMonster=0;otherMonster<game.monsterQuantity;otherMonster++){
-                if(otherMonster==monster){
-                    continue;
-                }else{
-                    if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
-                        success = false;
+                for(int otherMonster=0;otherMonster<game.monsterQuantity;otherMonster++){
+                    if(otherMonster==monster){
+                        continue;
+                    }else{
+                        if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
+                            success = false;
+                        }
                     }
                 }
             }
@@ -339,11 +339,15 @@ void render_map(GAME &game){
                     }
                 }
             }else{
-                if(!game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
-                    cout<<"\e[0m?";
+                if(rand()%10==0){
+                    if(!game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
+                        cout<<"\e[0m?";
+                    }else{
+                        cout<<"\e[0m ";
+                    }
                 }else{
                     cout<<"\e[0m ";
-                } 
+                }
             }
         }
         cout<<"\e[0m┃\n";
