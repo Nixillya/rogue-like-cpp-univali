@@ -1,7 +1,7 @@
 #include "game.h"
 
 void menu(GAME &game){
-        menu_render(game);
+    menu_render(game);
 }
 
 void play(GAME &game){

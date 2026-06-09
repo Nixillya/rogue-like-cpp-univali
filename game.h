@@ -149,7 +149,12 @@ int VA(int number){
     return number;
 }
 
-void player_verifiers(GAME &game){}
+void player_verifiers(GAME &game){
+    if(game.map.tiles[game.player.pos.Y][game.player.pos.X]==EMPTY){
+        game.next = true;
+        game.map.level++;
+    }
+}
 
 void player_input(GAME &game){
     if(kbhit()){
@@ -157,8 +162,8 @@ void player_input(GAME &game){
             game.player.clockSpeed = clock();
             game.player.keyInput = getch();
             POS targetPos = {0,0};
-            int blocks[2] = {FREEBLOCK,STAIRBLOCK};
-            for(int block=0;block<2;block++){
+            int blocks[3] = {FREEBLOCK,STAIRBLOCK,EMPTY};
+            for(int block=0;block<3;block++){
                 if(game.player.keyInput==119){
                     if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==blocks[block]){
                         targetPos.Y--;
@@ -217,9 +222,11 @@ void create_map(GAME &game){
                 }
             }
         }
-        if(i==game.map.level*2){
-            game.map.tiles[Y][X] = STAIRBLOCK;
-            break;
+        if(i>=game.map.level*2){
+            if(rand()%2==0){
+                game.map.tiles[Y][X] = STAIRBLOCK;
+                break;
+            }
         }
         int direction = rand()%4;
         while(true){
