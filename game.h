@@ -58,7 +58,7 @@ struct MAP{
 };
 
 struct MENU{
-    int optionVertical = 2;
+    int optionVertical = 4;
     int optionHorizontal = 0;
 };
 
@@ -67,6 +67,7 @@ struct GAME{
     bool play = false;
     bool pause = false;
     bool next = false;
+    bool codex = false;
     PLAYER player;
     int monsterQuantity = 50;
     MONSTER monsters[50];
@@ -84,59 +85,142 @@ void new_line(string x, string y, string z,int size){
 
 void menu_render(GAME &game) {
     cout << "\e[?25l\e[H";
-    if (game.menu.optionVertical == 2) {
-        cout << "   [JOGAR]  \n";
-    } else {
-        cout << " [JOGAR]  \n";
-    }
-    if (game.menu.optionVertical == 3) {
-        cout << "   [CODEX]  \n";
-    } else {
-        cout << " [CODEX]  \n";
-    }
+    new_line("┏","━","┓",15);
+    new_line("┃   ","ROGUE-LIKE","  ┃",1);
+    new_line("┣","━","┫",15);
     if (game.menu.optionVertical == 4) {
-        cout << "   [CRÉDITOS]  \n";
+        cout << "┃ > [JOGAR]     ┃\n";
     } else {
-        cout << " [CRÉDITOS]  \n";
+        cout << "┃ [JOGAR]       ┃\n";
     }
     if (game.menu.optionVertical == 5) {
-        cout << "   [SAIR]  \n";
-    } else {
-        cout << " [SAIR]  \n";
+        cout << "┃ > [CODEX]     ┃\n";
+    } else { 
+        cout << "┃ [CODEX]       ┃\n";
     }
+    if (game.menu.optionVertical == 6) {
+        cout << "┃ > [CRÉDITOS]  ┃\n";
+    } else {
+        cout << "┃ [CRÉDITOS]    ┃\n";
+    }
+    if (game.menu.optionVertical == 7) {
+        cout << "┃ > [SAIR]      ┃\n";
+    } else {
+        cout << "┃ [SAIR]        ┃\n";
+    }
+    new_line("┗","━","┛",15);
 
     int key = getch();
     switch(key){
         case 119: // Ir para cima
             game.menu.optionVertical--;
-            if (game.menu.optionVertical < 2) {
-                game.menu.optionVertical = 5;
+            if (game.menu.optionVertical < 4) {
+                game.menu.optionVertical = 7;
             }
             break;
         case 115: // Ir para baixo
                 game.menu.optionVertical++;
-                if (game.menu.optionVertical > 5) {
-                    game.menu.optionVertical = 2;
+                if (game.menu.optionVertical > 7) {
+                    game.menu.optionVertical = 4;
                 }
                 break;
         case 13: // Input (ENTER)
-            if (game.menu.optionVertical == 2) {
+            if (game.menu.optionVertical == 4) {
+                cout << "\ec";
                 game.play = true;
             }
-            if (game.menu.optionVertical == 3) {
-                cout << "\nTemplate de Codex.";
-                cout << "\e[?25l\e[H";
+            if (game.menu.optionVertical == 5) {
+                game.codex = true;
+                cout << "\ec";
+            }
+            if (game.menu.optionVertical == 6) {
+                cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓";
+                cout << "\n┃       Universidade do Vale do Itajaí - UNIVALI     ┃";
+                cout << "\n┃              Escola Politícnica  - POLI            ┃";
+                cout << "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫";
+                cout << "\n┃ Curso: Ciência da Computação                       ┃";
+                cout << "\n┃ Disciplina: Algoritmos e Programação II            ┃";
+                cout << "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫";
+                cout << "\n┃ Equipe de Desenvolvimento:                         ┃";
+                cout << "\n┃  Alunos:                                           ┃";
+                cout << "\n┃   - Adolfo Schaeffer.                              ┃";
+                cout << "\n┃   - Douglas Vilar.                                 ┃";
+                cout << "\n┃   - Gustavo Alves.                                 ┃";
+                cout << "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫";
+                cout << "\n┃ Professor: Alex Rese.                              ┃";
+                cout << "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫";
+                cout << "\n┃ Local/Data da produção: Itajaí-SC, Junho/2026.     ┃";
+                cout << "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛";
                 getch();
                 cout << "\ec";
             }
+            if (game.menu.optionVertical == 7) {
+                game.exit = true;
+            }
+            break;
+    }
+}
+
+void codex_render(GAME &game) {
+    cout << "\e[?25l\e[H";
+    new_line("┏","━","┓",15);
+    new_line("┃   ","CODEX","   ┃",1);
+    new_line("┣","━","┫",15);
+    if (game.menu.optionVertical == 4) {
+        cout << "┃ > [COMO JOGAR]   ┃\n";
+    } else {
+        cout << "┃ [COMO JOGAR]     ┃\n";
+    }
+    if (game.menu.optionVertical == 5) {
+        cout << "┃ > [ITENS]     ┃\n";
+    } else { 
+        cout << "┃ [ITENS]       ┃\n";
+    }
+    if (game.menu.optionVertical == 6) {
+        cout << "┃ > [INIMIGOS]  ┃\n";
+    } else {
+        cout << "┃ [INIMIGOS]    ┃\n";
+    }
+    if (game.menu.optionVertical == 7) {
+        cout << "┃ > [VOLTAR]      ┃\n";
+    } else {
+        cout << "┃ [VOLTAR]           ┃\n";
+    }
+    new_line("┗","━","┛",15);
+
+    int key = getch();
+    switch(key){
+        case 119: // Ir para cima
+            game.menu.optionVertical--;
+            if (game.menu.optionVertical < 4) {
+                game.menu.optionVertical = 7;
+            }
+            break;
+        case 115: // Ir para baixo
+                game.menu.optionVertical++;
+                if (game.menu.optionVertical > 7) {
+                    game.menu.optionVertical = 4;
+                }
+                break;
+        case 13: // Input (ENTER)
             if (game.menu.optionVertical == 4) {
-                cout << "\nTemplate de Créditos.";
-                cout << "\e[?25l\e[H";
+                cout << "\nTemplate [COMO JOGAR]";
                 getch();
                 cout << "\ec";
             }
             if (game.menu.optionVertical == 5) {
-                game.exit = true;
+                cout << "\nTemplate [ITENS]";
+                getch();
+                cout << "\ec";
+            }
+            if (game.menu.optionVertical == 6) {
+                cout << "\nTemplate [INIMIGOS]";
+                getch();
+                cout << "\ec";
+            }
+            if (game.menu.optionVertical == 7) {
+                cout << "\ec";
+                game.codex = false;
             }
             break;
     }

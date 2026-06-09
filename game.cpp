@@ -2,6 +2,11 @@
 
 void menu(GAME &game){
         menu_render(game);
+        if (game.codex == true) {
+            while (game.codex == true) {
+                codex_render(game);
+            }
+        }
 }
 
 void play(GAME &game){
