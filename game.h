@@ -82,66 +82,64 @@ void new_line(string x, string y, string z,int size){
     cout<<z<<endl;
 }
 
-int menu_render(GAME &game) {
-        cout << "\e[?25l\e[H";
-        if (game.menu.optionVertical == 2) {
-            cout << "   [JOGAR]  \n";
-        } else {
-            cout << " [JOGAR]  \n";
-        }
-        if (game.menu.optionVertical == 3) {
-            cout << "   [CODEX]  \n";
-        } else {
-            cout << " [CODEX]  \n";
-        }
-        if (game.menu.optionVertical == 4) {
-            cout << "   [CRÉDITOS]  \n";
-        } else {
-            cout << " [CRÉDITOS]  \n";
-        }
-        if (game.menu.optionVertical == 5) {
-            cout << "   [SAIR]  \n";
-        } else {
-            cout << " [SAIR]  \n";
-        }
+void menu_render(GAME &game) {
+    cout << "\e[?25l\e[H";
+    if (game.menu.optionVertical == 2) {
+        cout << "   [JOGAR]  \n";
+    } else {
+        cout << " [JOGAR]  \n";
+    }
+    if (game.menu.optionVertical == 3) {
+        cout << "   [CODEX]  \n";
+    } else {
+        cout << " [CODEX]  \n";
+    }
+    if (game.menu.optionVertical == 4) {
+        cout << "   [CRÉDITOS]  \n";
+    } else {
+        cout << " [CRÉDITOS]  \n";
+    }
+    if (game.menu.optionVertical == 5) {
+        cout << "   [SAIR]  \n";
+    } else {
+        cout << " [SAIR]  \n";
+    }
 
-        int key = getch();
-        switch(key){
-            case 119: // Ir para cima
-                game.menu.optionVertical--;
-                if (game.menu.optionVertical < 2) {
-                    game.menu.optionVertical = 5;
+    int key = getch();
+    switch(key){
+        case 119: // Ir para cima
+            game.menu.optionVertical--;
+            if (game.menu.optionVertical < 2) {
+                game.menu.optionVertical = 5;
+            }
+            break;
+        case 115: // Ir para baixo
+                game.menu.optionVertical++;
+                if (game.menu.optionVertical > 5) {
+                    game.menu.optionVertical = 2;
                 }
                 break;
-            case 115: // Ir para baixo
-                    game.menu.optionVertical++;
-                    if (game.menu.optionVertical > 5) {
-                        game.menu.optionVertical = 2;
-                    }
-                    break;
-            case 13: // Input (ENTER)
-                if (game.menu.optionVertical == 2) {
-                    game.play = true;
-                }
-                if (game.menu.optionVertical == 3) {
-                    cout << "\nTemplate de Codex.";
-                    cout << "\e[?25l\e[H";
-                    getch();
-                    cout << "\ec";
-                }
-                if (game.menu.optionVertical == 4) {
-                    cout << "\nTemplate de Créditos.";
-                    cout << "\e[?25l\e[H";
-                    getch();
-                    cout << "\ec";
-                }
-                if (game.menu.optionVertical == 5) {
-                    game.exit = true;
-                }
-                break;
-        }
-
-    return 0;
+        case 13: // Input (ENTER)
+            if (game.menu.optionVertical == 2) {
+                game.play = true;
+            }
+            if (game.menu.optionVertical == 3) {
+                cout << "\nTemplate de Codex.";
+                cout << "\e[?25l\e[H";
+                getch();
+                cout << "\ec";
+            }
+            if (game.menu.optionVertical == 4) {
+                cout << "\nTemplate de Créditos.";
+                cout << "\e[?25l\e[H";
+                getch();
+                cout << "\ec";
+            }
+            if (game.menu.optionVertical == 5) {
+                game.exit = true;
+            }
+            break;
+    }
 }
 
 int VA(int number){
@@ -159,24 +157,27 @@ void player_input(GAME &game){
             game.player.clockSpeed = clock();
             game.player.keyInput = getch();
             POS targetPos = {0,0};
-            if(game.player.keyInput==119){
-                if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==FREEBLOCK){
-                    targetPos.Y--;
+            int blocks[2] = {FREEBLOCK,STAIRBLOCK};
+            for(int block=0;block<2;block++){
+                if(game.player.keyInput==119){
+                    if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==blocks[block]){
+                        targetPos.Y--;
+                    }
                 }
-            }
-            if(game.player.keyInput==115){
-                if(game.map.tiles[game.player.pos.Y+1][game.player.pos.X]==FREEBLOCK){
-                    targetPos.Y++;
+                if(game.player.keyInput==115){
+                    if(game.map.tiles[game.player.pos.Y+1][game.player.pos.X]==blocks[block]){
+                        targetPos.Y++;
+                    }
                 }
-            }
-            if(game.player.keyInput==97){
-                if(game.map.tiles[game.player.pos.Y][game.player.pos.X-1]==FREEBLOCK){
-                    targetPos.X--;
+                if(game.player.keyInput==97){
+                    if(game.map.tiles[game.player.pos.Y][game.player.pos.X-1]==blocks[block]){
+                        targetPos.X--;
+                    }
                 }
-            }
-            if(game.player.keyInput==100){
-                if(game.map.tiles[game.player.pos.Y][game.player.pos.X+1]==FREEBLOCK){
-                    targetPos.X++;
+                if(game.player.keyInput==100){
+                    if(game.map.tiles[game.player.pos.Y][game.player.pos.X+1]==blocks[block]){
+                        targetPos.X++;
+                    }
                 }
             }
             game.player.pos.Y+=targetPos.Y;
