@@ -253,6 +253,9 @@ void player_input(GAME &game){
             POS targetPos = {0,0};
             int blocks[3] = {FREEBLOCK,STAIRBLOCK,EMPTY};
             for(int block=0;block<3;block++){
+                if(block==2 && rand()%10!=0){
+                    continue;
+                }
                 if(game.player.keyInput==119){
                     if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==blocks[block]){
                         targetPos.Y--;
