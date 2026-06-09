@@ -366,10 +366,9 @@ void create_map(GAME &game){
                 for(int otherMonster=0;otherMonster<game.monsterQuantity;otherMonster++){
                     if(otherMonster==monster){
                         continue;
-                    }else{
-                        if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
-                            success = false;
-                        }
+                    }
+                    if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
+                        success = false;
                     }
                 }
             }
@@ -438,7 +437,11 @@ void render_map(GAME &game){
                         cout<<"\e[0m ";
                     }
                 }else{
-                    cout<<"\e[0m ";
+                    if(rand()%1000==0){
+                        cout<<"\e[0m?";
+                    }else{
+                        cout<<"\e[0m ";
+                    }
                 }
             }
         }
