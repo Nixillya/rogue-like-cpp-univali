@@ -33,6 +33,29 @@ struct STATUS{
     int multiplier = 10;
 };
 
+struct WEAPON {
+    int espada = 1;
+    int machado = 1;
+    int arco = 1;
+};
+
+struct ARMOR {
+    int armor = 1;
+};
+
+struct ITEN {
+    int potion = 1;
+    int bomb = 1;
+};
+
+enum PREFIXO {
+    prefixo0, prefixo1, prefixo2, prefixo3, prefixo4, prefixo5, prefixo6, prefixo7, prefixo8, prefixo9
+};
+
+enum SUFIXO {
+    sufixo0, sufixo1, sufixo2, sufixo3, sufixo4, sufixo5, sufixo6, sufixo7, sufixo8, sufixo9 
+};
+
 struct PLAYER{
     int attPoints = 5;
     int points = 0;
@@ -42,6 +65,9 @@ struct PLAYER{
     POS pos;
     STATUS status;
     ATTRIBUTES attributes;
+    WEAPON weapon;
+    ARMOR armor;
+    ITEN iten;
 };
 
 struct MONSTER{
@@ -50,6 +76,8 @@ struct MONSTER{
     POS pos;
     STATUS status;
     ATTRIBUTES attributes;
+    WEAPON weapon;
+    ARMOR armor;
 };
 
 struct MAP{
@@ -72,6 +100,9 @@ struct GAME{
     bool codex = false;
     PLAYER player;
     MONSTER monsters[50];
+    WEAPON weapon;
+    ARMOR armor;
+    ITEN iten;
     MAP map;
     MENU menu;
 };
