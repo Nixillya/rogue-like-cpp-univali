@@ -245,6 +245,46 @@ void player_verifiers(GAME &game){
     }
 }
 
+void move_monsters(GAME &game){
+    int monster;
+    POS targetPos = {0,0};
+    int blocks[2] = {FREEBLOCK,STAIRBLOCK};
+    for(int trys=0;trys<game.monsterQuantity;trys++){
+        monster = rand()%game.monsterQuantity;
+        if(game.monsters[monster].alive==true){
+            break;
+        }
+    }
+    if(game.monsters[monster].alive==true){
+        int direction = rand()%4;
+        for(int block=0;block<2;block++){
+            if(direction==0){
+                if(game.map.tiles[game.monsters[monster].pos.Y-1][game.monsters[monster].pos.X]==blocks[block]){
+                    targetPos.Y--;
+                }
+            }
+            if(direction==1){
+                if(game.map.tiles[game.monsters[monster].pos.Y+1][game.monsters[monster].pos.X]==blocks[block]){
+                    targetPos.Y++;
+                }
+            }
+            if(direction==2){
+                if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X-1]==blocks[block]){
+                    targetPos.X--;
+                }
+            }
+            if(direction==3){
+                if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X+1]==blocks[block]){
+                    targetPos.X++;
+                }
+            }
+        }
+        game.monsters[monster].pos.Y+=targetPos.Y;
+        game.monsters[monster].pos.X+=targetPos.X;
+    }
+
+}
+
 void player_input(GAME &game){
     if(kbhit()){
         if((clock()-game.player.clockSpeed)>100){

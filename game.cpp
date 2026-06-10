@@ -18,6 +18,7 @@ void play(GAME &game){
         render_map(game);
         player_verifiers(game);
         player_input(game);
+        move_monsters(game);
     }
 }
 int main(){
