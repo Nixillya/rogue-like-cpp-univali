@@ -33,41 +33,16 @@ struct STATUS{
     int multiplier = 10;
 };
 
-struct WEAPON {
-    int espada = 1;
-    int machado = 1;
-    int arco = 1;
-};
-
-struct ARMOR {
-    int armor = 1;
-};
-
-struct ITEN {
-    int potion = 1;
-    int bomb = 1;
-};
-
-enum PREFIXO {
-    prefixo0, prefixo1, prefixo2, prefixo3, prefixo4, prefixo5, prefixo6, prefixo7, prefixo8, prefixo9
-};
-
-enum SUFIXO {
-    sufixo0, sufixo1, sufixo2, sufixo3, sufixo4, sufixo5, sufixo6, sufixo7, sufixo8, sufixo9 
-};
-
 struct PLAYER{
     int attPoints = 5;
     int points = 0;
     int exp = 0;
     int keyInput = 0;
     int clockSpeed = clock();
+    int inventory[5][2];
     POS pos;
     STATUS status;
     ATTRIBUTES attributes;
-    WEAPON weapon;
-    ARMOR armor;
-    ITEN iten;
 };
 
 struct MONSTER{
@@ -76,8 +51,6 @@ struct MONSTER{
     POS pos;
     STATUS status;
     ATTRIBUTES attributes;
-    WEAPON weapon;
-    ARMOR armor;
 };
 
 struct MAP{
@@ -100,9 +73,6 @@ struct GAME{
     bool codex = false;
     PLAYER player;
     MONSTER monsters[50];
-    WEAPON weapon;
-    ARMOR armor;
-    ITEN iten;
     MAP map;
     MENU menu;
 };
@@ -115,7 +85,7 @@ void new_line(string x, string y, string z,int size){
     cout<<z<<endl;
 }
 
-void menu_render(GAME &game) {
+void menu_render(GAME &game){
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",16);
     new_line("┃   ","ROGUE-LIKE","   ┃",1);
@@ -193,7 +163,7 @@ void menu_render(GAME &game) {
     }
 }
 
-void codex_render(GAME &game) {
+void codex_render(GAME &game){
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",15);
     new_line("┃     ","CODEX","     ┃",1);
@@ -273,6 +243,49 @@ void player_verifiers(GAME &game){
         cout<<"\ec";
         cout<<"CAINDO...";
         while((clock()-game.player.clockSpeed)<1500){}
+    }
+    if(game.map.tiles[game.player.pos.Y][game.player.pos.X]==STAIRBLOCK){
+        if(game.player.keyInput==13){
+            game.next = true;
+            game.map.level++;
+            cout<<"\ec";
+            cout<<"DESCENDO...";
+            while((clock()-game.player.clockSpeed)<1500){}
+        }
+    }
+}
+
+void move_monsters(GAME &game){
+    int blocks[2] = {FREEBLOCK,STAIRBLOCK};
+    for(int monster=0;monster<game.monsterQuantity;monster++){
+        if(game.monsters[monster].alive==true){
+            POS targetPos = {0,0};
+            int direction = rand()%4;
+            for(int block=0;block<2;block++){
+                if(direction==0){
+                    if(game.map.tiles[game.monsters[monster].pos.Y-1][game.monsters[monster].pos.X]==blocks[block]){
+                        targetPos.Y--;
+                    }
+                }
+                if(direction==1){
+                    if(game.map.tiles[game.monsters[monster].pos.Y+1][game.monsters[monster].pos.X]==blocks[block]){
+                        targetPos.Y++;
+                    }
+                }
+                if(direction==2){
+                    if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X-1]==blocks[block]){
+                        targetPos.X--;
+                    }
+                }
+                if(direction==3){
+                    if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X+1]==blocks[block]){
+                        targetPos.X++;
+                    }
+                }
+            }
+            game.monsters[monster].pos.Y+=targetPos.Y;
+            game.monsters[monster].pos.X+=targetPos.X;
+        }
     }
 }
 
@@ -412,6 +425,7 @@ void create_map(GAME &game){
                 }
             }
             if(success){
+                game.monsters[monster].id = rand()%game.map.level;
                 game.monsters[monster].pos.Y = posY;
                 game.monsters[monster].pos.X = posX;
                 game.monsters[monster].alive = true;
@@ -432,6 +446,9 @@ void render_map(GAME &game){
         }
     }
     new_line("┏","━","┓",vision*2);
+    if(game.player.keyInput==105){
+        return;
+    }
     for(int y=-vision;y<vision;y++){
         cout<<"┃";
         for(int x=-vision;x<vision;x++){
@@ -446,7 +463,7 @@ void render_map(GAME &game){
                     cout<<"\e[48;5;242m ";
                 }
                 if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==STAIRBLOCK){
-                    cout<<"\e[48;5;220m ";
+                    cout<<"\e[48;5;246m\e[38;5;242mv";
                 }
                 if(y==0 && x==0){
                     cout<<"\e[1D";
@@ -456,7 +473,9 @@ void render_map(GAME &game){
                     if(game.monsters[monster].alive){
                         if(game.monsters[monster].pos.Y==game.player.pos.Y+y && game.monsters[monster].pos.X==game.player.pos.X+x){
                             cout<<"\e[1D";
-                            cout<<"\e[38;5;160mO";
+                            if(game.monsters[monster].id==0){
+                                cout<<"\e[38;5;160mO";
+                            }
                         }
                     }
                 }
@@ -471,4 +490,18 @@ void render_map(GAME &game){
         cout<<"\e[0m┃\n";
     }
     new_line("┗","━","┛",vision*2);
+}
+
+void show_inventory(GAME &game){
+    if(game.player.keyInput==105){
+
+    }
+}
+
+void clear_inventory(GAME &game){
+    for(int y=0;y<5;y++){
+        for(int x=0;x<2;x++){
+            game.player.inventory[y][x] = 0;
+        }
+    }
 }
