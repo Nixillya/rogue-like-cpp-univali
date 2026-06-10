@@ -14,6 +14,9 @@ void play(GAME &game){
     srand(time(0)); 
     create_map(game);
     game.next = false;
+    if(game.map.level==1){
+        clear_inventory(game);
+    }
     while(game.play==true && game.next==false){
         render_map(game);
         player_verifiers(game);
@@ -21,6 +24,7 @@ void play(GAME &game){
         move_monsters(game);
     }
 }
+
 int main(){
     SetConsoleOutputCP(CP_UTF8);
     GAME game;
