@@ -11,14 +11,16 @@ void menu(GAME &game){
 }
 
 void play(GAME &game){
+    cout<<"\ec";
     srand(time(0)); 
     create_map(game);
     game.next = false;
-    if(game.map.level==1){
-        clear_inventory(game);
-    }
     while(game.play==true && game.next==false){
-        render_map(game);
+        if(game.player.inventoryOpened){
+            show_inventory(game);
+        }else{
+            render_map(game);
+        }
         player_verifiers(game);
         player_input(game);
         move_monsters(game);
@@ -28,7 +30,6 @@ void play(GAME &game){
 int main(){
     SetConsoleOutputCP(CP_UTF8);
     GAME game;
-    
     while(game.exit==false){
         if(game.play==false){
             menu(game);
