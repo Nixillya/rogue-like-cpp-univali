@@ -21,21 +21,20 @@ struct POS{
 };
 
 struct ATTRIBUTES{
-    int strength = 1;
-    int intelligence = 1;
-    int dexterity = 1;
-};
-
-struct STATUS{
     int hp = 1;
     int hpMax = 1;
     int defense = 1;
+    int strength = 1;
+    int dexterity = 1;
+    int intelligence = 1;
     int multiplier = 10;
 };
 
 struct ITEM{
-    int id=0;
-    int heal=0;
+    int id = 0;
+    int heal = 0;
+    int damage = 0;
+    int defense = 0;
 };
 
 struct PLAYER{
@@ -45,10 +44,10 @@ struct PLAYER{
     int exp = 0;
     int keyInput = 0;
     int clockSpeed = clock();
+    bool alive = true;
     bool inventoryOpened = false;
     ITEM inventory[4][3];
     POS pos;
-    STATUS status;
     ATTRIBUTES attributes;
 };
 
@@ -57,7 +56,6 @@ struct MONSTER{
     bool alive = false;
     int clockSpeed = clock();
     POS pos;
-    STATUS status;
     ATTRIBUTES attributes;
 };
 
@@ -66,6 +64,8 @@ struct MAP{
     int memory[MAPSIZEY][MAPSIZEX];
     int floor = 1;
     int floorMonsters = 0;
+    PLAYER player;
+    MONSTER monsters[50];
 };
 
 struct MENU{
@@ -81,8 +81,6 @@ struct GAME{
     bool pause = false;
     bool next = false;
     bool codex = false;
-    PLAYER player;
-    MONSTER monsters[50];
     MAP map;
     MENU menu;
 };
@@ -338,42 +336,26 @@ int VA(int number){
 }
 
 void player_verifiers(GAME &game){
-    if(game.map.tiles[game.player.pos.Y][game.player.pos.X]==EMPTY){
+    cout<<"\e[23;1H";
+    if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==EMPTY){
         game.next = true;
         game.map.floor++;
-        cout<<"\ec";
         cout<<"CAINDO...";
-        while((clock()-game.player.clockSpeed)<1500){}
+        while((clock()-game.map.player.clockSpeed)<1500){}
     }
-    if(game.map.tiles[game.player.pos.Y][game.player.pos.X]==STAIRBLOCK){
-        if(game.player.keyInput==13){
+    if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==STAIRBLOCK){
+        if(game.map.player.keyInput==13){
             game.next = true;
             game.map.floor++;
-            cout<<"\ec";
             cout<<"DESCENDO...";
-            while((clock()-game.player.clockSpeed)<1500){}
+            while((clock()-game.map.player.clockSpeed)<1500){}
         }
     }
-    for(int i=0;i<10;i++){
+    for(int i=0;i<100/game.map.player.attributes.intelligence;i++){
         int Y=rand()%MAPSIZEY;
         int X=rand()%MAPSIZEX;
-        bool success = false;
         if(game.map.memory[Y][X]==1){
-            for(int y=-1;y<=1;y++){
-                for(int x=-1;x<=1;x++){
-                    if(game.map.memory[Y+y][X+x]==0){
-                        success = true;
-                        break;
-                    }
-                }
-            }
-        }
-        if(success){
-            for(int y=-1;y<=1;y++){
-                for(int x=-1;x<=1;x++){
-                    game.map.memory[Y+y][X+x]=0;
-                }
-            }
+            game.map.memory[Y][X]=0;
         }
     }
 }
@@ -381,35 +363,35 @@ void player_verifiers(GAME &game){
 void move_monsters(GAME &game){
     int blocks[2] = {FREEBLOCK,STAIRBLOCK};
     for(int monster=0;monster<game.monsterQuantity;monster++){
-        if(game.monsters[monster].alive==true){
-            if((clock()-game.monsters[monster].clockSpeed)>1000/game.monsters[monster].attributes.dexterity){
-                game.monsters[monster].clockSpeed = clock();
+        if(game.map.monsters[monster].alive==true){
+            if((clock()-game.map.monsters[monster].clockSpeed)>1000/game.map.monsters[monster].attributes.dexterity){
+                game.map.monsters[monster].clockSpeed = clock();
                 POS targetPos = {0,0};
                 int direction = rand()%4;
                 for(int block=0;block<2;block++){
                     if(direction==0){
-                        if(game.map.tiles[game.monsters[monster].pos.Y-1][game.monsters[monster].pos.X]==blocks[block]){
+                        if(game.map.tiles[game.map.monsters[monster].pos.Y-1][game.map.monsters[monster].pos.X]==blocks[block]){
                             targetPos.Y--;
                         }
                     }
                     if(direction==1){
-                        if(game.map.tiles[game.monsters[monster].pos.Y+1][game.monsters[monster].pos.X]==blocks[block]){
+                        if(game.map.tiles[game.map.monsters[monster].pos.Y+1][game.map.monsters[monster].pos.X]==blocks[block]){
                             targetPos.Y++;
                         }
                     }
                     if(direction==2){
-                        if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X-1]==blocks[block]){
+                        if(game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X-1]==blocks[block]){
                             targetPos.X--;
                         }
                     }
                     if(direction==3){
-                        if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X+1]==blocks[block]){
+                        if(game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X+1]==blocks[block]){
                             targetPos.X++;
                         }
                     }
                 }
-                game.monsters[monster].pos.Y+=targetPos.Y;
-                game.monsters[monster].pos.X+=targetPos.X;
+                game.map.monsters[monster].pos.Y+=targetPos.Y;
+                game.map.monsters[monster].pos.X+=targetPos.X;
             }
         }
     }
@@ -417,49 +399,47 @@ void move_monsters(GAME &game){
 
 void player_input(GAME &game){
     if(kbhit()){
-        if((clock()-game.player.clockSpeed)>250/game.player.attributes.dexterity){
-            game.player.clockSpeed = clock();
-            game.player.keyInput = getch();
+        game.map.player.keyInput = getch();
+        if((clock()-game.map.player.clockSpeed)>250/game.map.player.attributes.dexterity){
+            game.map.player.clockSpeed = clock();
             POS targetPos = {0,0};
             int blocks[3] = {FREEBLOCK,STAIRBLOCK,EMPTY};
             for(int block=0;block<3;block++){
                 if(block==2 && rand()%10!=0){
                     continue;
                 }
-                if(game.player.keyInput==119){
-                    if(game.map.tiles[game.player.pos.Y-1][game.player.pos.X]==blocks[block]){
+                if(game.map.player.keyInput==119){
+                    if(game.map.tiles[game.map.player.pos.Y-1][game.map.player.pos.X]==blocks[block]){
                         targetPos.Y--;
                     }
                 }
-                if(game.player.keyInput==115){
-                    if(game.map.tiles[game.player.pos.Y+1][game.player.pos.X]==blocks[block]){
+                if(game.map.player.keyInput==115){
+                    if(game.map.tiles[game.map.player.pos.Y+1][game.map.player.pos.X]==blocks[block]){
                         targetPos.Y++;
                     }
                 }
-                if(game.player.keyInput==97){
-                    if(game.map.tiles[game.player.pos.Y][game.player.pos.X-1]==blocks[block]){
+                if(game.map.player.keyInput==97){
+                    if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X-1]==blocks[block]){
                         targetPos.X--;
                     }
                 }
-                if(game.player.keyInput==100){
-                    if(game.map.tiles[game.player.pos.Y][game.player.pos.X+1]==blocks[block]){
+                if(game.map.player.keyInput==100){
+                    if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X+1]==blocks[block]){
                         targetPos.X++;
                     }
                 }
-                if(game.player.keyInput==105){
+                if(game.map.player.keyInput==105){
                     cout<<"\ec";
-                    if(game.player.inventoryOpened == false){
-                        game.player.inventoryOpened = true;
+                    if(game.map.player.inventoryOpened == false){
+                        game.map.player.inventoryOpened = true;
                     }else{
-                        game.player.inventoryOpened = false;
+                        game.map.player.inventoryOpened = false;
                     }
-                    game.player.keyInput = 0;
+                    game.map.player.keyInput = 0;
                 }
             }
-            game.player.pos.Y+=targetPos.Y;
-            game.player.pos.X+=targetPos.X;
-        }else{
-            getch();
+            game.map.player.pos.Y+=targetPos.Y;
+            game.map.player.pos.X+=targetPos.X;
         }
     }
 }
@@ -473,8 +453,8 @@ void create_map(GAME &game){
     }
     int Y = MAPSIZEY/2;
     int X = MAPSIZEX/2;
-    game.player.pos.Y = Y;
-    game.player.pos.X = X;
+    game.map.player.pos.Y = Y;
+    game.map.player.pos.X = X;
     int i = 0;
     while(true){
         int tamY = rand()%5+2;
@@ -543,23 +523,23 @@ void create_map(GAME &game){
             int posY;
             int posX;
             bool success = false;
-            int attPoints = game.player.nivel+game.map.floor;
+            int attPoints = game.map.player.nivel+game.map.floor;
             while(attPoints>0){
                 int attribute = rand()%5;
                 if(attribute==0){
-                    game.monsters[monster].status.hpMax+=1;
+                    game.map.monsters[monster].attributes.hpMax+=1;
                 }
                 if(attribute==1){
-                    game.monsters[monster].status.defense+=1;
+                    game.map.monsters[monster].attributes.defense+=1;
                 }
                 if(attribute==2){
-                    game.monsters[monster].attributes.strength+=1;
+                    game.map.monsters[monster].attributes.strength+=1;
                 }
                 if(attribute==3){
-                    game.monsters[monster].attributes.intelligence+=1;
+                    game.map.monsters[monster].attributes.intelligence+=1;
                 }
                 if(attribute==4){
-                    game.monsters[monster].attributes.dexterity+=1;
+                    game.map.monsters[monster].attributes.dexterity+=1;
                 }
                 attPoints--;
             }
@@ -574,17 +554,17 @@ void create_map(GAME &game){
                     if(otherMonster==monster){
                         continue;
                     }
-                    if(game.monsters[monster].pos.Y == game.monsters[otherMonster].pos.Y && game.monsters[monster].pos.X == game.monsters[otherMonster].pos.X){
+                    if(game.map.monsters[monster].pos.Y == game.map.monsters[otherMonster].pos.Y && game.map.monsters[monster].pos.X == game.map.monsters[otherMonster].pos.X){
                         success = false;
                     }
                 }
             }
             if(success){
-                game.monsters[monster].id = rand()%game.map.floor;
-                game.monsters[monster].pos.Y = posY;
-                game.monsters[monster].pos.X = posX;
-                game.monsters[monster].status.hp = game.monsters[monster].status.hpMax*10;
-                game.monsters[monster].alive = true;
+                game.map.monsters[monster].id = rand()%game.map.floor;
+                game.map.monsters[monster].pos.Y = posY;
+                game.map.monsters[monster].pos.X = posX;
+                game.map.monsters[monster].attributes.hp = game.map.monsters[monster].attributes.hpMax*10;
+                game.map.monsters[monster].alive = true;
             }
         }else{
             continue;
@@ -599,7 +579,7 @@ void show_inventory(GAME &game){
     for(int y=0;y<4;y++){
         cout<<"┃";
         for(int x=0;x<3;x++){
-            if(game.player.inventory[y][x].id==0){
+            if(game.map.player.inventory[y][x].id==0){
                 cout<<"   ";
             }
         }
@@ -614,24 +594,24 @@ void render_map(GAME &game){
     int vision = 10;
     for(int y=-1;y<=1;y++){
         for(int x=-1;x<=1;x++){
-            game.map.memory[game.player.pos.Y+y][game.player.pos.X+x] = 1;
+            game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
         }
     }
     new_line("┏","━","┓",vision*2);
     for(int y=-vision;y<vision;y++){
         cout<<"┃";
         for(int x=-vision;x<vision;x++){
-            if(game.map.memory[game.player.pos.Y+y][game.player.pos.X+x]==1){
-                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
+            if(game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x]==1){
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
                     cout<<"\e[0m ";
                 }
-                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==FREEBLOCK){
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==FREEBLOCK){
                     cout<<"\e[48;5;246m ";
                 }
-                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==SOLIDBLOCK){
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==SOLIDBLOCK){
                     cout<<"\e[48;5;242m ";
                 }
-                if(game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==STAIRBLOCK){
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==STAIRBLOCK){
                     cout<<"\e[48;5;246m\e[38;5;242mv";
                 }
                 if(y==0 && x==0){
@@ -639,48 +619,48 @@ void render_map(GAME &game){
                     cout<<"\e[38;5;255m@";
                 }
                 for(int monster=0;monster<50;monster++){   
-                    if(game.monsters[monster].alive){
-                        if(game.monsters[monster].pos.Y==game.player.pos.Y+y && game.monsters[monster].pos.X==game.player.pos.X+x){
+                    if(game.map.monsters[monster].alive){
+                        if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+y && game.map.monsters[monster].pos.X==game.map.player.pos.X+x){
                             cout<<"\e[1D";
-                            if(game.monsters[monster].id==0){
+                            if(game.map.monsters[monster].id==0){
                                 cout<<"\e[38;5;31mO";
                             }
-                            if(game.monsters[monster].id==1){
+                            if(game.map.monsters[monster].id==1){
                                 cout<<"\e[38;5;46mG";
                             }
-                            if(game.monsters[monster].id==2){
+                            if(game.map.monsters[monster].id==2){
                                 cout<<"\e[38;5;202mK";
                             }
-                            if(game.monsters[monster].id==3){
+                            if(game.map.monsters[monster].id==3){
                                 cout<<"\e[38;5;34mR";
                             }
-                            if(game.monsters[monster].id==4){
+                            if(game.map.monsters[monster].id==4){
                                 cout<<"\e[38;5;106mH";
                             }
-                            if(game.monsters[monster].id==5){
+                            if(game.map.monsters[monster].id==5){
                                 cout<<"\e[38;5;53mD";
                             }
-                            if(game.monsters[monster].id==6){
+                            if(game.map.monsters[monster].id==6){
                                 cout<<"\e[38;5;13mM";
                             }
-                            if(game.monsters[monster].id==7){
+                            if(game.map.monsters[monster].id==7){
                                 cout<<"\e[38;5;227mT";
                             }
-                            if(game.monsters[monster].id==8){
+                            if(game.map.monsters[monster].id==8){
                                 cout<<"\e[38;5;214mA";
                             }
-                            if(game.monsters[monster].id==9){
+                            if(game.map.monsters[monster].id==9){
                                 cout<<"\e[38;5;52mE";
                             }
-                            if(game.monsters[monster].id==10){
+                            if(game.map.monsters[monster].id==10){
                                 cout<<"\e[38;5;3mB";
                             }
                         }
                     }
                 }
             }else{
-                if(!game.map.tiles[game.player.pos.Y+y][game.player.pos.X+x]==EMPTY){
-                    cout<<"\e[0m?";
+                if(!game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
+                    cout<<"\e[48;5;233m ";
                 }else{
                     cout<<"\e[0m ";
                 }
@@ -692,5 +672,5 @@ void render_map(GAME &game){
     cout<<"\e[4;"<<((vision+1)*2)+1<<"H";
     cout<<"ANDAR: "<<game.map.floor;
     cout<<"\e[5;"<<((vision+1)*2)+1<<"H";
-    cout<<"EXP: "<<game.player.exp<<"/"<<game.player.nivel<<"     ";
+    cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nivel<<"     ";
 }

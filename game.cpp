@@ -16,7 +16,7 @@ void play(GAME &game){
     create_map(game);
     game.next = false;
     while(game.play==true && game.next==false){
-        if(game.player.inventoryOpened){
+        if(game.map.player.inventoryOpened){
             show_inventory(game);
         }else{
             render_map(game);
@@ -32,6 +32,8 @@ int main(){
     static GAME game;
     while(game.exit==false){
         if(game.play==false){
+            PLAYER player;
+            game.map.player = player;
             menu(game);
         }
         if(game.play==true){
