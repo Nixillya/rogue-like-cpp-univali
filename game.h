@@ -353,6 +353,28 @@ void player_verifiers(GAME &game){
             while((clock()-game.player.clockSpeed)<1500){}
         }
     }
+    for(int i=0;i<10;i++){
+        int Y=rand()%MAPSIZEY;
+        int X=rand()%MAPSIZEX;
+        bool success = false;
+        if(game.map.memory[Y][X]==1){
+            for(int y=-1;y<=1;y++){
+                for(int x=-1;x<=1;x++){
+                    if(game.map.memory[Y+y][X+x]==0){
+                        success = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if(success){
+            for(int y=-1;y<=1;y++){
+                for(int x=-1;x<=1;x++){
+                    game.map.memory[Y+y][X+x]=0;
+                }
+            }
+        }
+    }
 }
 
 void move_monsters(GAME &game){
@@ -516,11 +538,11 @@ void create_map(GAME &game){
         i++;
     }
     for(int monster=0;monster<game.monsterQuantity;monster++){
-        if(rand()%(11-game.map.floor)==0){
+        if(rand()%(11-game.map.floor)==0 || monster==0){
             int posY;
             int posX;
             bool success = false;
-            int attPoints = game.player.nivel;
+            int attPoints = game.player.nivel+game.map.floor;
             while(attPoints>0){
                 int attribute = rand()%5;
                 if(attribute==0){
