@@ -30,7 +30,6 @@ struct STATUS{
     int hp = 1;
     int hpMax = 1;
     int defense = 1;
-    int multiplier = 10;
 };
 
 struct ITEM{
@@ -64,7 +63,7 @@ struct MONSTER{
 struct MAP{
     int tiles[MAPSIZEY][MAPSIZEX];
     int memory[MAPSIZEY][MAPSIZEX];
-    int floor = 10;
+    int floor = 1;
 };
 
 struct MENU{
@@ -422,10 +421,30 @@ void create_map(GAME &game){
         i++;
     }
     for(int monster=0;monster<game.monsterQuantity;monster++){
-        if(rand()%(game.map.floor*10)==0){
+        if(rand()%(11-game.map.floor)==0){
             int posY;
             int posX;
             bool success = false;
+            int attPoints = game.player.nivel;
+            while(attPoints>0){
+                int attribute = rand()%5;
+                if(attribute==0){
+                    game.monsters[monster].status.hpMax+=1;
+                }
+                if(attribute==1){
+                    game.monsters[monster].status.defense+=1;
+                }
+                if(attribute==2){
+                    game.monsters[monster].attributes.strength+=1;
+                }
+                if(attribute==3){
+                    game.monsters[monster].attributes.intelligence+=1;
+                }
+                if(attribute==4){
+                    game.monsters[monster].attributes.dexterity+=1;
+                }
+                attPoints--;
+            }
             while(!success){
                 posY = rand()%MAPSIZEY;
                 posX = rand()%MAPSIZEX;
@@ -446,6 +465,7 @@ void create_map(GAME &game){
                 game.monsters[monster].id = rand()%game.map.floor;
                 game.monsters[monster].pos.Y = posY;
                 game.monsters[monster].pos.X = posX;
+                game.monsters[monster].status.hp = game.monsters[monster].status.hpMax*10;
                 game.monsters[monster].alive = true;
             }
         }else{

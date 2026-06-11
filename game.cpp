@@ -29,7 +29,7 @@ void play(GAME &game){
 
 int main(){
     SetConsoleOutputCP(CP_UTF8);
-    GAME game;
+    static GAME game;
     while(game.exit==false){
         if(game.play==false){
             menu(game);
