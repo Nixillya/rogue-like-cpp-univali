@@ -65,6 +65,7 @@ struct MAP{
     int tiles[MAPSIZEY][MAPSIZEX];
     int memory[MAPSIZEY][MAPSIZEX];
     int floor = 1;
+    int floorMonsters = 0;
 };
 
 struct MENU{
@@ -688,4 +689,8 @@ void render_map(GAME &game){
         cout<<"\e[0m┃\n";
     }
     new_line("┗","━","┛",vision*2);
+    cout<<"\e[4;"<<((vision+1)*2)+1<<"H";
+    cout<<"ANDAR: "<<game.map.floor;
+    cout<<"\e[5;"<<((vision+1)*2)+1<<"H";
+    cout<<"EXP: "<<game.player.exp<<"/"<<game.player.nivel<<"     ";
 }
