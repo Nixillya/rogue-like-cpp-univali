@@ -30,22 +30,16 @@ struct STATUS{
     int hp = 1;
     int hpMax = 1;
     int defense = 1;
-};
-
-struct ITEM{
-    int id=0;
-    int heal=0;
+    int multiplier = 10;
 };
 
 struct PLAYER{
-    int attPoints = 1;
-    int nivel = 1;
+    int attPoints = 5;
     int points = 0;
     int exp = 0;
     int keyInput = 0;
     int clockSpeed = clock();
-    bool inventoryOpened = false;
-    ITEM inventory[4][3];
+    int inventory[5][2];
     POS pos;
     STATUS status;
     ATTRIBUTES attributes;
@@ -54,7 +48,6 @@ struct PLAYER{
 struct MONSTER{
     int id = 0;
     bool alive = false;
-    int clockSpeed = clock();
     POS pos;
     STATUS status;
     ATTRIBUTES attributes;
@@ -63,12 +56,13 @@ struct MONSTER{
 struct MAP{
     int tiles[MAPSIZEY][MAPSIZEX];
     int memory[MAPSIZEY][MAPSIZEX];
-    int floor = 1;
+    int level = 1;
 };
 
 struct MENU{
     int optionVertical = 4;
-    int optionHorizontal = 0;
+    int optionHorizontal = 1;
+    bool codexPages = false;
 };
 
 struct GAME{
@@ -139,8 +133,8 @@ void menu_render(GAME &game){
                 game.play = true;
             }
             if (game.menu.optionVertical == 5) {
-                game.codex = true;
                 cout << "\ec";
+                game.codex = true;  
             }
             if (game.menu.optionVertical == 6) {
                 cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓";
@@ -186,11 +180,16 @@ void codex_render(GAME &game){
         cout << "┃ [ITENS]       ┃\n";
     }
     if (game.menu.optionVertical == 6) {
-        cout << "┃ > [INIMIGOS]  ┃\n";
+        cout << "┃ > [BESTIÁRIO] ┃\n";
     } else {
-        cout << "┃ [INIMIGOS]    ┃\n";
+        cout << "┃ [BESTIÁRIO]   ┃\n";
     }
     if (game.menu.optionVertical == 7) {
+        cout << "┃ > [HISTÓRIA] ┃\n";
+    } else {
+        cout << "┃ [HISTÓRIA]   ┃\n";
+    }
+    if (game.menu.optionVertical == 8) {
         cout << "┃ > [VOLTAR]    ┃\n";
     } else {
         cout << "┃ [VOLTAR]      ┃\n";
@@ -202,32 +201,118 @@ void codex_render(GAME &game){
         case 119: // Ir para cima
             game.menu.optionVertical--;
             if (game.menu.optionVertical < 4) {
-                game.menu.optionVertical = 7;
+                game.menu.optionVertical = 8;
             }
             break;
+
         case 115: // Ir para baixo
                 game.menu.optionVertical++;
-                if (game.menu.optionVertical > 7) {
+                if (game.menu.optionVertical > 8) {
                     game.menu.optionVertical = 4;
                 }
                 break;
+
         case 13: // Input (ENTER)
             if (game.menu.optionVertical == 4) {
                 cout << "\nTemplate [COMO JOGAR]";
                 getch();
                 cout << "\ec";
             }
-            if (game.menu.optionVertical == 5) {
-                cout << "\nTemplate [ITENS]";
+            if (game.menu.optionVertical == 5) {    
                 getch();
                 cout << "\ec";
             }
             if (game.menu.optionVertical == 6) {
-                cout << "\nTemplate [INIMIGOS]";
+                game.menu.optionVertical = 1;
+                game.menu.codexPages = true;
+                while (game.menu.codexPages == true) {
+                    int keyCodex = getch();
+                    switch (keyCodex) {
+                        case 119: // Cima
+                            game.menu.optionVertical--;
+                            if (game.menu.optionVertical < 1) {
+                                game.menu.optionVertical = 2;
+                            }
+                            break;
+                        case 115: //Baixo
+                            game.menu.optionVertical++;
+                            if (game.menu.optionVertical > 2) {
+                                game.menu.optionVertical = 1;
+                            }
+                            break;
+                        case 97: // Esquerda
+                            game.menu.optionHorizontal--;
+                            if (game.menu.optionHorizontal < 1) {
+                                game.menu.optionHorizontal = 3;
+                            }
+                            cout << "\ec";
+                        break;
+                        case 100:
+                            game.menu.optionHorizontal++;
+                            if (game.menu.optionHorizontal > 3) {
+                                game.menu.optionHorizontal = 1;
+                            }
+                            cout << "\ec";
+                        case 13: // Input
+                            if (game.menu.optionVertical) {
+                                cout << "\ec";
+                                game.menu.codexPages = false;
+                            }
+                        break;
+                        cout << "\e[?25l\e[H";
+                        new_line("┏","━","┓",26);
+                        cout << "┃       CODEX: ITENS       ┃\n";
+                        new_line("┣","━","┫",26);
+                        if (game.menu.optionVertical == 1) {
+                            if (game.menu.optionHorizontal == 1) {
+                                cout << "┃  \e[93m[Página 1 - PASSIVOS]\e[0m   ┃\n";
+                            }
+                            if (game.menu.optionHorizontal == 2) {
+                                cout << "┃  \e[93m[Página 1 - PASSIVOS]\e[0m   ┃\n";
+                            }
+                            if (game.menu.optionHorizontal == 3) {
+                                cout << "┃  \e[93m[Página 1 - PASSIVOS]\e[0m   ┃\n";
+                            }
+                            cout << "┃                          ┃\n";
+                        } else {
+                            if (game.menu.optionHorizontal == 1) {
+                                cout << "┃ [Página 1 - PASSIVOS]    ┃\n";
+                            }
+                            if (game.menu.optionHorizontal == 2) {
+                                cout << "┃ [Página 1 - PASSIVOS]    ┃\n";
+                            }
+                            if (game.menu.optionHorizontal == 3) {
+                                cout << "┃ [Página 1 - PASSIVOS]    ┃\n";
+                            }
+                            cout << "┃                          ┃\n";
+                        }
+                        if (game.menu.optionVertical == 2) {
+                            cout << "┃  \e[93m[Voltar]\e[0m                ┃\n";
+                        } else {
+                            cout << "┃  \e[93m[Voltar]\e[0m                ┃\n";
+                        }
+                        ("┗","━","┛",26);
+                        cout<<"\e[?25l";
+                        switch (game.menu.optionHorizontal) {
+                            case 1:
+                                cout << "\nTemplate 1.";
+                            break;
+                            case 2:
+                                cout << "\nTemplate 2.";
+                            break;
+                            case 3:
+                                cout << "\nTemplate 2.";
+                            break;
+                        }
+                    }
+                }
+            }
+            if (game.menu.optionVertical == 7) {
+                cout << "\nTemplate [HISTÓRIA]";
                 getch();
                 cout << "\ec";
             }
-            if (game.menu.optionVertical == 7) {
+            if (game.menu.optionVertical == 8) {
                 cout << "\ec";
                 game.menu.optionVertical = 4;
                 game.codex = false;
@@ -246,14 +331,16 @@ int VA(int number){
 void player_verifiers(GAME &game){
     if(game.map.tiles[game.player.pos.Y][game.player.pos.X]==EMPTY){
         game.next = true;
-        game.map.floor++;
+        game.map.level++;
+        cout<<"\ec";
         cout<<"CAINDO...";
         while((clock()-game.player.clockSpeed)<1500){}
     }
     if(game.map.tiles[game.player.pos.Y][game.player.pos.X]==STAIRBLOCK){
         if(game.player.keyInput==13){
             game.next = true;
-            game.map.floor++;
+            game.map.level++;
+            cout<<"\ec";
             cout<<"DESCENDO...";
             while((clock()-game.player.clockSpeed)<1500){}
         }
@@ -264,42 +351,39 @@ void move_monsters(GAME &game){
     int blocks[2] = {FREEBLOCK,STAIRBLOCK};
     for(int monster=0;monster<game.monsterQuantity;monster++){
         if(game.monsters[monster].alive==true){
-            if((clock()-game.monsters[monster].clockSpeed)>1000/game.monsters[monster].attributes.dexterity){
-                game.monsters[monster].clockSpeed = clock();
-                POS targetPos = {0,0};
-                int direction = rand()%4;
-                for(int block=0;block<2;block++){
-                    if(direction==0){
-                        if(game.map.tiles[game.monsters[monster].pos.Y-1][game.monsters[monster].pos.X]==blocks[block]){
-                            targetPos.Y--;
-                        }
-                    }
-                    if(direction==1){
-                        if(game.map.tiles[game.monsters[monster].pos.Y+1][game.monsters[monster].pos.X]==blocks[block]){
-                            targetPos.Y++;
-                        }
-                    }
-                    if(direction==2){
-                        if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X-1]==blocks[block]){
-                            targetPos.X--;
-                        }
-                    }
-                    if(direction==3){
-                        if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X+1]==blocks[block]){
-                            targetPos.X++;
-                        }
+            POS targetPos = {0,0};
+            int direction = rand()%4;
+            for(int block=0;block<2;block++){
+                if(direction==0){
+                    if(game.map.tiles[game.monsters[monster].pos.Y-1][game.monsters[monster].pos.X]==blocks[block]){
+                        targetPos.Y--;
                     }
                 }
-                game.monsters[monster].pos.Y+=targetPos.Y;
-                game.monsters[monster].pos.X+=targetPos.X;
+                if(direction==1){
+                    if(game.map.tiles[game.monsters[monster].pos.Y+1][game.monsters[monster].pos.X]==blocks[block]){
+                        targetPos.Y++;
+                    }
+                }
+                if(direction==2){
+                    if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X-1]==blocks[block]){
+                        targetPos.X--;
+                    }
+                }
+                if(direction==3){
+                    if(game.map.tiles[game.monsters[monster].pos.Y][game.monsters[monster].pos.X+1]==blocks[block]){
+                        targetPos.X++;
+                    }
+                }
             }
+            game.monsters[monster].pos.Y+=targetPos.Y;
+            game.monsters[monster].pos.X+=targetPos.X;
         }
     }
 }
 
 void player_input(GAME &game){
     if(kbhit()){
-        if((clock()-game.player.clockSpeed)>250/game.player.attributes.dexterity){
+        if((clock()-game.player.clockSpeed)>100){
             game.player.clockSpeed = clock();
             game.player.keyInput = getch();
             POS targetPos = {0,0};
@@ -328,20 +412,11 @@ void player_input(GAME &game){
                         targetPos.X++;
                     }
                 }
-                if(game.player.keyInput==105){
-                    cout<<"\ec";
-                    if(game.player.inventoryOpened == false){
-                        game.player.inventoryOpened = true;
-                    }else{
-                        game.player.inventoryOpened = false;
-                    }
-                    game.player.keyInput = 0;
-                }
             }
             game.player.pos.Y+=targetPos.Y;
             game.player.pos.X+=targetPos.X;
         }else{
-            getch();
+            game.player.keyInput = getch();
         }
     }
 }
@@ -375,7 +450,7 @@ void create_map(GAME &game){
                 }
             }
         }
-        if(i>=game.map.floor*2){
+        if(i>=game.map.level*2){
             if(rand()%2==0){
                 game.map.tiles[Y][X] = STAIRBLOCK;
                 break;
@@ -421,30 +496,10 @@ void create_map(GAME &game){
         i++;
     }
     for(int monster=0;monster<game.monsterQuantity;monster++){
-        if(rand()%(11-game.map.floor)==0){
+        if(rand()%(game.map.level*10)==0){
             int posY;
             int posX;
             bool success = false;
-            int attPoints = game.player.nivel;
-            while(attPoints>0){
-                int attribute = rand()%5;
-                if(attribute==0){
-                    game.monsters[monster].status.hpMax+=1;
-                }
-                if(attribute==1){
-                    game.monsters[monster].status.defense+=1;
-                }
-                if(attribute==2){
-                    game.monsters[monster].attributes.strength+=1;
-                }
-                if(attribute==3){
-                    game.monsters[monster].attributes.intelligence+=1;
-                }
-                if(attribute==4){
-                    game.monsters[monster].attributes.dexterity+=1;
-                }
-                attPoints--;
-            }
             while(!success){
                 posY = rand()%MAPSIZEY;
                 posX = rand()%MAPSIZEX;
@@ -462,10 +517,9 @@ void create_map(GAME &game){
                 }
             }
             if(success){
-                game.monsters[monster].id = rand()%game.map.floor;
+                game.monsters[monster].id = rand()%game.map.level;
                 game.monsters[monster].pos.Y = posY;
                 game.monsters[monster].pos.X = posX;
-                game.monsters[monster].status.hp = game.monsters[monster].status.hpMax*10;
                 game.monsters[monster].alive = true;
             }
         }else{
@@ -474,32 +528,19 @@ void create_map(GAME &game){
     }
 }
 
-void show_inventory(GAME &game){
-    cout << "\e[?25l\e[H";
-    cout << "\e[1;1H";
-    new_line("┏","━","┓",3*3);
-    for(int y=0;y<4;y++){
-        cout<<"┃";
-        for(int x=0;x<3;x++){
-            if(game.player.inventory[y][x].id==0){
-                cout<<"   ";
-            }
-        }
-        cout<<"\e[0m┃\n";
-    }
-    new_line("┗","━","┛",3*3);
-}
-
 void render_map(GAME &game){
     cout << "\e[?25l\e[H";
     cout << "\e[1;1H";
-    int vision = 10;
+    int vision = 15;
     for(int y=-1;y<=1;y++){
         for(int x=-1;x<=1;x++){
             game.map.memory[game.player.pos.Y+y][game.player.pos.X+x] = 1;
         }
     }
     new_line("┏","━","┓",vision*2);
+    if(game.player.keyInput==105){
+        return;
+    }
     for(int y=-vision;y<vision;y++){
         cout<<"┃";
         for(int x=-vision;x<vision;x++){
@@ -525,37 +566,7 @@ void render_map(GAME &game){
                         if(game.monsters[monster].pos.Y==game.player.pos.Y+y && game.monsters[monster].pos.X==game.player.pos.X+x){
                             cout<<"\e[1D";
                             if(game.monsters[monster].id==0){
-                                cout<<"\e[38;5;31mO";
-                            }
-                            if(game.monsters[monster].id==1){
-                                cout<<"\e[38;5;46mG";
-                            }
-                            if(game.monsters[monster].id==2){
-                                cout<<"\e[38;5;202mK";
-                            }
-                            if(game.monsters[monster].id==3){
-                                cout<<"\e[38;5;34mR";
-                            }
-                            if(game.monsters[monster].id==4){
-                                cout<<"\e[38;5;106mH";
-                            }
-                            if(game.monsters[monster].id==5){
-                                cout<<"\e[38;5;53mD";
-                            }
-                            if(game.monsters[monster].id==6){
-                                cout<<"\e[38;5;13mM";
-                            }
-                            if(game.monsters[monster].id==7){
-                                cout<<"\e[38;5;227mT";
-                            }
-                            if(game.monsters[monster].id==8){
-                                cout<<"\e[38;5;214mA";
-                            }
-                            if(game.monsters[monster].id==9){
-                                cout<<"\e[38;5;52mE";
-                            }
-                            if(game.monsters[monster].id==10){
-                                cout<<"\e[38;5;3mB";
+                                cout<<"\e[38;5;160mO";
                             }
                         }
                     }
@@ -571,4 +582,18 @@ void render_map(GAME &game){
         cout<<"\e[0m┃\n";
     }
     new_line("┗","━","┛",vision*2);
+}
+
+void show_inventory(GAME &game){
+    if(game.player.keyInput==105){
+
+    }
+}
+
+void clear_inventory(GAME &game){
+    for(int y=0;y<5;y++){
+        for(int x=0;x<2;x++){
+            game.player.inventory[y][x] = 0;
+        }
+    }
 }
