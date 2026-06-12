@@ -26,7 +26,7 @@ struct ATTRIBUTES{
     int defense = 1;
     int strength = 1;
     int dexterity = 1;
-    int intelligence = 1;
+    int intelligence = 10;
 };
 
 struct ITEM{
