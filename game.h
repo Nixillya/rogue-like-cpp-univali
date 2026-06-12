@@ -364,7 +364,7 @@ void player_verifiers(GAME &game){
                     }
                 }
             }
-            if(succeSss){
+            if(success){
                 game.map.memory[Y][X] = 0;
             }
         }
