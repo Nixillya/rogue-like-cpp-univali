@@ -336,6 +336,11 @@ int VA(int number){
 }
 
 void player_verifiers(GAME &game){
+    if(game.map.player.exp>=game.map.player.nivel){
+        game.map.player.exp = 0;
+        game.map.player.attPoints++;
+        game.map.player.nivel++;
+    }
     cout<<"\e[23;1H";
     if(game.map.player.attributes.hp<1){
         cout<<"MORREU";
@@ -385,6 +390,12 @@ void player_verifiers(GAME &game){
 void move_monsters(GAME &game){
     int blocks[2] = {FREEBLOCK,STAIRBLOCK};
     for(int monster=0;monster<game.monsterQuantity;monster++){
+        if(game.map.monsters[monster].attributes.hp<1){
+            if(game.map.monsters[monster].alive==true){
+                game.map.player.exp++;
+                game.map.monsters[monster].alive = false;
+            }
+        }
         if(game.map.monsters[monster].alive==true){
             if((clock()-game.map.monsters[monster].clockSpeed)>1000/game.map.monsters[monster].attributes.dexterity){
                 game.map.monsters[monster].clockSpeed = clock();
@@ -468,8 +479,17 @@ void player_input(GAME &game){
                     game.map.player.keyInput = 0;
                 }
             }
-            game.map.player.pos.Y+=targetPos.Y;
-            game.map.player.pos.X+=targetPos.X;
+            bool success = true;
+            for(int monster=0;monster<game.monsterQuantity;monster++){
+                if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+targetPos.Y && game.map.monsters[monster].pos.X==game.map.player.pos.X+targetPos.X){
+                    game.map.monsters[monster].attributes.hp-=rand()%game.map.player.attributes.strength+1;
+                    success = false;
+                }
+            }
+            if(success){
+                game.map.player.pos.Y+=targetPos.Y;
+                game.map.player.pos.X+=targetPos.X;
+            }
         }
     }
 }
