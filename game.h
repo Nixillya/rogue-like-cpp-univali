@@ -47,6 +47,7 @@ struct PLAYER{
     bool inventoryOpened = false;
     ITEM inventory[4][3];
     POS pos;
+    POS inventorySelection = {0,0};
     ATTRIBUTES attributes;
 };
 
@@ -336,10 +337,20 @@ int VA(int number){
 
 void player_verifiers(GAME &game){
     cout<<"\e[23;1H";
+    if(game.map.player.attributes.hp<1){
+        cout<<"MORREU";
+        while((clock()-game.map.player.clockSpeed)<2000){}
+        cout<<"\ec";
+        game.play = false;
+    }
     if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==EMPTY){
         game.next = true;
         game.map.floor++;
         cout<<"CAINDO...";
+        game.map.player.attributes.hp = 1;
+        if(rand()%2==0){
+            game.map.player.attributes.hp -= 1;
+        }
         while((clock()-game.map.player.clockSpeed)<1500){}
     }
     if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==STAIRBLOCK){
@@ -409,6 +420,9 @@ void move_monsters(GAME &game){
                     game.map.player.attributes.hp-=rand()%game.map.monsters[monster].attributes.strength+1;
                 }
             }
+        }else{
+            game.map.monsters[monster].pos.Y=-1;
+            game.map.monsters[monster].pos.X=-1;
         }
     }
 }
