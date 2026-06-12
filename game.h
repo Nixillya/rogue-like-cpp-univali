@@ -45,7 +45,6 @@ struct PLAYER{
     int clockSpeed = clock();
     bool alive = true;
     bool inventoryOpened = false;
-    bool defending = false;
     ITEM inventory[4][3];
     POS pos;
     POS inventorySelection = {0,0};
@@ -367,25 +366,6 @@ void player_verifiers(GAME &game){
             while((clock()-game.map.player.clockSpeed)<1500){}
         }
     }
-    for(int i=0;i<100/game.map.player.attributes.intelligence;i++){
-        int Y=rand()%MAPSIZEY;
-        int X=rand()%MAPSIZEX;
-        bool success = false;
-        if(game.map.memory[Y][X]==1){
-            for(int y=-1;y<=1;y++){
-                for(int x=-1;x<=1;x++){
-                    if(y==0 || x==0){
-                        if(game.map.memory[Y+y][X+x]==0){
-                            success = true;
-                        }
-                    }
-                }
-            }
-            if(success){
-                game.map.memory[Y][X] = 0;
-            }
-        }
-    }
 }
 
 void move_monsters(GAME &game){
@@ -428,19 +408,10 @@ void move_monsters(GAME &game){
                 if(game.map.monsters[monster].pos.Y+targetPos.Y==game.map.player.pos.Y && game.map.monsters[monster].pos.X+targetPos.X==game.map.player.pos.X){
                     success = false;
                     int attack = rand()%game.map.monsters[monster].attributes.strength+1;
-                    int defended = 0;
-                    if(game.map.player.defending){
-                        defended = rand()%game.map.player.attributes.defense;
-                        if(defended>attack){
-                            defended = attack;
-                        }
-                        if(defended==0){
-                            if(rand()%(100/game.map.player.attributes.intelligence)==0){
-                                defended = rand()%game.map.player.attributes.defense+1;
-                            }
-                            if(defended==0){
-                                game.map.player.defending = false;
-                            }
+                    int defended = rand()%game.map.player.attributes.defense;
+                    if(defended==0){
+                        if(rand()%(100/game.map.player.attributes.intelligence)==0){
+                            defended = rand()%game.map.player.attributes.defense+1;
                         }
                     }
                     game.map.player.attributes.hp-=(attack-defended);
@@ -474,14 +445,6 @@ void player_input(GAME &game){
             int blocks[3] = {FREEBLOCK,STAIRBLOCK,EMPTY};
             bool success = true;
             for(int block=0;block<3;block++){
-                if(game.map.player.keyInput==113){
-                    game.map.player.defending = true;
-                }else{
-                    if(game.map.player.defending==true){
-                        game.map.player.defending = false;
-                        break;
-                    }
-                }
                 if(block==2 && rand()%10!=0){
                     continue;
                 }
@@ -545,7 +508,6 @@ void create_map(GAME &game){
     while(true){
         int tamY = rand()%5+2;
         int tamX = rand()%5+2;
-        bool breakSolid = true;
         for(int y=-tamY;y<tamY;y++){
             for(int x=-tamX;x<tamX;x++){
                 if(Y+y>=0 && Y+y<MAPSIZEY && X+x>=0 && X+x<MAPSIZEX){
@@ -588,7 +550,7 @@ void create_map(GAME &game){
             if(rand()%5==0){
                 direction = rand()%4;
             }
-            if(rand()%20==0){
+            if(rand()%100==0){
                 break;
             }
         }
@@ -671,13 +633,34 @@ void show_inventory(GAME &game){
     new_line("┗","━","┛",3*3);
 }
 
+int simulate_vision(GAME &game,int y,int x,int i=0){
+    if(i>=1){
+        if(rand()%2==0){
+            y += (y!=0) ? y/VA(y) : 0;
+        }
+        if(rand()%2==0){
+            x += (x!=0) ? x/VA(x) : 0;
+        }
+    }
+    if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]!=SOLIDBLOCK){
+        i++;
+        game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
+        if(i<game.map.player.attributes.intelligence){
+            simulate_vision(game,y,x,i);
+        }
+    }
+    game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
+    return 0;
+}
+
+
 void render_map(GAME &game){
     cout << "\e[?25l\e[H";
     cout << "\e[1;1H";
     int vision = 10;
     for(int y=-1;y<=1;y++){
         for(int x=-1;x<=1;x++){
-            game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
+            simulate_vision(game,y,x);
         }
     }
     new_line("┏","━","┓",vision*2);
@@ -743,7 +726,7 @@ void render_map(GAME &game){
                 }
             }else{
                 if(!game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
-                    cout<<"\e[48;5;233m ";
+                    cout<<"\e[48;5;234m ";
                 }else{
                     cout<<"\e[0m ";
                 }
@@ -756,14 +739,8 @@ void render_map(GAME &game){
     new_line("┏","━","┓",10);
     cout<<"\e[2;"<<((vision+1)*2)+1<<"H┃";
     int bar=0;
-    if(game.map.player.defending){
-        for(bar=bar;bar<((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10);bar++){
-            cout<<"\e[48;5;255m ";
-        }
-    }else{
-        for(bar=bar;bar<((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10);bar++){
-            cout<<"\e[48;5;46m ";
-        }
+    for(bar=bar;bar<((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10);bar++){
+        cout<<"\e[48;5;46m ";
     }
     for(bar=bar;bar<10;bar++){
         cout<<"\e[0m ";
