@@ -72,7 +72,7 @@ struct MAP{
 struct MENU{
     int optionVertical = 4;
     int optionHorizontal = 1;
-    bool codexPages = false;
+    bool codexPages = true;
 };
 
 struct GAME{
@@ -227,93 +227,102 @@ void codex_render(GAME &game){
                 cout << "\ec";
             }
             if (game.menu.optionVertical == 5) {    
-                getch();
                 cout << "\ec";
-            }
-            if (game.menu.optionVertical == 6) {
                 game.menu.optionVertical = 1;
-                game.menu.codexPages = true;
                 while (game.menu.codexPages == true) {
-                    int keyCodex = getch();
-                    switch (keyCodex) {
+                    if (game.menu.optionVertical < 1) {
+                        game.menu.optionVertical = 2;
+                    }
+                    if  (game.menu.optionVertical > 2) {
+                        game.menu.optionVertical = 1;
+                    }
+                    if (game.menu.optionHorizontal < 1) {
+                        game.menu.optionHorizontal = 3;
+                    }
+                    if (game.menu.optionHorizontal > 3) {
+                        game.menu.optionHorizontal = 1;
+                    }
+                    cout << "\e[?25l\e[H";
+                    new_line("┏","━","┓",26);
+                    cout << "┃       CODEX: ITENS       ┃\n";
+                    new_line("┣","━","┫",26);
+                    if (game.menu.optionVertical == 1) {
+                        if (game.menu.optionHorizontal == 1) {
+                            cout << "┃  \e[93m[Página 1 - ARMAS]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 2) {
+                            cout << "┃  \e[93m[Página 2 - ARMADURAS]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 3) {
+                            cout << "┃  \e[93m[Página 3 - ITENS]\e[0m   ┃\n";
+                        }
+                        cout << "┃                          ┃\n";
+                    } else {
+                        if (game.menu.optionHorizontal == 1) {
+                            cout << "┃ [Página 1 - ARMAS]    ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 2) {
+                            cout << "┃ [Página 2 - ARMADURAS]    ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 3) {
+                            cout << "┃ [Página 3 - ITENS]    ┃\n";
+                        }
+                        cout << "┃                          ┃\n";
+                    }
+                    if (game.menu.optionVertical == 2) {
+                        cout << "┃  \e[93m[Voltar]\e[0m                ┃\n";
+                    } else {
+                        cout << "┃ [Voltar]                 ┃\n";
+                    }
+                    new_line("┗","━","┛",26);
+                    cout<<"\e[?25l";
+                    switch (game.menu.optionHorizontal) {
+                        case 1:
+                            cout << "\nTemplate 1.";
+                        break;
+
+                        case 2:
+                            cout << "\nTemplate 2.";
+                        break;
+
+                        case 3:
+                            cout << "\nTemplate 3.";
+                        break;
+                    }
+                    key = getch();
+                    switch (key) {
                         case 119: // Cima
                             game.menu.optionVertical--;
-                            if (game.menu.optionVertical < 1) {
-                                game.menu.optionVertical = 2;
-                            }
-                            break;
-                        case 115: //Baixo
+                        break;
+
+                        case 115: // Baixo
                             game.menu.optionVertical++;
-                            if (game.menu.optionVertical > 2) {
-                                game.menu.optionVertical = 1;
-                            }
-                            break;
-                        case 97: // Esquerda
+                        break;
+
+                        case 97: //Esquerda
                             game.menu.optionHorizontal--;
-                            if (game.menu.optionHorizontal < 1) {
-                                game.menu.optionHorizontal = 3;
-                            }
                             cout << "\ec";
                         break;
-                        case 100:
+
+                        case 100: //Direita
                             game.menu.optionHorizontal++;
-                            if (game.menu.optionHorizontal > 3) {
-                                game.menu.optionHorizontal = 1;
-                            }
                             cout << "\ec";
-                        case 13: // Input
-                            if (game.menu.optionVertical) {
+                        break;
+
+                        case 13:
+                            if (game.menu.optionVertical == 2) {
                                 cout << "\ec";
+                                game.menu.optionVertical = 5;
                                 game.menu.codexPages = false;
                             }
                         break;
-                        cout << "\e[?25l\e[H";
-                        new_line("┏","━","┓",26);
-                        cout << "┃       CODEX: ITENS       ┃\n";
-                        new_line("┣","━","┫",26);
-                        if (game.menu.optionVertical == 1) {
-                            if (game.menu.optionHorizontal == 1) {
-                                cout << "┃  \e[93m[Página 1 - PASSIVOS]\e[0m   ┃\n";
-                            }
-                            if (game.menu.optionHorizontal == 2) {
-                                cout << "┃  \e[93m[Página 1 - PASSIVOS]\e[0m   ┃\n";
-                            }
-                            if (game.menu.optionHorizontal == 3) {
-                                cout << "┃  \e[93m[Página 1 - PASSIVOS]\e[0m   ┃\n";
-                            }
-                            cout << "┃                          ┃\n";
-                        } else {
-                            if (game.menu.optionHorizontal == 1) {
-                                cout << "┃ [Página 1 - PASSIVOS]    ┃\n";
-                            }
-                            if (game.menu.optionHorizontal == 2) {
-                                cout << "┃ [Página 1 - PASSIVOS]    ┃\n";
-                            }
-                            if (game.menu.optionHorizontal == 3) {
-                                cout << "┃ [Página 1 - PASSIVOS]    ┃\n";
-                            }
-                            cout << "┃                          ┃\n";
-                        }
-                        if (game.menu.optionVertical == 2) {
-                            cout << "┃  \e[93m[Voltar]\e[0m                ┃\n";
-                        } else {
-                            cout << "┃  \e[93m[Voltar]\e[0m                ┃\n";
-                        }
-                        ("┗","━","┛",26);
-                        cout<<"\e[?25l";
-                        switch (game.menu.optionHorizontal) {
-                            case 1:
-                                cout << "\nTemplate 1.";
-                            break;
-                            case 2:
-                                cout << "\nTemplate 2.";
-                            break;
-                            case 3:
-                                cout << "\nTemplate 2.";
-                            break;
-                        }
                     }
                 }
+            }
+            if (game.menu.optionVertical == 6) {
+                cout << "\nTemplate [BESTIARIO]";
+                getch();
+                cout << "\ec";
             }
             if (game.menu.optionVertical == 7) {
                 cout << "\nTemplate [HISTÓRIA]";
