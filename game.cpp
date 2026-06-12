@@ -32,8 +32,8 @@ int main(){
     static GAME game;
     while(game.exit==false){
         if(game.play==false){
-            PLAYER player;
-            game.map.player = player;
+            MAP map;
+            game.map = map;
             menu(game);
         }
         if(game.play==true){

@@ -21,13 +21,12 @@ struct POS{
 };
 
 struct ATTRIBUTES{
-    int hp = 1;
-    int hpMax = 1;
+    double hp = 10;
+    double hpMax = 10;
     int defense = 1;
     int strength = 1;
     int dexterity = 1;
     int intelligence = 1;
-    int multiplier = 10;
 };
 
 struct ITEM{
@@ -354,8 +353,20 @@ void player_verifiers(GAME &game){
     for(int i=0;i<100/game.map.player.attributes.intelligence;i++){
         int Y=rand()%MAPSIZEY;
         int X=rand()%MAPSIZEX;
+        bool success = false;
         if(game.map.memory[Y][X]==1){
-            game.map.memory[Y][X]=0;
+            for(int y=-1;y<=1;y++){
+                for(int x=-1;x<=1;x++){
+                    if(y==0 || x==0){
+                        if(game.map.memory[Y+y][X+x]==0){
+                            success = true;
+                        }
+                    }
+                }
+            }
+            if(succeSss){
+                game.map.memory[Y][X] = 0;
+            }
         }
     }
 }
@@ -392,6 +403,11 @@ void move_monsters(GAME &game){
                 }
                 game.map.monsters[monster].pos.Y+=targetPos.Y;
                 game.map.monsters[monster].pos.X+=targetPos.X;
+                if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y && game.map.monsters[monster].pos.X==game.map.player.pos.X){
+                    game.map.monsters[monster].pos.Y-=targetPos.Y;
+                    game.map.monsters[monster].pos.X-=targetPos.X;
+                    game.map.player.attributes.hp-=rand()%game.map.monsters[monster].attributes.strength+1;
+                }
             }
         }
     }
@@ -563,7 +579,7 @@ void create_map(GAME &game){
                 game.map.monsters[monster].id = rand()%game.map.floor;
                 game.map.monsters[monster].pos.Y = posY;
                 game.map.monsters[monster].pos.X = posX;
-                game.map.monsters[monster].attributes.hp = game.map.monsters[monster].attributes.hpMax*10;
+                game.map.monsters[monster].attributes.hp = game.map.monsters[monster].attributes.hpMax;
                 game.map.monsters[monster].alive = true;
             }
         }else{
@@ -669,6 +685,19 @@ void render_map(GAME &game){
         cout<<"\e[0m┃\n";
     }
     new_line("┗","━","┛",vision*2);
+    cout<<"\e[1;"<<((vision+1)*2)+1<<"H";
+    new_line("┏","━","┓",10);
+    cout<<"\e[2;"<<((vision+1)*2)+1<<"H┃";
+    int bar=0;
+    for(bar=bar;bar<((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10);bar++){
+        cout<<"\e[48;5;46m ";
+    }
+    for(bar=bar;bar<10;bar++){
+        cout<<"\e[0m ";
+    }
+    cout<<"\e[0m┃";
+    cout<<"\e[3;"<<((vision+1)*2)+1<<"H";
+    new_line("┗","━","┛",10);
     cout<<"\e[4;"<<((vision+1)*2)+1<<"H";
     cout<<"ANDAR: "<<game.map.floor;
     cout<<"\e[5;"<<((vision+1)*2)+1<<"H";
