@@ -414,6 +414,9 @@ void move_monsters(GAME &game){
                             defended = rand()%game.map.player.attributes.defense+1;
                         }
                     }
+                    if(defended>attack){
+                        defended = attack;
+                    }
                     game.map.player.attributes.hp-=(attack-defended);
                 }
                 for(int otherMonster=0;otherMonster<game.monsterQuantity;otherMonster++){
@@ -481,7 +484,17 @@ void player_input(GAME &game){
             }
             for(int monster=0;monster<game.monsterQuantity;monster++){
                 if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+targetPos.Y && game.map.monsters[monster].pos.X==game.map.player.pos.X+targetPos.X){
-                    game.map.monsters[monster].attributes.hp-=rand()%game.map.player.attributes.strength+1;
+                    int attack = rand()%game.map.player.attributes.strength+1;
+                    int defended = rand()%game.map.monsters[monster].attributes.defense;
+                    if(defended==0){
+                        if(rand()%(100/game.map.monsters[monster].attributes.intelligence)==0){
+                            defended = rand()%game.map.player.attributes.defense+1;
+                        }
+                    }
+                    if(defended>attack){
+                        defended = attack;
+                    }
+                    game.map.monsters[monster].attributes.hp-=(attack-defended);
                     success = false;
                 }
             }
@@ -575,7 +588,7 @@ void create_map(GAME &game){
                     game.map.monsters[monster].attributes.hpMax+=10;
                 }
                 if(attribute==1){
-                    game.map.monsters[monster].attributes.defense+=10;
+                    game.map.monsters[monster].attributes.defense+=1;
                 }
                 if(attribute==2){
                     game.map.monsters[monster].attributes.strength+=1;
