@@ -71,8 +71,7 @@ struct MAP{
 
 struct MENU{
     int optionVertical = 4;
-    int optionHorizontal = 1;
-    bool codexPages = true;
+    int optionHorizontal = 1;;
 };
 
 struct GAME{
@@ -174,6 +173,7 @@ void menu_render(GAME &game){
 }
 
 void codex_render(GAME &game){
+    bool codexPages = true;
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",15);
     new_line("┃     ","CODEX","     ┃",1);
@@ -194,9 +194,9 @@ void codex_render(GAME &game){
         cout << "┃ [BESTIÁRIO]   ┃\n";
     }
     if (game.menu.optionVertical == 7) {
-        cout << "┃ > [HISTÓRIA] ┃\n";
+        cout << "┃ > [HISTÓRIA]  ┃\n";
     } else {
-        cout << "┃ [HISTÓRIA]   ┃\n";
+        cout << "┃ [HISTÓRIA]    ┃\n";
     }
     if (game.menu.optionVertical == 8) {
         cout << "┃ > [VOLTAR]    ┃\n";
@@ -220,17 +220,47 @@ void codex_render(GAME &game){
                     game.menu.optionVertical = 4;
                 }
                 break;
-
+//------------------------------------------------------------------//
         case 13: // Input (ENTER)
-            if (game.menu.optionVertical == 4) {
-                cout << "\nTemplate [COMO JOGAR]";
+            if (game.menu.optionVertical == 4) { //COMO JOGAR
+                new_line("┏","━","┓",46);
+                cout << "┃ Controles:                                   ┃\n";
+                cout << "┃                                              ┃\n";
+                cout << "┃                Cima                          ┃\n";
+                cout << "┃                 ^                            ┃\n";
+                cout << "┃                 W                            ┃\n";
+                cout << "┃    Esquerda < A S D > Direita                ┃\n";
+                cout << "┃                 V                            ┃\n";
+                cout << "┃               Baixo                          ┃\n";
+                cout << "┃                                              ┃\n";
+                new_line("┣","━","┫",46);
+                cout << "┃ Iventário -> I                               ┃\n";
+                cout << "┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ OBJETIVO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n";
+                cout << "┃                                                                                ┃\n";
+                cout << "┃ - Sobreviva pelos 11 anderes, até chegar no último andar, e matar o Chefão.    ┃\n";
+                cout << "┃ - Elimine o monstro carregando a chave, e usa-la para abrir a entrada para o   ┃\n";
+                cout << "┃ - próximo andar.                                                               ┃\n";
+                cout << "┃                                                                                ┃\n";
+                cout << "┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ GERAÇÃO DO MAPA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n";
+                cout << "┃                                                                                ┃\n";
+                cout << "┃ - O mapa é gerado aleatoriamente em todas as runs. Cuidado ao andar pelas      ┃\n";
+                cout << "┃   áreas abertas sem paredes, você pode cair no abismo para o próximo andar,    ┃\n";
+                cout << "┃   há uma chance de você sobreviver a queda, ou morrer instananeamente.         ┃\n";
+                cout << "┃ - Os andares possuem armadilhas, e podem causar danos a você e os monstros.    ┃\n";
+                cout << "┃                                                                                ┃\n";
+                cout << "┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ INIMIGOS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n";
+                cout << "┃                                                                                ┃\n";
+                cout << "┃                                                                                ┃\n";
+
+
                 getch();
                 cout << "\ec";
-            }
-            if (game.menu.optionVertical == 5) {    
+            } 
+//------------------------------------------------------------------//
+            if (game.menu.optionVertical == 5) { // ITENS
                 cout << "\ec";
                 game.menu.optionVertical = 1;
-                while (game.menu.codexPages == true) {
+                while (codexPages == true) {
                     if (game.menu.optionVertical < 1) {
                         game.menu.optionVertical = 2;
                     }
@@ -314,23 +344,197 @@ void codex_render(GAME &game){
                             if (game.menu.optionVertical == 2) {
                                 cout << "\ec";
                                 game.menu.optionVertical = 5;
-                                game.menu.codexPages = false;
+                                game.menu.optionHorizontal = 1;
+                                codexPages = false;
                             }
                         break;
                     }
                 }
             }
-            if (game.menu.optionVertical == 6) {
-                cout << "\nTemplate [BESTIARIO]";
-                getch();
-                cout << "\ec";
+//------------------------------------------------------------------//
+            if (game.menu.optionVertical == 6) { // BESTIARIO
+                cout << "\ec"; 
+                game.menu.optionVertical = 1;
+                while (codexPages == true) {
+                    if (game.menu.optionVertical < 1) {
+                        game.menu.optionVertical = 2;
+                    }
+                    if  (game.menu.optionVertical > 2) {
+                        game.menu.optionVertical = 1;
+                    }
+                    if (game.menu.optionHorizontal < 1) {
+                        game.menu.optionHorizontal = 11;
+                    }
+                    if (game.menu.optionHorizontal > 11) {
+                        game.menu.optionHorizontal = 1;
+                    }
+                    cout << "\e[?25l\e[H";
+                    new_line("┏","━","┓",26);
+                    cout << "┃       CODEX: BESTIÁRIO       ┃\n";
+                    new_line("┣","━","┫",26);
+                    if (game.menu.optionVertical == 1) {
+                        if (game.menu.optionHorizontal == 1) {
+                            cout << "┃  \e[93m[Página 1 - SLIME]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 2) {
+                            cout << "┃  \e[93m[Página 2 - GOBLIN]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 3) {
+                            cout << "┃  \e[93m[Página 3 - KOBOLD]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 4) {
+                            cout << "┃  \e[93m[Página 4 - ORC]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 5) {
+                            cout << "┃  \e[93m[Página 5 - OGRO]\e[0m   ┃\n";
+                        }
+                        if  (game.menu.optionHorizontal == 6) {
+                            cout << "┃  \e[93m[Página 6 - TROLL]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 7) {
+                            cout << "┃  \e[93m[Página 7 - MÍMICO]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 8) {
+                            cout << "┃  \e[93m[Página 8 - TROGLODITA]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 9) {
+                            cout << "┃  \e[93m[Página 9 - AUTÔNOMO]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 10) {
+                            cout << "┃  \e[93m[Página 10 - ESCÓRIA]\e[0m   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 11) {
+                            cout << "┃  \e[93m[Página 11 - BOSS]\e[0m   ┃\n";
+                        }
+                        cout << "┃                          ┃\n";
+                    } else {
+                        if (game.menu.optionHorizontal == 1) {
+                            cout << "┃ [Página 1 - SLIME]    ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 2) {
+                            cout << "┃ [Página 2 - GOBLIN]    ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 3) {
+                            cout << "┃ [Página 3 - KOBOLD]    ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 4) {
+                            cout << "┃  [Página 4 - ORC]   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 5) {
+                            cout << "┃  [Página 5 - OGRO]   ┃\n";
+                        }
+                        if  (game.menu.optionHorizontal == 6) {
+                            cout << "┃  [Página 6 - TROLL]   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 7) {
+                            cout << "┃  [Página 7 - MÍMICO]   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 8) {
+                            cout << "┃  [Página 8 - TROGLODITA]   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 9) {
+                            cout << "┃  [Página 9 - AUTôNOMO]   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 10) {
+                            cout << "┃  [Página 10 - ESCÓRIA]   ┃\n";
+                        }
+                        if (game.menu.optionHorizontal == 11) {
+                            cout << "┃  [Página 11 - BOSS]   ┃\n";
+                        }
+                        cout << "┃                          ┃\n";
+                    }
+                    if (game.menu.optionVertical == 2) {
+                        cout << "┃  \e[93m[Voltar]\e[0m                ┃\n";
+                    } else {
+                        cout << "┃ [Voltar]                 ┃\n";
+                    }
+                    new_line("┗","━","┛",26);
+                    cout<<"\e[?25l";
+                    switch (game.menu.optionHorizontal) {
+                        case 1:
+                            cout << "\nTemplate 1.";
+                        break;
+
+                        case 2:
+                            cout << "\nTemplate 2.";
+                        break;
+
+                        case 3:
+                            cout << "\nTemplate 3.";
+                        break;
+
+                        case 4:
+                            cout << "\nTemplate 4.";
+                        break;
+
+                        case 5:
+                            cout << "\nTemplate 5.";
+                        break;
+
+                        case 6:
+                            cout << "\nTemplate 6.";
+                        break;
+
+                        case 7:
+                            cout << "\nTemplate 7.";
+                        break;
+
+                        case 8:
+                            cout << "\nTemplate 8.";
+                        break;
+
+                        case 9:
+                            cout << "\nTemplate 9.";
+                        break;
+
+                        case 10:
+                            cout << "\nTemplate 10.";
+                        break;
+
+                        case 11:
+                            cout << "\nTemplate 11.";
+                        break;
+                        
+                    }
+                    key = getch();
+                    switch (key) {
+                        case 119: // Cima
+                            game.menu.optionVertical--;
+                        break;
+
+                        case 115: // Baixo
+                            game.menu.optionVertical++;
+                        break;
+
+                        case 97: //Esquerda
+                            game.menu.optionHorizontal--;
+                            cout << "\ec";
+                        break;
+
+                        case 100: //Direita
+                            game.menu.optionHorizontal++;
+                            cout << "\ec";
+                        break;
+
+                        case 13:
+                            if (game.menu.optionVertical == 2) {
+                                cout << "\ec";
+                                game.menu.optionVertical = 6;
+                                game.menu.optionHorizontal = 1;
+                                codexPages = false;
+                            }
+                        break;
+                    }
+                }
             }
-            if (game.menu.optionVertical == 7) {
+//------------------------------------------------------------------//
+            if (game.menu.optionVertical == 7) { // HISTÓRIA
                 cout << "\nTemplate [HISTÓRIA]";
                 getch();
                 cout << "\ec";
             }
-            if (game.menu.optionVertical == 8) {
+//------------------------------------------------------------------//
+            if (game.menu.optionVertical == 8) { // SAIR
                 cout << "\ec";
                 game.menu.optionVertical = 4;
                 game.codex = false;
