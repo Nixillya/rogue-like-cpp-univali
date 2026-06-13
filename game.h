@@ -21,12 +21,12 @@ struct POS{
 };
 
 struct ATTRIBUTES{
-    double hp = 10;
-    double hpMax = 10;
+    double hp = 1;
+    double hpMax = 1;
     int defense = 1;
     int strength = 1;
     int dexterity = 1;
-    int intelligence = 10;
+    int intelligence = 1;
 };
 
 struct ITEM{
@@ -53,6 +53,7 @@ struct PLAYER{
 
 struct MONSTER{
     int id = 0;
+    bool attacked = false;
     bool alive = false;
     int clockSpeed = clock();
     POS pos;
@@ -76,6 +77,7 @@ struct MENU{
 
 struct GAME{
     int monsterQuantity = 50;
+    int attSelection = 0;
     bool exit = false;
     bool play = false;
     bool pause = false;
@@ -493,6 +495,7 @@ void player_input(GAME &game){
             }
             for(int monster=0;monster<game.monsterQuantity;monster++){
                 if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+targetPos.Y && game.map.monsters[monster].pos.X==game.map.player.pos.X+targetPos.X){
+                    game.map.monsters[monster].attacked = true;
                     int attack = rand()%game.map.player.attributes.strength+1;
                     int defended = rand()%game.map.monsters[monster].attributes.defense;
                     if(defended==0){
@@ -502,6 +505,7 @@ void player_input(GAME &game){
                     }
                     if(defended>attack){
                         defended = attack;
+                        game.map.monsters[monster].attacked = false;
                     }
                     game.map.monsters[monster].attributes.hp-=(attack-defended);
                     success = false;
@@ -585,16 +589,21 @@ void create_map(GAME &game){
             int posY;
             int posX;
             bool success = false;
-            int attPoints = game.map.player.nivel+game.map.floor;
+            int attPoints = game.map.player.nivel+game.map.floor+10;
             while(attPoints>0){
                 int attribute = rand()%5;
                 if(game.map.monsters[monster].id==0){
+                    if(rand()%2==0){
+                        attribute = -1;
+                    }
+                }
+                if(game.map.monsters[monster].id==1){
                     if(rand()%2==0){
                         attribute = 4;
                     }
                 }
                 if(attribute==0){
-                    game.map.monsters[monster].attributes.hpMax+=10;
+                    game.map.monsters[monster].attributes.hpMax+=1;
                 }
                 if(attribute==1){
                     game.map.monsters[monster].attributes.defense+=1;
@@ -676,6 +685,74 @@ int simulate_vision(GAME &game,int y,int x,int i=0){
 }
 
 
+void put_attributes(GAME &game){
+    cout << "\e[?25l\e[H";
+    cout << "\e[1;1H";
+    cout<<"PONTOS DE ATRIBUTOS: "<<game.map.player.attPoints<<" ";
+    cout<<"\n\n";
+    if(game.attSelection<0){
+        game.attSelection = 0;
+    }
+    if(game.attSelection>4){
+        game.attSelection = 4;
+    }
+    if(game.attSelection==0){
+        cout<<" \e[93mHP: "<<game.map.player.attributes.hpMax<<" \e[0m";
+    }else{
+        cout<<"HP: "<<game.map.player.attributes.hpMax<<" ";
+    }
+    cout<<"\n";
+    if(game.attSelection==1){
+        cout<<" \e[93mDEFESA: "<<game.map.player.attributes.defense<<" \e[0m";
+    }else{
+        cout<<"DEFESA: "<<game.map.player.attributes.defense<<" ";
+    }
+    cout<<"\n";
+    if(game.attSelection==2){
+        cout<<" \e[93mFORÇA: "<<game.map.player.attributes.strength<<" \e[0m";
+    }else{
+        cout<<"FORÇA: "<<game.map.player.attributes.strength<<" ";
+    }
+    cout<<"\n";
+    if(game.attSelection==3){
+        cout<<" \e[93mINTELIGENCIA: "<<game.map.player.attributes.intelligence<<" \e[0m";
+    }else{
+        cout<<"INTELIGENCIA: "<<game.map.player.attributes.intelligence<<" ";
+    }
+    cout<<"\n";
+    if(game.attSelection==4){
+        cout<<" \e[93mDESTREZA: "<<game.map.player.attributes.dexterity<<" \e[0m";
+    }else{
+        cout<<"DESTREZA: "<<game.map.player.attributes.dexterity<<" ";
+    }
+    int key = getch();
+    if(key==119){
+        game.attSelection--;
+    }
+    if(key==115){
+        game.attSelection++;
+    }
+    if(key==13){
+        if(game.attSelection==0){
+            game.map.player.attributes.hpMax++;
+            game.map.player.attributes.hp++;
+        }
+        if(game.attSelection==1){
+            game.map.player.attributes.defense++;
+        }
+        if(game.attSelection==2){
+            game.map.player.attributes.strength++;
+        }
+        if(game.attSelection==3){
+            game.map.player.attributes.intelligence++;
+        }
+        if(game.attSelection==4){
+            game.map.player.attributes.dexterity++;
+        }
+        game.map.player.attPoints--;
+    }
+}
+
 void render_map(GAME &game){
     cout << "\e[?25l\e[H";
     cout << "\e[1;1H";
@@ -710,38 +787,43 @@ void render_map(GAME &game){
                     if(game.map.monsters[monster].alive){
                         if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+y && game.map.monsters[monster].pos.X==game.map.player.pos.X+x){
                             cout<<"\e[1D";
-                            if(game.map.monsters[monster].id==0){
-                                cout<<"\e[38;5;31mO";
+                            if(game.map.monsters[monster].id==0){ // SLIME
+                                cout<<"\e[38;5;31m󱎷"; 
                             }
-                            if(game.map.monsters[monster].id==1){
+                            if(game.map.monsters[monster].id==1){ // GOBLIN
                                 cout<<"\e[38;5;46mG";
                             }
-                            if(game.map.monsters[monster].id==2){
+                            if(game.map.monsters[monster].id==2){ // KOBOLD
                                 cout<<"\e[38;5;202mK";
                             }
-                            if(game.map.monsters[monster].id==3){
+                            if(game.map.monsters[monster].id==3){ // ORC
                                 cout<<"\e[38;5;34mR";
                             }
-                            if(game.map.monsters[monster].id==4){
+                            if(game.map.monsters[monster].id==4){ // OGRO
                                 cout<<"\e[38;5;106mH";
                             }
-                            if(game.map.monsters[monster].id==5){
-                                cout<<"\e[38;5;53mD";
+                            if(game.map.monsters[monster].id==5){ // TROLL
+                                cout<<"\e[38;5;53m";
                             }
-                            if(game.map.monsters[monster].id==6){
+                            if(game.map.monsters[monster].id==6){ // MIMICO
                                 cout<<"\e[38;5;13mM";
                             }
-                            if(game.map.monsters[monster].id==7){
+                            if(game.map.monsters[monster].id==7){ // TROGLODITA
                                 cout<<"\e[38;5;227mT";
                             }
-                            if(game.map.monsters[monster].id==8){
-                                cout<<"\e[38;5;214mA";
+                            if(game.map.monsters[monster].id==8){ // AUTONOMO
+                                cout<<"\e[38;5;214m󱚝";
                             }
-                            if(game.map.monsters[monster].id==9){
+                            if(game.map.monsters[monster].id==9){ // ESCORIA
                                 cout<<"\e[38;5;52mE";
                             }
-                            if(game.map.monsters[monster].id==10){
-                                cout<<"\e[38;5;3mB";
+                            if(game.map.monsters[monster].id==10){ // BOSS
+                                cout<<"\e[38;5;3m";
+                            }
+                            if(game.map.monsters[monster].attacked==true){
+                                cout<<"\e[1D";
+                                cout<<" ";
+                                game.map.monsters[monster].attacked = false;
                             }
                         }
                     }
