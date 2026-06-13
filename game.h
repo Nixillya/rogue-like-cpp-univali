@@ -37,7 +37,7 @@ struct ITEM{
 };
 
 struct PLAYER{
-    int attPoints = 1;
+    int attPoints = 4;
     int nivel = 1;
     int points = 0;
     int exp = 0;
@@ -589,7 +589,7 @@ void create_map(GAME &game){
             int posY;
             int posX;
             bool success = false;
-            int attPoints = game.map.player.nivel+game.map.floor+10;
+            int attPoints = game.map.player.nivel+game.map.floor+5;
             while(attPoints>0){
                 int attribute = rand()%5;
                 if(game.map.monsters[monster].id==0){
