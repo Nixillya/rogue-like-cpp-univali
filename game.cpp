@@ -14,10 +14,6 @@ void play(GAME &game){
     cout<<"\ec";
     srand(time(0)); 
     create_map(game);
-    game.next = false;
-    while(game.map.player.attPoints>0){
-        put_attributes(game);
-    }
     while(game.play==true && game.next==false){
         if(game.map.player.inventoryOpened){
             show_inventory(game);
