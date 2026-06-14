@@ -15,13 +15,12 @@ void play(GAME &game){
     srand(time(0)); 
     create_map(game);
     while(game.play==true && game.next==false){
-        if(game.map.player.inventoryOpened){
+        if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
             show_inventory(game);
         }else{
             render_map(game);
         }
-        player_verifiers(game);
-        player_input(game);
+        move_player(game);
         move_monsters(game);
     }
 }
