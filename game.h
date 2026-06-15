@@ -277,9 +277,9 @@ void codex_render(GAME &game){
                         game.menu.optionVertical = 1;
                     }
                     if (game.menu.optionHorizontal < 1) {
-                        game.menu.optionHorizontal = 3;
+                        game.menu.optionHorizontal = 2;
                     }
-                    if (game.menu.optionHorizontal > 3) {
+                    if (game.menu.optionHorizontal > 2) {
                         game.menu.optionHorizontal = 1;
                     }
                     cout << "\e[?25l\e[H";
@@ -288,24 +288,18 @@ void codex_render(GAME &game){
                     new_line("┣","━","┫",26);
                     if (game.menu.optionVertical == 1) {
                         if (game.menu.optionHorizontal == 1) {
-                            cout << "┃  \e[93m[Página 1 - ARMAS]\e[0m   ┃\n";
+                            cout << "┃  \e[93m[Página 1 - ARMAS]\e[0m      ┃\n";
                         }
                         if (game.menu.optionHorizontal == 2) {
-                            cout << "┃  \e[93m[Página 2 - ARMADURAS]\e[0m   ┃\n";
-                        }
-                        if (game.menu.optionHorizontal == 3) {
-                            cout << "┃  \e[93m[Página 3 - ITENS]\e[0m   ┃\n";
+                            cout << "┃  \e[93m[Página 2 - ITENS]\e[0m      ┃\n";
                         }
                         cout << "┃                          ┃\n";
                     } else {
                         if (game.menu.optionHorizontal == 1) {
-                            cout << "┃ [Página 1 - ARMAS]    ┃\n";
-                        }
+                            cout << "┃ [Página 1 - ARMAS]       ┃\n";
+                        } 
                         if (game.menu.optionHorizontal == 2) {
-                            cout << "┃ [Página 2 - ARMADURAS]    ┃\n";
-                        }
-                        if (game.menu.optionHorizontal == 3) {
-                            cout << "┃ [Página 3 - ITENS]    ┃\n";
+                            cout << "┃ [Página 2 - ITENS]       ┃\n";
                         }
                         cout << "┃                          ┃\n";
                     }
@@ -318,16 +312,61 @@ void codex_render(GAME &game){
                     cout<<"\e[?25l";
                     switch (game.menu.optionHorizontal) {
                         case 1:
-                            cout << "\nTemplate 1.";
+                        new_line("┏","━","┓",26);
+                            cout << "┃ Espada Longa (|):                                                             ┃\n";
+                            cout << "┃ Um lâmina forjada em aço pelos melhores orcs que a Horda pode oferecer,       ┃\n";
+                            cout << "┃ pesada e implacável nas mãos de um guerreiro determinado.                     ┃\n";
+                            cout << "┃ (Arma equipável. Aumenta a Força do jogador em 'X').                          ┃\n";
+                            new_line("┣","━","┫",26);
+                            cout << "┃ Adagas (=):                                                                   ┃\n";
+                            cout << "┃ Um par de lâminas que, na verdade, são presas de um troll, amoladas ao ponto  ┃\n";
+                            cout << "┃ de cortarem facilmente até o menor toque. É uma tradição dos trolls cortarem  ┃\n";
+                            cout << "┃ as próprias presas e criarem suas próprias adagas, como uma forma de provar   ┃\n";
+                            cout << "┃ ser um guerreiro capaz e digno.                                               ┃\n";
+                            cout << "┃ Lâminas gêmeas, leves e equilibradas, feitas a partir de presas de Troll,     ┃\n";
+                            cout << "┃ perfeitas para cortes rápidos antes que o inimigo possa reagir.               ┃\n";
+                            cout << "┃ (Arma equipável. Aumenta a Destreza do jogador em 'X').                       ┃\n";
+                            new_line("┣","━","┫",26);
+                            cout << "┃ Cajado Elétrico (󱡄):                                                          ┃\n";
+                            cout << "┃ Esculpido em madeira antiga, possui um Núcleo Laser de um Autônomo acoplado   ┃\n";
+                            cout << "┃ em um capacitador, capaz de disparar feixes de energia pura concentrada. Um   ┃\n";
+                            cout << "┃ protótipo que serve para demonstrar a engenharia e ambição dos Kobolds para   ┃\n";
+                            cout << "┃ superar a tecnologia dos humanos e anões.                                     ┃\n";
+                            cout << "┃ (Arma de ataque à distância. Aumenta a Inteligência do jogador em 'X').       ┃\n";
+                            new_line("┗","━","┛",26);
                         break;
 
                         case 2:
-                            cout << "\nTemplate 2.";
+                            new_line("┏","━","┓",26);
+                            cout << "┃ Poção Regenerativa ( ):                                                        ┃\n";
+                            cout << "┃ Uma bebida medicinal criada pelos Trogloditas, capaz de curar até os piores    ┃\n";
+                            cout << "┃ ferimentos. Apesar dos Trogloditas não serem lá muito inteligentes, eles       ┃\n";
+                            cout << "┃ possuem uma sabedoria nata para sobreviver até nos ambientes mais hostis, e    ┃\n";
+                            cout << "┃ essa poção é um exemplo; criada através de alquimia, misturando cogumelos,     ┃\n";
+                            cout << "┃ partes de Slimes e outros ingredientes, para criar uma bebida que deixa        ┃\n";
+                            cout << "┃ diversos médicos no chinelo.                                                   ┃\n";
+                            cout << "┃ (Recupera 'X' de vida do jogador).                                             ┃\n";
+                            new_line("┣","━","┫",26);
+                            cout << "┃ Anel Encantado ( ):                                                            ┃\n";
+                            cout << "┃ Uma joia antiga gravada com runas atemporais, que parecem mudar de forma a     ┃\n";
+                            cout << "┃ cada olhar, um dos poucos itens mágicos que ainda sobrevivem nos dias de hoje. ┃\n";
+                            cout << "┃ (Concede um bônus em um atributo aleatório ao jogador).                        ┃\n";
+                            new_line("┣","━","┫",26);
+                            cout << "┃ Poção de Teleporte ( ):                                                        ┃\n";
+                            cout << "┃ Outro exemplo das incríveis habilidades de alquimia dos Trogloditas, um        ┃\n";
+                            cout << "┃ líquido violeta e instável produzido utilizando secreções de Slime e ferro     ┃\n";
+                            cout << "┃ derretido. Não se sabe exatamente os detalhes do procedimento e funcionamento  ┃\n";
+                            cout << "┃ da poção; é especulado que eles utilizem algum ingrediente mágico secreto.     ┃\n";
+                            cout << "┃ (Ao ser consumida, teleporta o jogador para um local aleatório do mapa).       ┃\n";
+                            new_line("┣","━","┫",26);
+                            cout << "┃ Escudo de Batalha ( ):                                                         ┃\n";
+                            cout << "┃ De tamanho médio, feito com metal resistente e escamas de guerreiros de elite  ┃\n";
+                            cout << "┃ Kobolds, é incrivelmente resistente a ataques perfurantes e contundentes, e    ┃\n";
+                            cout << "┃ com certeza protegerá o usuário de qualquer ataque.                            ┃\n";
+                            cout << "┃ (Equipável. Aumenta a Armadura do jogador em 'X').                             ┃\n";
+                            new_line("┗","━","┛",26);
                         break;
 
-                        case 3:
-                            cout << "\nTemplate 3.";
-                        break;
                     }
                     key = getch();
                     switch (key) {
@@ -538,7 +577,65 @@ void codex_render(GAME &game){
             }
 //------------------------------------------------------------------//
             if (game.menu.optionVertical == 7) { // HISTÓRIA
-                cout << "\nTemplate [HISTÓRIA]";
+                new_line("┏","━","┓",80);
+                cout << "┃ CONTEXTO:                                                                      ┃\n";
+                cout << "┃ - No mundo de [TEMPLATE], existe um arquipélago composto por três continentes: ┃\n";
+                cout << "┃   os Reinos do Oeste, o reino dos humanos; os Reinos do Norte, o reino dos     ┃\n";
+                cout << "┃   anões; e as Terras Selvagens, um continente localizado a leste, onde vivem   ┃\n";
+                cout << "┃   diversas raças tradicionalmente hostis tanto aos humanos quanto aos anões,   ┃\n";
+                cout << "┃   como goblins, kobolds, orcs, ogros, trolls e trogloditas. Ao longo da        ┃\n";
+                cout << "┃   história, inúmeros conflitos ocorreram entre os três continentes. Na última  ┃\n";
+                cout << "┃   grande guerra, uma aliança entre humanos e anões devastou quase              ┃\n";
+                cout << "┃   completamente as Terras Selvagens, e quase todas as raças que ali viviam     ┃\n";
+                cout << "┃   foram forçadas a se submeter aos termos impostos pelas outras duas nações.   ┃\n";
+                cout << "┃   Vivendo sob constante repressão e obrigadas a trabalhar para os dois         ┃\n";
+                cout << "┃   continentes vencedores, as antigas Terras Selvagens passaram a ser           ┃\n";
+                cout << "┃   conhecidas como Terras do Fogo e Ferro, devido às inúmeras operações de      ┃\n";
+                cout << "┃   mineração e metalurgia que hoje dominam a região.                            ┃\n";
+                new_line("┣","━","┫",80);
+                cout << "┃ A REBELIÃO DA BIGORNA E ASCENSÃO DA HORDA DE AÇO:                              ┃\n";
+                cout << "┃ - Um certo kobold, cujo nome foi perdido ao longo da história, lutou na última ┃\n";
+                cout << "┃   guerra e encontrou alguns livros pertencentes a uma caravana humana que      ┃\n";
+                cout << "┃   havia sido emboscada em uma floresta. Esses livros narravam a história de    ┃\n";
+                cout << "┃   impérios e grandes líderes humanos e, por coincidência, também continham     ┃\n";
+                cout << "┃   conhecimentos sobre táticas e organização militar, técnicas de fundição e    ┃\n";
+                cout << "┃   forja, além de engenharia, física e outros campos da ciência. Fascinado por  ┃\n";
+                cout << "┃   esse conhecimento, ele estudava secretamente esses livros, acreditando que   ┃\n";
+                cout << "┃   poderiam ajudar no esforço de guerra dos kobolds. Naquela época, as raças    ┃\n";
+                cout << "┃   das Terras Selvagens não estavam unidas; cada povo lutava por si próprio.    ┃\n";
+                cout << "┃   Posteriormente, com a derrota e a quase escravização de seu povo e das       ┃\n";
+                cout << "┃   demais raças do continente, esse kobold adotou o nome Victor, uma palavra    ┃\n";
+                cout << "┃   de uma das muitas línguas humanas que significa 'Conquistador'. Desde então, ┃\n";
+                cout << "┃   passou a planejar uma forma de libertar o continente e se vingar do que      ┃\n";
+                cout << "┃   humanos e anões haviam feito com ele e com seu povo. Utilizando o            ┃\n";
+                cout << "┃   conhecimento adquirido nos livros e equipado com um braço mecânico feito de  ┃\n";
+                cout << "┃   aço negro (na qual perdeu nas forjas), Victor começou a criar uma aliança    ┃\n";
+                cout << "┃   secreta entre as raças oprimidas das Terras de Fogo e Ferro. Esse movimento  ┃\n";
+                cout << "┃   culminaria na Rebelião da Bigorna, durante a qual a recém-formada Horda de   ┃\n";
+                cout << "┃   Aço, empunhando armas de qualidade incrível e dotada de uma organização      ┃\n";
+                cout << "┃   militar eficiente, expulsou humanos e anões do continente e iniciou os       ┃\n";
+                cout << "┃   preparativos para uma força de invasão destinada a esmagar os reinos dos     ┃\n";
+                cout << "┃   homens e dos anões. Durante a Rebelião, diversos humanos foram capturados e  ┃\n";
+                cout << "┃   submetidos a experimentos na tentativa de fundir matéria biológica com       ┃\n";
+                cout << "┃   componentes mecânicos. Desses experimentos surgiu a Escória: humanos         ┃\n";
+                cout << "┃   terrivelmente deformados e mantidos sob o controle da Horda de Aço,          ┃\n";
+                cout << "┃   servindo como trabalhadores ou tropas descartáveis, porém extremamente       ┃\n";
+                cout << "┃   perigosas.                                                                   ┃\n";
+                new_line("┣","━","┫",80);
+                cout << "┃ VOCÊ:                                                                          ┃\n";
+                cout << "┃ - Você foi um dos soldados que tentou resistir desesperadamente contra as      ┃\n";
+                cout << "┃   investidas da Horda de Aço, mas foi capturado, e teve o mesmo destino de se  ┃\n";
+                cout << "┃   tornar um Escória, e pior ainda, você foi descartado, apresentando sinais    ┃\n";
+                cout << "┃   de mau funcionamento, e deixado para apodrecer em uma vala...                ┃\n";
+                cout << "┃   Mas, o destino é uma coisa engraçada: Você acorda na entrada de uma das      ┃\n";
+                cout << "┃   muitas forjas e fundições subterrâneas da Horda de Aço, de alguma forma,     ┃\n";
+                cout << "┃   você sobreviveu, e ainda consegue lutar, e agora, cabe a você deter os       ┃\n";
+                cout << "┃   planos da Horda nessa fundição, quais armas terríveis eles estão criando     ┃\n";
+                cout << "┃   aqui? E você?                                                                ┃\n";
+                cout << "┃   Pelo o que lutará?                                                           ┃\n";
+                cout << "┃   Vingança? Dever? Honra? Ouro? Glória?                                        ┃\n";
+                cout << "┃   Isso, é você quem decide...                                                  ┃\n";
+                new_line("┗","━","┛",80);
                 getch();
                 cout << "\ec";
             }
