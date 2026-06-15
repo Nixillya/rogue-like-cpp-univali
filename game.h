@@ -32,14 +32,12 @@ struct ATTRIBUTES{
 
 struct ITEM{
     int id = 0;
-    int type = 0;
     int heal = 0;
     int hp = 0;
     int strength = 0;
     int defense = 0;
     int dexterity = 0;
     int intelligence = 0;
-    bool equipped = false;
 };
 
 struct PLAYER{
@@ -79,7 +77,6 @@ struct MAP{
     int memory[MAPSIZEY][MAPSIZEX];
     FLOORITEM items[10];
     int floor = 1;
-    int floorMonsters = 0;
     PLAYER player;
     MONSTER monsters[50];
 };
@@ -718,18 +715,46 @@ void move_player(GAME &game){
                     game.map.player.keyInput = 0;
                 }
                 if(game.map.player.keyInput==13){
-                    if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==KEYBLOCK){
-                        game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] = FREEBLOCK;
-                        game.map.player.key = true;
-                    }
-                    if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==STAIRBLOCK){
-                        if(game.map.player.key){
-                            game.next = true;
-                            game.map.floor++;
-                            cout<<"DESCENDO...";
-                            game.map.player.clockSpeed = clock();
-                            while((clock()-game.map.player.clockSpeed)<2000){}
-                            return;
+                    if(!game.map.player.inventoryOpened){
+                        bool haveSpace = false;
+                        for(int y=1;y<3;y++){
+                            for(int x=0;x<3;x++){
+                                if(game.map.player.inventory[y][x].id==0){
+                                    haveSpace = true;
+                                }
+                            }
+                        }
+                        if(haveSpace = true){
+                            for(int item=0;item<10;item++){
+                                if(game.map.items[item].pos.Y==game.map.player.pos.Y && game.map.items[item].pos.X==game.map.player.pos.X){
+                                    game.map.items[item].pos.Y = -1;
+                                    game.map.items[item].pos.Y = -1;
+                                    for(int y=1;y<3;y++){
+                                        for(int x=0;x<3;x++){
+                                            if(game.map.player.inventory[y][x].id==0){
+                                                game.map.player.inventory[y][x].id = game.map.items[item].id;
+                                                x = 3;
+                                                y = 3;
+                                            }
+                                        }
+                                    }
+                                    game.map.items[item].id = 0;
+                                }
+                            }
+                        }
+                        if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==KEYBLOCK){
+                            game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] = FREEBLOCK;
+                            game.map.player.key = true;
+                        }
+                        if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==STAIRBLOCK){
+                            if(game.map.player.key){
+                                game.next = true;
+                                game.map.floor++;
+                                cout<<"DESCENDO...";
+                                game.map.player.clockSpeed = clock();
+                                while((clock()-game.map.player.clockSpeed)<2000){}
+                                return;
+                            }
                         }
                     }
                 }
@@ -745,6 +770,76 @@ void move_player(GAME &game){
                     }
                     if(game.map.player.inventorySelection.X>2){
                         game.map.player.inventorySelection.X = 2;
+                    }
+                    if(game.map.player.keyInput==13){
+                        if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id!=0){
+                            bool haveSpace = false;
+                            for(int y=1;y<3;y++){
+                                for(int x=0;x<3;x++){
+                                    if(game.map.player.inventory[y][x].id==0){
+                                        haveSpace = true;
+                                    }
+                                }
+                            }
+                            if(game.map.player.inventorySelection.Y==0){
+                                if(haveSpace){
+                                    for(int y=1;y<3;y++){
+                                        for(int x=0;x<3;x++){
+                                            if(game.map.player.inventory[y][x].id==0){
+                                                game.map.player.inventory[y][x].id = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id;
+                                                game.map.player.inventory[y][x].defense = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].defense;
+                                                game.map.player.inventory[y][x].dexterity = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].dexterity;
+                                                game.map.player.inventory[y][x].heal = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal;
+                                                game.map.player.inventory[y][x].hp = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].hp;
+                                                game.map.player.inventory[y][x].intelligence = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].intelligence;
+                                                game.map.player.inventory[y][x].strength = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength;
+                                                x = 3;
+                                                y = 3;
+                                            }
+                                        }
+                                    }
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].defense = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].dexterity = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].hp = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].intelligence = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength = 0;
+                                }
+                            }
+                            bool equip = false;
+                            int x = game.map.player.inventorySelection.X;
+                            if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==1 || game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==4 || game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==5){
+                                equip = true;
+                                x = 0;
+                            }
+                            if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==2 || game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==8){
+                                equip = true;
+                                x = 1;
+                            }
+                            if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==3 || game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==9){
+                                equip = true;
+                                x = 2;
+                            }
+                            if(equip){
+                                if(game.map.player.inventory[0][x].id==0){
+                                    game.map.player.inventory[0][x].id = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id;
+                                    game.map.player.inventory[0][x].defense = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].defense;
+                                    game.map.player.inventory[0][x].dexterity = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].dexterity;
+                                    game.map.player.inventory[0][x].heal = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal;
+                                    game.map.player.inventory[0][x].hp = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].hp;
+                                    game.map.player.inventory[0][x].intelligence = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].intelligence;
+                                    game.map.player.inventory[0][x].strength = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].defense = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].dexterity = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].hp = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].intelligence = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength = 0;
+                                }
+                            }
+                        }
                     }
                     break;
                 }
@@ -819,38 +914,40 @@ void put_attributes(GAME &game){
     }else{
         cout<<"DESTREZA: "<<game.map.player.attributes.dexterity<<" ";
     }
-    int key = 0; 
     if(game.map.player.attPoints>0){
-        key = getch();
-    }
-    if(key==119){
-        game.attSelection--;
-    }
-    if(key==115){
-        game.attSelection++;
-    }
-    if(key==13){
-        if(game.attSelection==0){
-            game.map.player.attributes.hpMax++;
-            game.map.player.attributes.hp++;
+        int key = getch();
+        if(key==119){
+            game.attSelection--;
         }
-        if(game.attSelection==1){
-            game.map.player.attributes.defense++;
+        if(key==115){
+            game.attSelection++;
         }
-        if(game.attSelection==2){
-            game.map.player.attributes.strength++;
+        if(key==13){
+            if(game.attSelection==0){
+                game.map.player.attributes.hpMax++;
+                game.map.player.attributes.hp++;
+            }
+            if(game.attSelection==1){
+                game.map.player.attributes.defense++;
+            }
+            if(game.attSelection==2){
+                game.map.player.attributes.strength++;
+            }
+            if(game.attSelection==3){
+                game.map.player.attributes.intelligence++;
+            }
+            if(game.attSelection==4){
+                game.map.player.attributes.dexterity++;
+            }
+            game.map.player.attPoints--;
         }
-        if(game.attSelection==3){
-            game.map.player.attributes.intelligence++;
-        }
-        if(game.attSelection==4){
-            game.map.player.attributes.dexterity++;
-        }
-        game.map.player.attPoints--;
     }
 }
 
 void create_map(GAME &game){
+    if(game.next==true){
+        game.map.player.attPoints++;
+    }
     game.next = false;
     game.map.player.key = false;
     while(true){
@@ -858,8 +955,6 @@ void create_map(GAME &game){
             put_attributes(game);
             if(game.map.player.attPoints<=0){
                 put_attributes(game);
-                game.map.player.clockSpeed = clock();
-                while((clock()-game.map.player.clockSpeed)<1000){}
                 break;
             }
         }else{
@@ -867,47 +962,16 @@ void create_map(GAME &game){
             break;
         }
     }
-    if(game.map.floor==1){
-        game.map.player.inventory[0][0].id = 1;
-        game.map.player.inventory[0][0].type = 1;
-        game.map.player.inventory[0][0].equipped = true;
-        game.map.player.inventory[0][0].strength = 1;
-
-        game.map.player.inventory[0][1].id = 2;
-        game.map.player.inventory[0][1].type = 2;
-        game.map.player.inventory[0][1].equipped = true;
-        game.map.player.inventory[0][1].defense = 1;
-
-        game.map.player.inventory[0][2].id = 3;
-        game.map.player.inventory[0][2].type = 3;
-        game.map.player.inventory[0][2].equipped = true;
-        int attribute = rand()%5;
-        if(attribute==0){
-            game.map.player.inventory[0][2].defense = 1;
-        }
-        if(attribute==1){
-            game.map.player.inventory[0][2].strength = 1;
-        }
-        if(attribute==2){
-            game.map.player.inventory[0][2].hp = 1;
-        }
-        if(attribute==3){
-            game.map.player.inventory[0][2].intelligence = 1;
-        }
-        if(attribute==4){
-            game.map.player.inventory[0][2].dexterity = 1;
-        }
-    }
+    game.map.player.clockSpeed = clock();
+    while((clock()-game.map.player.clockSpeed)<1000){}
     for(int y=0;y<MAPSIZEY;y++){
         for(int x=0;x<MAPSIZEX;x++){
             game.map.tiles[y][x] = EMPTY;
             game.map.memory[y][x] = 0;
+            if(y==0 || x==0 || y==MAPSIZEY-1 || x==MAPSIZEX-1){
+                game.map.tiles[y][x] = SOLIDBLOCK;
+            }
         }
-    }
-    for(int item=0;item<10;item++){
-        game.map.items[item].pos.Y = -1;
-        game.map.items[item].pos.X = -1;
-        game.map.items[item].id = 0;
     }
     int Y = MAPSIZEY/2;
     int X = MAPSIZEX/2;
@@ -951,7 +1015,7 @@ void create_map(GAME &game){
             if(direction==3){
                 X++;
             }
-            if(Y>=0 && Y<MAPSIZEY && X>=0 && X<MAPSIZEX){
+            if(Y>=1 && Y<MAPSIZEY-1 && X>=1 && X<MAPSIZEX-1){
                 game.map.tiles[Y][X] = FREEBLOCK;
             }else{
                 direction = rand()%4;
@@ -979,14 +1043,16 @@ void create_map(GAME &game){
             break;
         }
     }
-    MONSTER resetMonsters[50];
     for(int monster=0;monster<50;monster++){
+        MONSTER resetMonsters[50];
         game.map.monsters[monster] = resetMonsters[monster];
+    }
+    for(int monster=0;monster<50;monster++){
         if(rand()%(11-game.map.floor)==0 || monster==0){
             int posY;
             int posX;
             bool success = false;
-            int attPoints = (game.map.player.nivel*2)+(game.map.floor/2);
+            int attPoints = (game.map.player.nivel*2)+(game.map.floor);
             while(attPoints>0){
                 int attribute = rand()%5;
                 if(game.map.monsters[monster].id==1){
@@ -1039,15 +1105,35 @@ void create_map(GAME &game){
         }
     }
     for(int item=0;item<10;item++){
+        game.map.items[item].pos.Y = -1;
+        game.map.items[item].pos.X = -1;
+        game.map.items[item].id = 0;
+    }
+    for(int item=0;item<10;item++){
         if(rand()%10==0){
             while(true){
                 int posY = rand()%MAPSIZEY;
                 int posX = rand()%MAPSIZEX;
-                if(game.map.tiles[posY][posX]==FREEBLOCK){
-                    game.map.items[item].pos.Y = posY;
-                    game.map.items[item].pos.X = posX;
-                    game.map.items[item].id = rand()%4+1;
-                    break;
+                game.map.items[item].pos.Y = posY;
+                game.map.items[item].pos.X = posX;
+                bool success = true;
+                for(int otherItem=0;otherItem<10;otherItem++){
+                    if(otherItem==item){
+                        continue;
+                    }
+                    if(game.map.items[item].pos.Y==game.map.items[otherItem].pos.Y && game.map.items[item].pos.X==game.map.items[otherItem].pos.X){
+                        success = false;
+                        break;
+                    }
+                }
+                if(success){
+                    if(game.map.tiles[posY][posX]==FREEBLOCK){
+                        game.map.items[item].id = rand()%10+1;
+                        break;
+                    }
+                }else{
+                    game.map.items[item].pos.Y = -1;
+                    game.map.items[item].pos.X = -1;
                 }
             }
         }
@@ -1087,7 +1173,16 @@ void show_inventory(GAME &game){
                 cout<<"󱄰"; // POÇÃO DE CURA 
             }
             if(game.map.player.inventory[y][x].id==7){
-                cout<<"󱄮"; // POÇÃO
+                cout<<"󱄮"; // POÇÃO MISTERIOSA
+            }
+            if(game.map.player.inventory[y][x].id==8){
+                cout<<"󱄮"; // ESCUDO REFLETOR
+            }
+            if(game.map.player.inventory[y][x].id==9){
+                cout<<""; // TOTEM
+            }
+            if(game.map.player.inventory[y][x].id==10){
+                cout<<""; // PERGAMINHO
             }
             cout<<"\e[0m ";
         }
@@ -1184,7 +1279,16 @@ void render_map(GAME &game){
                             cout<<"󱄰"; // POÇÃO DE CURA 
                         }
                         if(game.map.items[item].id==7){
-                            cout<<"󱄮"; // POÇÃO
+                            cout<<"󱄮"; // POÇÃO MISTERIOSA
+                        }
+                        if(game.map.items[item].id==8){
+                            cout<<"󱄮"; // ESCUDO REFLETOR
+                        }
+                        if(game.map.items[item].id==9){
+                            cout<<""; // TOTEM
+                        }
+                        if(game.map.items[item].id==10){
+                            cout<<""; // PERGAMINHO
                         }
                     }
                 }
