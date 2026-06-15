@@ -53,6 +53,7 @@ struct PLAYER{
     bool inventoryOpened = false;
     bool fallen = false;
     bool key = false;
+    bool attacked = false;
     ITEM inventory[4][3];
     POS pos;
     POS inventorySelection = {0,0};
@@ -69,15 +70,10 @@ struct MONSTER{
     ATTRIBUTES attributes;
 };
 
-struct FLOORITEM{
-    POS pos;
-    int id = 0;
-};
-
 struct MAP{
     int tiles[MAPSIZEY][MAPSIZEX];
     int memory[MAPSIZEY][MAPSIZEX];
-    FLOORITEM items[10];
+    POS items[10];
     int floor = 1;
     PLAYER player;
     MONSTER monsters[50];
@@ -565,7 +561,10 @@ void move_monsters(GAME &game){
         }
         if(game.map.monsters[monster].attributes.hp<1){
             if(game.map.monsters[monster].alive==true){
-                game.map.player.exp++;
+                if(game.map.monsters[monster].id==0){
+                    game.map.monsters[monster].id = 1;
+                }
+                game.map.player.exp += rand()%game.map.monsters[monster].id+1;
                 game.map.monsters[monster].alive = false;
                 if(game.map.monsters[monster].key){
                     game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X] = KEYBLOCK;
@@ -641,6 +640,20 @@ void move_monsters(GAME &game){
 void move_player(GAME &game){
     cout<<"\e[23;1H";
     if(game.map.player.attributes.hp<1){
+        if(game.map.player.inventory[0][2].id==9){
+            game.map.player.attributes.hp = 1;
+            while(true){
+                int posY = rand()%MAPSIZEY;
+                int posX = rand()%MAPSIZEX;
+                if(game.map.tiles[posY][posX]==FREEBLOCK){
+                    game.map.player.pos.Y = posY;
+                    game.map.player.pos.X = posX;
+                    break;
+                }
+            }
+            game.map.player.inventory[0][2].id = 0;
+            return;
+        }
         cout<<"MORREU";
         game.map.player.clockSpeed = clock();
         while((clock()-game.map.player.clockSpeed)<3000){}
@@ -731,19 +744,54 @@ void move_player(GAME &game){
                         }
                         if(haveSpace = true){
                             for(int item=0;item<10;item++){
-                                if(game.map.items[item].pos.Y==game.map.player.pos.Y && game.map.items[item].pos.X==game.map.player.pos.X){
-                                    game.map.items[item].pos.Y = -1;
-                                    game.map.items[item].pos.Y = -1;
+                                if(game.map.items[item].Y==game.map.player.pos.Y && game.map.items[item].X==game.map.player.pos.X){
+                                    game.map.items[item].Y = -1;
+                                    game.map.items[item].Y = -1;
                                     for(int y=1;y<3;y++){
                                         for(int x=0;x<3;x++){
                                             if(game.map.player.inventory[y][x].id==0){
-                                                game.map.player.inventory[y][x].id = game.map.items[item].id;
+                                                game.map.player.inventory[y][x].id = rand()%10+1;
+                                                game.map.player.inventory[y][x].heal = 0;
+                                                game.map.player.inventory[y][x].hp = 0;
+                                                game.map.player.inventory[y][x].strength = 0;
+                                                game.map.player.inventory[y][x].defense = 0;
+                                                game.map.player.inventory[y][x].dexterity = 0;
+                                                game.map.player.inventory[y][x].intelligence = 0;
+                                                game.map.player.inventory[y][x].cursed = false;
+                                                if(rand()%100==0){
+                                                    game.map.player.inventory[y][x].cursed = true;
+                                                }
+                                                if(game.map.player.inventory[y][x].id==3){
+                                                    int bonus = 1;
+                                                    while(true){
+                                                        if(rand()%2==0){
+                                                            bonus++;
+                                                        }else{
+                                                            break;
+                                                        }
+                                                    }
+                                                    int attribute = rand()%5;
+                                                    if(attribute==0){
+                                                        game.map.player.inventory[y][x].hp = rand()%game.map.floor+bonus;
+                                                    }
+                                                    if(attribute==1){
+                                                        game.map.player.inventory[y][x].strength = rand()%game.map.floor+bonus;
+                                                    }
+                                                    if(attribute==2){
+                                                        game.map.player.inventory[y][x].defense = rand()%game.map.floor+bonus;
+                                                    }
+                                                    if(attribute==3){
+                                                        game.map.player.inventory[y][x].dexterity = rand()%game.map.floor+bonus;
+                                                    }
+                                                    if(attribute==4){
+                                                        game.map.player.inventory[y][x].intelligence = rand()%game.map.floor+bonus;
+                                                    }                                           
+                                                }
                                                 x = 3;
                                                 y = 3;
                                             }
                                         }
                                     }
-                                    game.map.items[item].id = 0;
                                 }
                             }
                         }
@@ -788,6 +836,13 @@ void move_player(GAME &game){
                             }
                             if(game.map.player.inventorySelection.Y==0){
                                 if(haveSpace){
+                                    if(game.map.player.inventory[0][game.map.player.inventorySelection.X].id==3){
+                                        game.map.player.attributes.hpMax-=game.map.player.inventory[0][game.map.player.inventorySelection.X].hp;
+                                        game.map.player.attributes.defense-=game.map.player.inventory[0][game.map.player.inventorySelection.X].defense;
+                                        game.map.player.attributes.strength-=game.map.player.inventory[0][game.map.player.inventorySelection.X].strength;
+                                        game.map.player.attributes.intelligence-=game.map.player.inventory[0][game.map.player.inventorySelection.X].intelligence;
+                                        game.map.player.attributes.dexterity-=game.map.player.inventory[0][game.map.player.inventorySelection.X].dexterity;
+                                    }
                                     for(int y=1;y<3;y++){
                                         for(int x=0;x<3;x++){
                                             if(game.map.player.inventory[y][x].id==0){
@@ -842,6 +897,13 @@ void move_player(GAME &game){
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].hp = 0;
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].intelligence = 0;
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength = 0;
+                                    if(game.map.player.inventory[0][x].id==3){
+                                        game.map.player.attributes.hpMax+=game.map.player.inventory[0][x].hp;
+                                        game.map.player.attributes.defense+=game.map.player.inventory[0][x].defense;
+                                        game.map.player.attributes.strength+=game.map.player.inventory[0][x].strength;
+                                        game.map.player.attributes.intelligence+=game.map.player.inventory[0][x].intelligence;
+                                        game.map.player.attributes.dexterity+=game.map.player.inventory[0][x].dexterity;
+                                    }
                                 }
                             }
                         }
@@ -858,6 +920,9 @@ void move_player(GAME &game){
                             if(rand()%4!=0){
                                 attack += rand()%game.map.player.attributes.strength;
                             }
+                            if(rand()%100==0){
+                                game.map.player.inventory[0][0].id==0;
+                            }
                         }
                         if(game.map.player.inventory[0][0].id==4){
                             if(rand()%2==0){
@@ -868,6 +933,9 @@ void move_player(GAME &game){
                                     }else{
                                         break;
                                     }
+                                }
+                                if(rand()%50==0){
+                                    game.map.player.inventory[0][0].id==0;
                                 }
                             }
                         }
@@ -881,6 +949,9 @@ void move_player(GAME &game){
                                         attack -= rand()%game.map.player.attributes.intelligence;
                                     }
                                 }
+                            }
+                            if(rand()%50==0){
+                                game.map.player.inventory[0][0].id==0;
                             }
                         }
                         int defended = rand()%game.map.monsters[monster].attributes.defense;
@@ -901,7 +972,7 @@ void move_player(GAME &game){
                     game.map.player.pos.Y+=targetPos.Y;
                     game.map.player.pos.X+=targetPos.X;
                     if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] == TRAPBLOCK){
-                        game.map.player.attributes.hp -= 5;
+                        game.map.player.attributes.hp -= game.map.floor;
                         game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] = FREEBLOCK;
                     }
                 }
@@ -1222,35 +1293,33 @@ void create_map(GAME &game){
         }
     }
     for(int item=0;item<10;item++){
-        game.map.items[item].pos.Y = -1;
-        game.map.items[item].pos.X = -1;
-        game.map.items[item].id = 0;
+        game.map.items[item].Y = -1;
+        game.map.items[item].X = -1;
     }
     for(int item=0;item<10;item++){
         if(rand()%10==0 || item==0){
             while(true){
                 int posY = rand()%MAPSIZEY;
                 int posX = rand()%MAPSIZEX;
-                game.map.items[item].pos.Y = posY;
-                game.map.items[item].pos.X = posX;
+                game.map.items[item].Y = posY;
+                game.map.items[item].X = posX;
                 bool success = true;
                 for(int otherItem=0;otherItem<10;otherItem++){
                     if(otherItem==item){
                         continue;
                     }
-                    if(game.map.items[item].pos.Y==game.map.items[otherItem].pos.Y && game.map.items[item].pos.X==game.map.items[otherItem].pos.X){
+                    if(game.map.items[item].Y==game.map.items[otherItem].Y && game.map.items[item].X==game.map.items[otherItem].X){
                         success = false;
                         break;
                     }
                 }
                 if(success){
                     if(game.map.tiles[posY][posX]==FREEBLOCK){
-                        game.map.items[item].id = rand()%10+1;
                         break;
                     }
                 }else{
-                    game.map.items[item].pos.Y = -1;
-                    game.map.items[item].pos.X = -1;
+                    game.map.items[item].Y = -1;
+                    game.map.items[item].X = -1;
                 }
             }
         }
@@ -1292,7 +1361,8 @@ void create_map(GAME &game){
         // Se após 1000 tentativas o mapa atual não tiver espaço grande o bastante,
         // quebra o loop principal para impedir que o jogo trave infinitamente.
         if(!colocou){
-            break;
+            armadilhasCriadas++;
+            continue;
         }
     }
 }
@@ -1308,8 +1378,15 @@ void show_inventory(GAME &game){
         cout<<"┃";
         for(int x=0;x<3;x++){
             cout<<" ";
+            if(game.map.player.inventory[y][x].cursed){
+                cout<<"\e[38;5;9m";
+            }
             if(y==game.map.player.inventorySelection.Y && x==game.map.player.inventorySelection.X){
-                cout<<"\e[38;5;255m\e[48;5;237m";
+                if(game.map.player.inventory[y][x].cursed){
+                    cout<<"\e[38;5;9m\e[48;5;237m";
+                }else{
+                    cout<<"\e[38;5;255m\e[48;5;237m";
+                }
             }
             if(game.map.player.inventory[y][x].id==0){
                 cout<<" ";
@@ -1419,10 +1496,8 @@ void render_map(GAME &game){
                     cout<<"\e[48;5;246m\e[38;5;3m";
                 }
                 for(int item=0;item<10;item++){
-                    if(game.map.items[item].pos.Y==game.map.player.pos.Y+y && game.map.items[item].pos.X==game.map.player.pos.X+x){
-                        if(game.map.items[item].id!=0){
-                            cout<<"\e[1D\e[38;5;13m󰜦";
-                        }
+                    if(game.map.items[item].Y==game.map.player.pos.Y+y && game.map.items[item].X==game.map.player.pos.X+x){
+                        cout<<"\e[1D\e[38;5;13m󰜦";
                     }
                 }
                 if(y==0 && x==0){
@@ -1437,11 +1512,15 @@ void render_map(GAME &game){
                     if(game.map.monsters[monster].alive){
                         if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+y && game.map.monsters[monster].pos.X==game.map.player.pos.X+x){
                             cout<<"\e[1D";
+                            if(game.map.monsters[monster].attacked==true){
+                                cout<<"\e[48;5;1m";
+                                game.map.monsters[monster].attacked = false;
+                            }
                             if(game.map.monsters[monster].id==0){ // SLIME
                                 cout<<"\e[38;5;31m󰛹";
                             }
                             if(game.map.monsters[monster].id==1){ // GOBLIN
-                                cout<<"\e[38;5;46m";
+                                cout<<"\e[38;5;46m";
                             }
                             if(game.map.monsters[monster].id==2){ // KOBOLD
                                 cout<<"\e[38;5;202m";
@@ -1470,10 +1549,7 @@ void render_map(GAME &game){
                             if(game.map.monsters[monster].id==10){ // BOSS
                                 cout<<"\e[38;5;3m";
                             }
-                            if(game.map.monsters[monster].attacked==true){
-                                cout<<"\e[1D\e[38;5;255m-";
-                                game.map.monsters[monster].attacked = false;
-                            }
+                            cout<<"\e[0m";
                         }
                     }
                 }
@@ -1505,13 +1581,50 @@ void render_map(GAME &game){
     cout<<"\e[3;"<<((vision+1)*2)+1<<"H";
     new_line("┗","━","┛",10);
     cout<<"\e[4;"<<((vision+1)*2)+1<<"H";
-    cout<<"ANDAR: "<<game.map.floor;
-    cout<<"\e[5;"<<((vision+1)*2)+1<<"H";
-    cout<<"NIVEL: "<<game.map.player.nivel;
+    new_line("┏","━","┓",3*3);
+    cout<<"\e[5;"<<((vision+1)*2)+1<<"H┃";
+    for(int x=0;x<3;x++){
+        cout<<" ";
+        if(game.map.player.inventory[0][x].cursed){
+            cout<<"\e[38;5;9m";
+        }
+        if(game.map.player.inventory[0][x].id==0){
+            cout<<" ";
+        }
+        if(game.map.player.inventory[0][x].id==1){
+            cout<<"󰓥"; // ESPADA
+        }
+        if(game.map.player.inventory[0][x].id==2){
+            cout<<"󰒘"; // ESCUDO
+        }
+        if(game.map.player.inventory[0][x].id==3){
+            cout<<""; // ANEL
+        }
+        if(game.map.player.inventory[0][x].id==4){
+            cout<<"󰧼"; // ADAGA
+        }
+        if(game.map.player.inventory[0][x].id==5){
+            cout<<"󱡄"; // CAJADO
+        }
+        if(game.map.player.inventory[0][x].id==8){
+            cout<<"󰂪"; // ESCUDO REFLETOR
+        }
+        if(game.map.player.inventory[0][x].id==9){
+            cout<<""; // TOTEM
+        }
+        cout<<"\e[0m ";
+    }
+    cout<<"\e[0m┃\n";
     cout<<"\e[6;"<<((vision+1)*2)+1<<"H";
+    new_line("┗","━","┛",3*3);
+    cout<<"\e[7;"<<((vision+1)*2)+1<<"H";
+    cout<<"ANDAR: "<<game.map.floor;
+    cout<<"\e[8;"<<((vision+1)*2)+1<<"H";
+    cout<<"NIVEL: "<<game.map.player.nivel;
+    cout<<"\e[9;"<<((vision+1)*2)+1<<"H";
     cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nivel<<"     ";
     if(game.map.player.key){
-        cout<<"\e[7;"<<((vision+1)*2)+1<<"H";
+        cout<<"\e[10;"<<((vision+1)*2)+1<<"H";
         cout<<"\e[38;5;3m\e[0m";
     }
 }
