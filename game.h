@@ -14,6 +14,7 @@
 #define STAIRBLOCK 3
 #define KEYBLOCK 4
 #define TRAPBLOCK 5 // definição para a trap
+#define NPCBLOCK 6
 
 using namespace std;
 
@@ -106,7 +107,7 @@ void new_line(string x, string y, string z,int size){
 void menu_render(GAME &game){
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",16);
-    new_line("┃   ","ROGUE-LIKE","   ┃",1);
+    new_line("┃   ","ROGUE-LIKE","    ┃",1);
     new_line("┣","━","┫",16);
     if (game.menu.optionVertical == 4) {
         cout << "┃ > [JOGAR]      ┃\n";
@@ -115,7 +116,7 @@ void menu_render(GAME &game){
     }
     if (game.menu.optionVertical == 5) {
         cout << "┃ > [CODEX]      ┃\n";
-    } else { 
+    } else {
         cout << "┃ [CODEX]        ┃\n";
     }
     if (game.menu.optionVertical == 6) {
@@ -151,12 +152,12 @@ void menu_render(GAME &game){
             }
             if (game.menu.optionVertical == 5) {
                 cout << "\ec";
-                game.codex = true;  
+                game.codex = true;
             }
             if (game.menu.optionVertical == 6) {
                 cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓";
-                cout << "\n┃       Universidade do Vale do Itajaí - UNIVALI     ┃";
-                cout << "\n┃              Escola Politícnica  - POLI            ┃";
+                cout << "\n┃        Universidade do Vale do Itajaí - UNIVALI     ┃";
+                cout << "\n┃             Escola Politícnica  - POLI            ┃";
                 cout << "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫";
                 cout << "\n┃ Curso: Ciência da Computação                       ┃";
                 cout << "\n┃ Disciplina: Algoritmos e Programação II            ┃";
@@ -185,7 +186,7 @@ void codex_render(GAME &game){
     bool codexPages = true;
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",15);
-    new_line("┃     ","CODEX","     ┃",1);
+    new_line("┃      ","CODEX","      ┃",1);
     new_line("┣","━","┫",15);
     if (game.menu.optionVertical == 4) {
         cout << "┃ > [COMO JOGAR]┃\n";
@@ -194,7 +195,7 @@ void codex_render(GAME &game){
     }
     if (game.menu.optionVertical == 5) {
         cout << "┃ > [ITENS]     ┃\n";
-    } else { 
+    } else {
         cout << "┃ [ITENS]       ┃\n";
     }
     if (game.menu.optionVertical == 6) {
@@ -254,7 +255,7 @@ void codex_render(GAME &game){
                 cout << "┃                                                                                ┃\n";
                 cout << "┃ - O mapa é gerado aleatoriamente em todas as runs. Cuidado ao andar pelas      ┃\n";
                 cout << "┃   áreas abertas sem paredes, você pode cair no abismo para o próximo andar,    ┃\n";
-                cout << "┃   há uma chance de você sobreviver a queda, ou morrer instananeamente.         ┃\n";
+                cout << "┃   há uma chance de você sobrevivir a queda, ou morrer instananeamente.          ┃\n";
                 cout << "┃ - Os andares possuem armadilhas, e podem causar danos a você e os monstros.    ┃\n";
                 cout << "┃                                                                                ┃\n";
                 cout << "┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ INIMIGOS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n";
@@ -264,7 +265,7 @@ void codex_render(GAME &game){
 
                 getch();
                 cout << "\ec";
-            } 
+            }
 //------------------------------------------------------------------//
             if (game.menu.optionVertical == 5) { // ITENS
                 cout << "\ec";
@@ -284,20 +285,20 @@ void codex_render(GAME &game){
                     }
                     cout << "\e[?25l\e[H";
                     new_line("┏","━","┓",26);
-                    cout << "┃       CODEX: ITENS       ┃\n";
+                    cout << "┃        CODEX: ITENS       ┃\n";
                     new_line("┣","━","┫",26);
                     if (game.menu.optionVertical == 1) {
                         if (game.menu.optionHorizontal == 1) {
-                            cout << "┃  \e[93m[Página 1 - ARMAS]\e[0m      ┃\n";
+                            cout << "┃  \e[93m[Página 1 - ARMAS]\e[0m       ┃\n";
                         }
                         if (game.menu.optionHorizontal == 2) {
-                            cout << "┃  \e[93m[Página 2 - ITENS]\e[0m      ┃\n";
+                            cout << "┃  \e[93m[Página 2 - ITENS]\e[0m       ┃\n";
                         }
                         cout << "┃                          ┃\n";
                     } else {
                         if (game.menu.optionHorizontal == 1) {
                             cout << "┃ [Página 1 - ARMAS]       ┃\n";
-                        } 
+                        }
                         if (game.menu.optionHorizontal == 2) {
                             cout << "┃ [Página 2 - ITENS]       ┃\n";
                         }
@@ -313,26 +314,26 @@ void codex_render(GAME &game){
                     switch (game.menu.optionHorizontal) {
                         case 1:
                         new_line("┏","━","┓",26);
-                            cout << "┃ Espada Longa (|):                                                             ┃\n";
-                            cout << "┃ Um lâmina forjada em aço pelos melhores orcs que a Horda pode oferecer,       ┃\n";
-                            cout << "┃ pesada e implacável nas mãos de um guerreiro determinado.                     ┃\n";
+                            cout << "┃ Espada Longa (|):                                                                             ┃\n";
+                            cout << "┃ Um lâmina forjada em aço pelos melhores orcs que a Horda pode oferecer,        ┃\n";
+                            cout << "┃ pesada e implacável nas mãos de um guerreiro determinado.                      ┃\n";
                             cout << "┃ (Arma equipável. Aumenta a Força do jogador em 'X').                          ┃\n";
                             new_line("┣","━","┫",26);
-                            cout << "┃ Adagas (=):                                                                   ┃\n";
+                            cout << "┃ Adagas (=):                                                                    ┃\n";
                             cout << "┃ Um par de lâminas que, na verdade, são presas de um troll, amoladas ao ponto  ┃\n";
-                            cout << "┃ de cortarem facilmente até o menor toque. É uma tradição dos trolls cortarem  ┃\n";
-                            cout << "┃ as próprias presas e criarem suas próprias adagas, como uma forma de provar   ┃\n";
-                            cout << "┃ ser um guerreiro capaz e digno.                                               ┃\n";
+                            cout << "┃ de cortarem facilmente até o menor toque. É uma tradição dos trolls cortarem   ┃\n";
+                            cout << "┃ as próprias presas e criarem suas próprias adagas, como uma forma de provar    ┃\n";
+                            cout << "┃ ser um guerreiro capaz e digno.                                                ┃\n";
                             cout << "┃ Lâminas gêmeas, leves e equilibradas, feitas a partir de presas de Troll,     ┃\n";
-                            cout << "┃ perfeitas para cortes rápidos antes que o inimigo possa reagir.               ┃\n";
-                            cout << "┃ (Arma equipável. Aumenta a Destreza do jogador em 'X').                       ┃\n";
+                            cout << "┃ perfeitas para cortes rápidos antes que o inimigo possa reagir.                ┃\n";
+                            cout << "┃ (Arma equipável. Aumenta a Destreza do jogador em 'X').                        ┃\n";
                             new_line("┣","━","┫",26);
-                            cout << "┃ Cajado Elétrico (󱡄):                                                          ┃\n";
-                            cout << "┃ Esculpido em madeira antiga, possui um Núcleo Laser de um Autônomo acoplado   ┃\n";
-                            cout << "┃ em um capacitador, capaz de disparar feixes de energia pura concentrada. Um   ┃\n";
-                            cout << "┃ protótipo que serve para demonstrar a engenharia e ambição dos Kobolds para   ┃\n";
+                            cout << "┃ Cajado Elétrico (󱡄):                                                           ┃\n";
+                            cout << "┃ Esculpido em madeira antiga, possui um Núcleo Laser de um Autônomo acoplado    ┃\n";
+                            cout << "┃ em um capacitador, capaz de disparar feixes de energia pura concentrada. Um    ┃\n";
+                            cout << "┃ protótipo que serve para demonstrar a engenharia e ambição dos Kobolds para    ┃\n";
                             cout << "┃ superar a tecnologia dos humanos e anões.                                     ┃\n";
-                            cout << "┃ (Arma de ataque à distância. Aumenta a Inteligência do jogador em 'X').       ┃\n";
+                            cout << "┃ (Arma de ataque à distância. Aumenta a Inteligência do jogador em 'X').        ┃\n";
                             new_line("┗","━","┛",26);
                         break;
 
@@ -340,7 +341,7 @@ void codex_render(GAME &game){
                             new_line("┏","━","┓",26);
                             cout << "┃ Poção Regenerativa ( ):                                                        ┃\n";
                             cout << "┃ Uma bebida medicinal criada pelos Trogloditas, capaz de curar até os piores    ┃\n";
-                            cout << "┃ ferimentos. Apesar dos Trogloditas não serem lá muito inteligentes, eles       ┃\n";
+                            cout << "┃ ferimentos. Apesar dos Trogloditas não serem lá muito inteligentes, eles        ┃\n";
                             cout << "┃ possuem uma sabedoria nata para sobreviver até nos ambientes mais hostis, e    ┃\n";
                             cout << "┃ essa poção é um exemplo; criada através de alquimia, misturando cogumelos,     ┃\n";
                             cout << "┃ partes de Slimes e outros ingredientes, para criar uma bebida que deixa        ┃\n";
@@ -357,7 +358,7 @@ void codex_render(GAME &game){
                             cout << "┃ líquido violeta e instável produzido utilizando secreções de Slime e ferro     ┃\n";
                             cout << "┃ derretido. Não se sabe exatamente os detalhes do procedimento e funcionamento  ┃\n";
                             cout << "┃ da poção; é especulado que eles utilizem algum ingrediente mágico secreto.     ┃\n";
-                            cout << "┃ (Ao ser consumida, teleporta o jogador para um local aleatório do mapa).       ┃\n";
+                            cout << "┃ (Ao ser consumida, teleporta o jogador para um local aleatório do mapa).        ┃\n";
                             new_line("┣","━","┫",26);
                             cout << "┃ Escudo de Batalha ( ):                                                         ┃\n";
                             cout << "┃ De tamanho médio, feito com metal resistente e escamas de guerreiros de elite  ┃\n";
@@ -401,7 +402,7 @@ void codex_render(GAME &game){
             }
 //------------------------------------------------------------------//
             if (game.menu.optionVertical == 6) { // BESTIARIO
-                cout << "\ec"; 
+                cout << "\ec";
                 game.menu.optionVertical = 1;
                 while (codexPages == true) {
                     if (game.menu.optionVertical < 1) {
@@ -418,7 +419,7 @@ void codex_render(GAME &game){
                     }
                     cout << "\e[?25l\e[H";
                     new_line("┏","━","┓",26);
-                    cout << "┃       CODEX: BESTIÁRIO       ┃\n";
+                    cout << "┃        CODEX: BESTIÁRIO       ┃\n";
                     new_line("┣","━","┫",26);
                     if (game.menu.optionVertical == 1) {
                         if (game.menu.optionHorizontal == 1) {
@@ -542,7 +543,7 @@ void codex_render(GAME &game){
                         case 11:
                             cout << "\nTemplate 11.";
                         break;
-                        
+
                     }
                     key = getch();
                     switch (key) {
@@ -578,13 +579,13 @@ void codex_render(GAME &game){
 //------------------------------------------------------------------//
             if (game.menu.optionVertical == 7) { // HISTÓRIA
                 new_line("┏","━","┓",80);
-                cout << "┃ CONTEXTO:                                                                      ┃\n";
+                cout << "┃ CONTEXTO:                                                                                      ┃\n";
                 cout << "┃ - No mundo de [TEMPLATE], existe um arquipélago composto por três continentes: ┃\n";
                 cout << "┃   os Reinos do Oeste, o reino dos humanos; os Reinos do Norte, o reino dos     ┃\n";
                 cout << "┃   anões; e as Terras Selvagens, um continente localizado a leste, onde vivem   ┃\n";
                 cout << "┃   diversas raças tradicionalmente hostis tanto aos humanos quanto aos anões,   ┃\n";
-                cout << "┃   como goblins, kobolds, orcs, ogros, trolls e trogloditas. Ao longo da        ┃\n";
-                cout << "┃   história, inúmeros conflitos ocorreram entre os três continentes. Na última  ┃\n";
+                cout << "┃   como goblins, kobolds, orcs, ogros, trolls e trogloditas. Ao longo da   ┃\n";
+                cout << "┃   história, inúmeros conflitos ocorreram entre os três continentes. Na última   ┃\n";
                 cout << "┃   grande guerra, uma aliança entre humanos e anões devastou quase              ┃\n";
                 cout << "┃   completamente as Terras Selvagens, e quase todas as raças que ali viviam     ┃\n";
                 cout << "┃   foram forçadas a se submeter aos termos impostos pelas outras duas nações.   ┃\n";
@@ -593,7 +594,7 @@ void codex_render(GAME &game){
                 cout << "┃   conhecidas como Terras do Fogo e Ferro, devido às inúmeras operações de      ┃\n";
                 cout << "┃   mineração e metalurgia que hoje dominam a região.                            ┃\n";
                 new_line("┣","━","┫",80);
-                cout << "┃ A REBELIÃO DA BIGORNA E ASCENSÃO DA HORDA DE AÇO:                              ┃\n";
+                cout << "┃ A REBELIÃO DA BIGORNA E ASCENSÃO DA HORDA DE AÇO:                                              ┃\n";
                 cout << "┃ - Um certo kobold, cujo nome foi perdido ao longo da história, lutou na última ┃\n";
                 cout << "┃   guerra e encontrou alguns livros pertencentes a uma caravana humana que      ┃\n";
                 cout << "┃   havia sido emboscada em uma floresta. Esses livros narravam a história de    ┃\n";
@@ -622,14 +623,14 @@ void codex_render(GAME &game){
                 cout << "┃   servindo como trabalhadores ou tropas descartáveis, porém extremamente       ┃\n";
                 cout << "┃   perigosas.                                                                   ┃\n";
                 new_line("┣","━","┫",80);
-                cout << "┃ VOCÊ:                                                                          ┃\n";
+                cout << "┃ VOCÊ:                                                                                          ┃\n";
                 cout << "┃ - Você foi um dos soldados que tentou resistir desesperadamente contra as      ┃\n";
                 cout << "┃   investidas da Horda de Aço, mas foi capturado, e teve o mesmo destino de se  ┃\n";
                 cout << "┃   tornar um Escória, e pior ainda, você foi descartado, apresentando sinais    ┃\n";
                 cout << "┃   de mau funcionamento, e deixado para apodrecer em uma vala...                ┃\n";
                 cout << "┃   Mas, o destino é uma coisa engraçada: Você acorda na entrada de uma das      ┃\n";
                 cout << "┃   muitas forjas e fundições subterrâneas da Horda de Aço, de alguma forma,     ┃\n";
-                cout << "┃   você sobreviveu, e ainda consegue lutar, e agora, cabe a você deter os       ┃\n";
+                cout << "┃   you sobreviveu, e ainda consegue lutar, e agora, cabe a você deter os        ┃\n";
                 cout << "┃   planos da Horda nessa fundição, quais armas terríveis eles estão criando     ┃\n";
                 cout << "┃   aqui? E você?                                                                ┃\n";
                 cout << "┃   Pelo o que lutará?                                                           ┃\n";
@@ -831,6 +832,30 @@ void move_player(GAME &game){
                 }
                 if(game.map.player.keyInput==13){
                     if(!game.map.player.inventoryOpened){
+
+                        // codigo do sacerdote:
+
+                        int npcY = 0, npcX = 0;
+                        bool achouSacerdote = false;
+
+                        // isso aqui é pra permitir nos interagir com ele por todos os lados
+                        if(game.map.tiles[game.map.player.pos.Y-1][game.map.player.pos.X] == NPCBLOCK) { npcY = game.map.player.pos.Y-1; npcX = game.map.player.pos.X; achouSacerdote = true; }
+                        else if(game.map.tiles[game.map.player.pos.Y+1][game.map.player.pos.X] == NPCBLOCK) { npcY = game.map.player.pos.Y+1; npcX = game.map.player.pos.X; achouSacerdote = true; }
+                        else if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X-1] == NPCBLOCK) { npcY = game.map.player.pos.Y; npcX = game.map.player.pos.X-1; achouSacerdote = true; }
+                        else if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X+1] == NPCBLOCK) { npcY = game.map.player.pos.Y; npcX = game.map.player.pos.X+1; achouSacerdote = true; }
+
+                        if(achouSacerdote){
+                            game.map.player.attributes.hp += 5; // quantidade da cura ( a gente pode mudar isso depois se tiver op)
+                            if(game.map.player.attributes.hp > game.map.player.attributes.hpMax){
+                                game.map.player.attributes.hp = game.map.player.attributes.hpMax; // pra n passar da vida máxima
+                            }
+                            game.map.tiles[npcY][npcX] = FREEBLOCK; // fazendo ele desaparecer
+                            cout << "\e[23;1H\e[2KCURADO +5 HP!"; // Mensagenzinha de " curado" (se for mudar a quantidade cura, n esquece de mudar aqui tbm)
+                            game.map.player.clockSpeed = clock();
+                            while((clock()-game.map.player.clockSpeed)<1000){}
+                            return;
+                        }
+
                         bool haveSpace = false;
                         for(int y=1;y<3;y++){
                             for(int x=0;x<3;x++){
@@ -882,7 +907,7 @@ void move_player(GAME &game){
                                                     }
                                                     if(attribute==4){
                                                         game.map.player.inventory[y][x].intelligence = rand()%game.map.floor+bonus;
-                                                    }                                           
+                                                    }
                                                 }
                                                 x = 3;
                                                 y = 3;
@@ -1256,6 +1281,19 @@ void create_map(GAME &game){
             break;
         }
     }
+
+    // spawn do sacer em lugar aleatório
+
+    while(true){
+        int y = rand()%MAPSIZEY;
+        int x = rand()%MAPSIZEX;
+
+        if(game.map.tiles[y][x]==FREEBLOCK && (y != game.map.player.pos.Y || x != game.map.player.pos.X)){
+            game.map.tiles[y][x] = NPCBLOCK;
+            break;
+        }
+    }
+
     for(int monster=0;monster<50;monster++){
         MONSTER resetMonsters[50];
         game.map.monsters[monster] = resetMonsters[monster];
@@ -1426,10 +1464,10 @@ void create_map(GAME &game){
     int armadilhasCriadas = 0;
 
     while(armadilhasCriadas < qtdArmadilhas){
-        int tentativas = 0; // Sistema-Timeout integrado (impedir que crashe se n conseguir achar espaço pras armadilhas)
+        int tentatives = 0; // Sistema-Timeout integrado (impedir que crashe se n conseguir achar espaço pras armadilhas)
         bool colocou = false;
 
-        while(tentativas < 1000){
+        while(tentatives < 1000){
             int posY = rand()%MAPSIZEY;
             int posX = rand()%MAPSIZEX;
 
@@ -1453,7 +1491,7 @@ void create_map(GAME &game){
                     break;
                 }
             }
-            tentativas++;
+            tentatives++;
         }
         // Se após 1000 tentativas o mapa atual não tiver espaço grande o bastante,
         // quebra o loop principal para impedir que o jogo trave infinitamente.
@@ -1504,7 +1542,7 @@ void show_inventory(GAME &game){
                 cout<<"󱡄"; // CAJADO
             }
             if(game.map.player.inventory[y][x].id==6){
-                cout<<"󱄰"; // POÇÃO DE CURA 
+                cout<<"󱄰"; // POÇÃO DE CURA
             }
             if(game.map.player.inventory[y][x].id==7){
                 cout<<"󱄮"; // POÇÃO MISTERIOSA
@@ -1592,6 +1630,13 @@ void render_map(GAME &game){
                 if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==KEYBLOCK){
                     cout<<"\e[48;5;246m\e[38;5;3m";
                 }
+
+                //cout do sacer
+
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==NPCBLOCK){
+                    cout<<"\e[48;5;246m\e[38;5;121m";
+                }
+
                 for(int item=0;item<10;item++){
                     if(game.map.items[item].Y==game.map.player.pos.Y+y && game.map.items[item].X==game.map.player.pos.X+x){
                         cout<<"\e[1D\e[38;5;13m󰜦";
@@ -1719,7 +1764,7 @@ void render_map(GAME &game){
     cout<<"\e[8;"<<((vision+1)*2)+1<<"H";
     cout<<"NIVEL: "<<game.map.player.nivel;
     cout<<"\e[9;"<<((vision+1)*2)+1<<"H";
-    cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nivel<<"     ";
+    cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nivel<<"      ";
     if(game.map.player.key){
         cout<<"\e[10;"<<((vision+1)*2)+1<<"H";
         cout<<"\e[38;5;3m\e[0m";
