@@ -41,7 +41,7 @@ struct ITEM{
 };
 
 struct PLAYER{
-    int attPoints = 4;
+    int attPoints = 5;
     int nivel = 1;
     int points = 0;
     int exp = 0;
@@ -1053,11 +1053,84 @@ void create_map(GAME &game){
             int posX;
             bool success = false;
             int attPoints = (game.map.player.nivel*2)+(game.map.floor);
+            game.map.monsters[monster].id = rand()%game.map.floor;
             while(attPoints>0){
                 int attribute = rand()%5;
-                if(game.map.monsters[monster].id==1){
+                if(rand()%4==0){
+                    attPoints--;
+                    continue;
+                }
+                if(game.map.monsters[monster].id==1){ // GOBLIN
                     if(rand()%2==0){
                         attribute = 4;
+                    }
+                }
+                if(game.map.monsters[monster].id==2){ // KOBOLD
+                    if(rand()%2==0){
+                        attribute = 4;
+                    }
+                    if(rand()%2==0){
+                        attribute = 3;
+                    }
+                }
+                if(game.map.monsters[monster].id==3){ // OCRS
+                    if(rand()%2==0){
+                        attribute = 2;
+                    }
+                }
+                if(game.map.monsters[monster].id==4){ // OGROS
+                    if(rand()%2==0){
+                        attribute = 2;
+                    }
+                }
+                if(game.map.monsters[monster].id==5){ // TROLLS
+                    if(rand()%2==0){
+                        attribute = 2;
+                    }
+                    if(rand()%2==0){
+                        attribute = 3;
+                    }
+                }
+                if(game.map.monsters[monster].id==6){ // MIMICO
+                    if(rand()%10==0){
+                        attPoints++;
+                        continue;
+                    }
+                    if(rand()%2==0){
+                        attribute = 1;
+                    }
+                }
+                if(game.map.monsters[monster].id==7){ // TROGLODITA
+                    if(rand()%2==0){
+                        attribute = 2;
+                    }
+                    if(rand()%2==0){
+                        attribute = 4;
+                    }
+                }
+                if(game.map.monsters[monster].id==8){ // AUTONOMOS
+                    if(rand()%2==0){
+                        attribute = 2;
+                    }
+                    if(rand()%2==0){
+                        attribute = 4;
+                    }
+                    if(rand()%2==0){
+                        attribute = 1;
+                    }
+                }
+                if(game.map.monsters[monster].id==9){ // ESCORIAS
+                    if(rand()%2==0){
+                        attribute = 2;
+                    }
+                    if(rand()%2==0){
+                        attribute = 4;
+                    }
+                }
+                if(game.map.monsters[monster].id==10){ // BOSS
+                    if(rand()%2==0){
+                        attPoints++;
+                        continue;
                     }
                 }
                 if(attribute==0){
@@ -1094,7 +1167,6 @@ void create_map(GAME &game){
                 }
             }
             if(success){
-                game.map.monsters[monster].id = rand()%game.map.floor;
                 game.map.monsters[monster].pos.Y = posY;
                 game.map.monsters[monster].pos.X = posX;
                 game.map.monsters[monster].attributes.hp = game.map.monsters[monster].attributes.hpMax;
