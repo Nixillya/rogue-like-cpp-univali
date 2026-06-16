@@ -48,6 +48,7 @@ struct PLAYER{
     int nivel = 1;
     int points = 0;
     int exp = 0;
+    int nextExp = 2;
     int keyInput = 0;
     int clockSpeed = clock();
     bool alive = true;
@@ -107,7 +108,7 @@ void new_line(string x, string y, string z,int size){
 void menu_render(GAME &game){
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",16);
-    new_line("┃   ","ROGUE-LIKE","    ┃",1);
+    new_line("┃   ","ROGUE-LIKE","   ┃",1);
     new_line("┣","━","┫",16);
     if (game.menu.optionVertical == 4) {
         cout << "┃ > [JOGAR]      ┃\n";
@@ -650,6 +651,19 @@ void codex_render(GAME &game){
     }
 }
 
+void send_message(GAME &game,string message,int time){
+    cout<<"\e[23;1H";
+    cout<<message;
+    int timeClock = clock();
+    while(clock()-timeClock<time){}
+    game.map.player.clockSpeed-=time;
+    for(int monster=0;monster<50;monster++){
+        game.map.monsters[monster].clockSpeed-=time;
+    }
+    cout<<"\e[23;1H";
+    cout<<"\e[2K";
+}
+
 void move_monsters(GAME &game){
     int blocks[4] = {FREEBLOCK,STAIRBLOCK,KEYBLOCK,TRAPBLOCK};
     for(int monster=0;monster<50;monster++){
@@ -714,6 +728,8 @@ void move_monsters(GAME &game){
                         defended = attack;
                     }
                     game.map.player.attributes.hp-=(attack-defended);
+                    string message = "\e[38;5;9mDANO RECEBIDO: "+to_string(attack-defended)+"\e[0m";
+                    send_message(game,message,1000);
                 }
                 for(int otherMonster=0;otherMonster<50;otherMonster++){
                     if(otherMonster==monster){
@@ -736,7 +752,6 @@ void move_monsters(GAME &game){
 }
 
 void move_player(GAME &game){
-    cout<<"\e[23;1H";
     if(game.map.player.attributes.hp<1){
         if(game.map.player.inventory[0][2].id==9){
             game.map.player.attributes.hp = 1;
@@ -752,9 +767,7 @@ void move_player(GAME &game){
             game.map.player.inventory[0][2].id = 0;
             return;
         }
-        cout<<"MORREU";
-        game.map.player.clockSpeed = clock();
-        while((clock()-game.map.player.clockSpeed)<3000){}
+        send_message(game,"MORREU",3000);
         cout<<"\ec";
         game.play = false;
         return;
@@ -763,23 +776,22 @@ void move_player(GAME &game){
         game.next = true;
         game.map.player.fallen = true;
         game.map.floor++;
-        cout<<"CAINDO...";
         game.map.player.attributes.hp = 1;
         if(rand()%2==0){
             game.map.player.attributes.hp -= 1;
         }
-        game.map.player.clockSpeed = clock();
-        while((clock()-game.map.player.clockSpeed)<2000){}
+        send_message(game,"CAINDO...",2000);
         return;
     }
     if(kbhit()){
         game.map.player.keyInput = getch();
         if((clock()-game.map.player.clockSpeed)>1000/game.map.player.attributes.dexterity){
-            cout<<"\e[2K";
-            if(game.map.player.exp>=game.map.player.nivel){
+            
+            if(game.map.player.exp>=game.map.player.nextExp){
                 game.map.player.exp = 0;
                 game.map.player.attPoints++;
                 game.map.player.nivel++;
+                game.map.player.nextExp+=rand()%game.map.player.nextExp+1;
             }
             game.map.player.clockSpeed = clock();
             POS targetPos = {0,0};
@@ -845,14 +857,12 @@ void move_player(GAME &game){
                         else if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X+1] == NPCBLOCK) { npcY = game.map.player.pos.Y; npcX = game.map.player.pos.X+1; achouSacerdote = true; }
 
                         if(achouSacerdote){
-                            game.map.player.attributes.hp += 5; // quantidade da cura ( a gente pode mudar isso depois se tiver op)
+                            game.map.player.attributes.hp += game.map.floor; // quantidade da cura ( a gente pode mudar isso depois se tiver op)
                             if(game.map.player.attributes.hp > game.map.player.attributes.hpMax){
                                 game.map.player.attributes.hp = game.map.player.attributes.hpMax; // pra n passar da vida máxima
                             }
                             game.map.tiles[npcY][npcX] = FREEBLOCK; // fazendo ele desaparecer
-                            cout << "\e[23;1H\e[2KCURADO +5 HP!"; // Mensagenzinha de " curado" (se for mudar a quantidade cura, n esquece de mudar aqui tbm)
-                            game.map.player.clockSpeed = clock();
-                            while((clock()-game.map.player.clockSpeed)<1000){}
+                            send_message(game,"\e[38;5;10mCURANDO...\e[0m",1000);
                             return;
                         }
 
@@ -925,9 +935,7 @@ void move_player(GAME &game){
                             if(game.map.player.key){
                                 game.next = true;
                                 game.map.floor++;
-                                cout<<"DESCENDO...";
-                                game.map.player.clockSpeed = clock();
-                                while((clock()-game.map.player.clockSpeed)<2000){}
+                                send_message(game,"DESCENDO...",2000);
                                 return;
                             }
                         }
@@ -957,7 +965,7 @@ void move_player(GAME &game){
                                 }
                             }
                             if(game.map.player.inventorySelection.Y==0){
-                                if(haveSpace){
+                                if(haveSpace && !game.map.player.inventory[0][game.map.player.inventorySelection.X].cursed){
                                     if(game.map.player.inventory[0][game.map.player.inventorySelection.X].id==3){
                                         game.map.player.attributes.hpMax-=game.map.player.inventory[0][game.map.player.inventorySelection.X].hp;
                                         game.map.player.attributes.defense-=game.map.player.inventory[0][game.map.player.inventorySelection.X].defense;
@@ -1036,7 +1044,6 @@ void move_player(GAME &game){
             if(!game.map.player.inventoryOpened){
                 for(int monster=0;monster<50;monster++){
                     if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+targetPos.Y && game.map.monsters[monster].pos.X==game.map.player.pos.X+targetPos.X){
-                        game.map.monsters[monster].attacked = true;
                         int attack = rand()%game.map.player.attributes.strength+1;
                         if(game.map.player.inventory[0][0].id==1){
                             if(rand()%4!=0){
@@ -1087,6 +1094,8 @@ void move_player(GAME &game){
                             game.map.monsters[monster].attacked = false;
                         }
                         game.map.monsters[monster].attributes.hp-=(attack-defended);
+                        string message = "\e[38;5;46mDANO CAUSADO: "+to_string(attack-defended)+"\e[0m";
+                        send_message(game,message,1000);
                         success = false;
                     }
                 }
@@ -1200,8 +1209,10 @@ void create_map(GAME &game){
             break;
         }
     }
-    game.map.player.clockSpeed = clock();
-    while((clock()-game.map.player.clockSpeed)<1000){}
+    if(game.map.player.attPoints<=0){
+        game.map.player.clockSpeed = clock();
+        while((clock()-game.map.player.clockSpeed)<1000){}
+    }
     for(int y=0;y<MAPSIZEY;y++){
         for(int x=0;x<MAPSIZEX;x++){
             game.map.tiles[y][x] = EMPTY;
@@ -1551,16 +1562,26 @@ void show_inventory(GAME &game){
                 cout<<"󰂪"; // ESCUDO REFLETOR
             }
             if(game.map.player.inventory[y][x].id==9){
-                cout<<""; // TOTEM
+                cout<<""; // TOTEM
             }
             if(game.map.player.inventory[y][x].id==10){
-                cout<<""; // PERGAMINHO
+                cout<<""; // PERGAMINHO
             }
             cout<<"\e[0m ";
         }
         cout<<"\e[0m┃\n";
     }
     new_line("┗","━","┛",3*3);
+    cout<<"\e[1;12H";
+    cout<<"HP: "<<game.map.player.attributes.hp<<"/"<<game.map.player.attributes.hpMax<<"   ";
+    cout<<"\e[2;12H";
+    cout<<"DEFESA: "<<game.map.player.attributes.defense<<"   ";
+    cout<<"\e[3;12H";
+    cout<<"FORÇA: "<<game.map.player.attributes.strength<<"   ";
+    cout<<"\e[4;12H";
+    cout<<"INTELIGENCIA: "<<game.map.player.attributes.intelligence<<"   ";
+    cout<<"\e[5;12H";
+    cout<<"DESTREZA: "<<game.map.player.attributes.dexterity<<"   ";
 }
 
 int simulate_vision(GAME &game,int y,int x,int i=0){
@@ -1625,7 +1646,7 @@ void render_map(GAME &game){
                     }
                 }
                 if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==TRAPBLOCK){
-                    cout<<"\e[48;5;246m\e[38;5;196m󰝧";
+                    cout<<"\e[48;5;246m\e[38;5;247m";
                 }
                 if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==KEYBLOCK){
                     cout<<"\e[48;5;246m\e[38;5;3m";
@@ -1752,11 +1773,14 @@ void render_map(GAME &game){
             cout<<"󰂪"; // ESCUDO REFLETOR
         }
         if(game.map.player.inventory[0][x].id==9){
-            cout<<""; // TOTEM
+            cout<<""; // TOTEM
         }
         cout<<"\e[0m ";
     }
-    cout<<"\e[0m┃\n";
+    cout<<"\e[0m┃";
+    if(game.map.player.key){
+        cout<<" \e[38;5;3m\e[0m";
+    }
     cout<<"\e[6;"<<((vision+1)*2)+1<<"H";
     new_line("┗","━","┛",3*3);
     cout<<"\e[7;"<<((vision+1)*2)+1<<"H";
@@ -1764,9 +1788,8 @@ void render_map(GAME &game){
     cout<<"\e[8;"<<((vision+1)*2)+1<<"H";
     cout<<"NIVEL: "<<game.map.player.nivel;
     cout<<"\e[9;"<<((vision+1)*2)+1<<"H";
-    cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nivel<<"      ";
-    if(game.map.player.key){
-        cout<<"\e[10;"<<((vision+1)*2)+1<<"H";
-        cout<<"\e[38;5;3m\e[0m";
+    if(game.map.player.exp>=game.map.player.nextExp){
+        cout<<"\e[38;5;3m";
     }
+    cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nextExp<<"\e[0m      ";
 }
