@@ -420,7 +420,7 @@ void codex_render(GAME &game){
                     }
                     cout << "\e[?25l\e[H";
                     new_line("┏","━","┓",26);
-                    cout << "┃        CODEX: BESTIÁRIO       ┃\n";
+                    cout << "┃     CODEX: BESTIÁRIO       ┃\n";
                     new_line("┣","━","┫",26);
                     if (game.menu.optionVertical == 1) {
                         if (game.menu.optionHorizontal == 1) {
@@ -436,7 +436,7 @@ void codex_render(GAME &game){
                             cout << "┃  \e[93m[Página 4 - ORC]\e[0m   ┃\n";
                         }
                         if (game.menu.optionHorizontal == 5) {
-                            cout << "┃  \e[93m[Página 5 - OGRO]\e[0m   ┃\n";
+                            cout << "┃  \e[93m[Página 5 - CICLOPE]\e[0m   ┃\n";
                         }
                         if  (game.menu.optionHorizontal == 6) {
                             cout << "┃  \e[93m[Página 6 - TROLL]\e[0m   ┃\n";
@@ -471,7 +471,7 @@ void codex_render(GAME &game){
                             cout << "┃  [Página 4 - ORC]   ┃\n";
                         }
                         if (game.menu.optionHorizontal == 5) {
-                            cout << "┃  [Página 5 - OGRO]   ┃\n";
+                            cout << "┃  [Página 5 - CICLOPE]   ┃\n";
                         }
                         if  (game.menu.optionHorizontal == 6) {
                             cout << "┃  [Página 6 - TROLL]   ┃\n";
@@ -502,47 +502,215 @@ void codex_render(GAME &game){
                     cout<<"\e[?25l";
                     switch (game.menu.optionHorizontal) {
                         case 1:
-                            cout << "\nTemplate 1.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - SLIME ( ):                                                               ┃\n";
+                            cout << "┃ 'Slime' é um termo informal e popular utilizado para descrever 'criaturas' ┃\n";
+                            cout << "┃ que, na verdade, consistem em um aglomerado de micro-organismos            ┃\n";
+                            cout << "┃ unicelulares reunidos em uma massa amorfa semelhante a uma bolha. Não se   ┃\n";
+                            cout << "┃ sabe ao certo como surgem, mas é de conhecimento geral que são criaturas   ┃\n";
+                            cout << "┃ relativamente fracas, porém, não se deve subestimar seu perigo. Os slimes  ┃\n";
+                            cout << "┃ são capazes de absorver e manter matéria inorgânica em seus corpos,        ┃\n";
+                            cout << "┃ utilizando-a como arma; pedras afiadas, pedaços metálicos, e até mesmo     ┃\n";
+                            cout << "┃ adagas já foram encontrados alojados em seu interior. Seu método de ataque ┃\n";
+                            cout << "┃ mais comum consiste em saltar contra o alvo, impulsionando os objetos      ┃\n";
+                            cout << "┃ contidos em seu corpo na direção da vítima. Observou-se que os slimes das  ┃\n";
+                            cout << "┃ Terras do Fogo e Ferro raramente atacam os habitantes locais, demonstrando ┃\n";
+                            cout << "┃ hostilidade quase exclusiva contra humanos e anões. A razão para esse      ┃\n";
+                            cout << "┃ comportamento permanece desconhecida.                                      ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 2:
-                            cout << "\nTemplate 2.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - GOBLIM ( ):                                                              ┃\n";
+                            cout << "┃ Pequenos humanoides de pele esverdeada, os goblins são criaturas           ┃\n";
+                            cout << "┃ relativamente fracas e conhecidas por sua natureza cautelosa, muitas vezes ┃\n";
+                            cout << "┃ confundida com covardia. Ainda assim, não hesitam em lutar quando          ┃\n";
+                            cout << "┃ ameaçados. Dentro da Horda de Aço, os goblins costumam ser designados para ┃\n";
+                            cout << "┃ tarefas simples, como patrulhamento, manutenção, limpeza e organização de  ┃\n";
+                            cout << "┃ suprimentos. Apesar disso, possuem uma reputação como comerciantes         ┃\n";
+                            cout << "┃ habilidosos. Por parte da sua ganância e obsessão por riqueza, são mestres ┃\n";
+                            cout << "┃ do mercantilismo, capazes de negociar praticamente qualquer coisa com      ┃\n";
+                            cout << "┃ qualquer pessoa. Ironicamente, mesmo em meio às hostilidades entre os      ┃\n";
+                            cout << "┃ continentes, diversos goblins podem ser encontrados operando nos mercados  ┃\n";
+                            cout << "┃ negros dos 3 continentes. Comercializam armas, ferramentas e equipamentos  ┃\n";
+                            cout << "┃ de excelente qualidade produzidos nas forjas da Horda. Alguns goblins são  ┃\n";
+                            cout << "┃ menos extremistas do que muitos de seus compatriotas, colocando o lucro    ┃\n";
+                            cout << "┃ acima de rivalidades raciais ou políticas. Embora frequentemente sejam     ┃\n";
+                            cout << "┃ considerados pouco inteligentes por outras raças, os goblins são           ┃\n";
+                            cout << "┃ especialistas em gambiarras e sucata, reaproveitando materiais para criar  ┃\n";
+                            cout << "┃ máquinas funcionais. Embora suas invenções raramente sejam elegantes ou    ┃\n";
+                            cout << "┃ seguras, costumam funcionar surpreendentemente bem.                        ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 3:
-                            cout << "\nTemplate 3.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - KOBOLDS ( ):                                                             ┃\n";
+                            cout << "┃ Pequenos humanoides escamosos, geralmente de coloração alaranjada com tons ┃\n";
+                            cout << "┃ vermelhos e aparência dracônica, os kobolds afirmam ser descendentes dos   ┃\n";
+                            cout << "┃ antigos dragões, hoje considerados extintos. Em razão dessa crença,        ┃\n";
+                            cout << "┃ costumam adornar suas armaduras com características e até estruturas       ┃\n";
+                            cout << "┃ metálicas em forma de asas, tanto para reforçar sua suposta herança quanto ┃\n";
+                            cout << "┃ para intimidar seus inimigos. Apesar da baixa estatura, os kobolds são     ┃\n";
+                            cout << "┃ adversários perigosos e jamais devem ser subestimados em combate. Na Horda ┃\n";
+                            cout << "┃ de Aço, os kobolds ocupam posições de grande importância, reconhecidos como┃\n";
+                            cout << "┃ excelentes ferreiros, engenheiros e artesãos, responsáveis pela construção ┃\n";
+                            cout << "┃ e manutenção das vastas forjas subterrâneas que sustentam a máquina de     ┃\n";
+                            cout << "┃ guerra da Horda. Também são especialistas na criação de armadilhas e       ┃\n";
+                            cout << "┃ mecanismos defensivos, muitas vezes trabalhando em conjunto com inventores ┃\n";
+                            cout << "┃ goblins para desenvolver elas. Além de suas funções industriais, os        ┃\n";
+                            cout << "┃ kobolds atuam como supervisores e administradores, coordenando operações de┃\n";
+                            cout << "┃ mineração, produção de armamentos e logística militar.                     ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 4:
-                            cout << "\nTemplate 4.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - ORCS ( ):                                                                ┃\n";
+                            cout << "┃ Grandes humanoides de pele verde-oliva e durões, os orcs são combatentes   ┃\n";
+                            cout << "┃ temíveis por sua força física, mas o que realmente os distingue de outras  ┃\n";
+                            cout << "┃ raças guerreiras é o respeito que demonstram pela honra e coragem em       ┃\n";
+                            cout << "┃ batalha. Na Horda de Aço, os orcs desempenham um papel fundamental ao      ┃\n";
+                            cout << "┃ operar as enormes fornalhas e auxiliar na produção do vasto arsenal        ┃\n";
+                            cout << "┃ necessário para sustentar o esforço de guerra. Sua resistência ao calor, à ┃\n";
+                            cout << "┃ fadiga e ao trabalho pesado os torna especialmente adequados para as       ┃\n";
+                            cout << "┃ exigências das grandes fundições subterrâneas. Os orcs também servem como  ┃\n";
+                            cout << "┃ excelentes guerreiros. Embora raramente sejam reconhecidos por sua         ┃\n";
+                            cout << "┃ inteligência, costumam ser surpreendentemente sociáveis. Em comparação com ┃\n";
+                            cout << "┃ seus parentes mais brutais, os ciclopes e os trolls, os orcs são           ┃\n";
+                            cout << "┃ geralmente muito mais fáceis de compreender e de conviver.                 ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 5:
-                            cout << "\nTemplate 5.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - CICLOPES ( ):                                                            ┃\n";
+                            cout << "┃ Gigantes humanoides de pele verde-escura e corpo massivo, os ciclopes      ┃\n";
+                            cout << "┃ possuem apenas um único olho no centro do rosto. Geralmente corpulentos e  ┃\n";
+                            cout << "┃ de intelecto limitado, são criaturas temidas por sua força descomunal e    ┃\n";
+                            cout << "┃ por seu temperamento violento. Embora compartilhem algumas características ┃\n";
+                            cout << "┃ com os orcs, as semelhanças terminam aí. Os ciclopes encontram prazer na   ┃\n";
+                            cout << "┃ própria violência, tratando combates como uma forma de entretenimento      ┃\n";
+                            cout << "┃ brutal, transformando seus oponentes em verdadeiros sacos de pancadas. Na  ┃\n";
+                            cout << "┃ Horda de Aço, devido à dificuldade que apresentam para executar tarefas    ┃\n";
+                            cout << "┃ complexas ou seguir instruções detalhadas, os ciclopes são normalmente     ┃\n";
+                            cout << "┃ designados para o trabalho pesado nas minas, escavando túneis, extraindo   ┃\n";
+                            cout << "┃ minério e transportando enormes quantidades de pedra e metal para as       ┃\n";
+                            cout << "┃ fundições.                                                                 ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 6:
-                            cout << "\nTemplate 6.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - TROLLS ( ):                                                             ┃\n";
+                            cout << "┃ Grandes humanoides de pele verde-azulada escura, os trolls possuem corpos ┃\n";
+                            cout << "┃ esguios e ágeis, o que lhes confere uma agilidade que seus outros 'primos'┃\n";
+                            cout << "┃ mais brutos não possuem. Em termos intelectuais, trolls e orcs apresentam ┃\n";
+                            cout << "┃ capacidades relativamente semelhantes, embora os trolls sejam geralmente  ┃\n";
+                            cout << "┃ considerados um pouco mais perspicazes. Essa combinação de inteligência   ┃\n";
+                            cout << "┃ prática e agilidade faz deles excelentes assassinos. Na Horda de Aço, os  ┃\n";
+                            cout << "┃ trolls são frequentemente empregados como batedores e assassinos. Embora  ┃\n";
+                            cout << "┃ não possuam a mesma resistência física dos orcs, compensam essa limitação ┃\n";
+                            cout << "┃ com velocidade, agilidade e furtividade letal.                            ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 7:
-                            cout << "\nTemplate 7.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - MÍMICOS ( ):                                                            ┃\n";
+                            cout << "┃ Criaturas de natureza estranha e aparentemente amorfa, os mímicos possuem ┃\n";
+                            cout << "┃ a capacidade de assumir a aparência de um baú comum. Sua origem permanece ┃\n";
+                            cout << "┃ desconhecida, embora existam teorias que afirmem que foram criados pela   ┃\n";
+                            cout << "┃ própria Horda de Aço como uma forma de proteger depósitos de suprimentos, ┃\n";
+                            cout << "┃ tesouros e armamentos contra incursões de humanos e anões.                ┃\n";
+                            cout << "┃ Independentemente de sua verdadeira origem, os mímicos são criaturas      ┃\n";
+                            cout << "┃ extremamente perigosas. Permanecem imóveis por longos períodos, escondidos┃\n";
+                            cout << "┃ em salas de tesouro, aguardando pacientemente até que uma vítima se       ┃\n";
+                            cout << "┃ aproxime. À primeira vista, distinguem-se de um baú comum apenas por      ┃\n";
+                            cout << "┃ pequenos detalhes que passam despercebidos. Somente quando alguém tenta   ┃\n";
+                            cout << "┃ abrir o baú é que o mímico se revela, deformando-se rapidamente e         ┃\n";
+                            cout << "┃ expondo uma enorme boca repleta de dentes afiados e uma língua            ┃\n";
+                            cout << "┃ surpreendentemente longa.                                                 ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 8:
-                            cout << "\nTemplate 8.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - TROGLODITA ( ):                                                         ┃\n";
+                            cout << "┃ Grandes criaturas reptilianas cobertas por escamas brancas e              ┃\n";
+                            cout << "┃ avermelhadas, embora não sejam conhecidas por sua inteligência,           ┃\n";
+                            cout << "┃ compensam essa limitação com força física, resistência e selvageria. É    ┃\n";
+                            cout << "┃ especulado que os trogloditas possuam alguma ligação com os kobolds ou até┃\n";
+                            cout << "┃ mesmo com os antigos dragões. No entanto, devido à dificuldade de realizar┃\n";
+                            cout << "┃ novos estudos e investigações mais profundas, não existe nada de concreto ┃\n";
+                            cout << "┃ que comprove essa teoria. Diferentemente de outras raças que habitavam as ┃\n";
+                            cout << "┃ antigas Terras Selvagens, os trogloditas permaneceram praticamente        ┃\n";
+                            cout << "┃ desconhecidos para humanos e anões durante séculos, vivendo em vastas     ┃\n";
+                            cout << "┃ redes de cavernas abaixo da superfície. Foi apenas após a ascensão da     ┃\n";
+                            cout << "┃ Horda de Aço e a expansão das operações de mineração que sua existência se┃\n";
+                            cout << "┃ tornou amplamente conhecida. Na Horda, os trogloditas são empregados como ┃\n";
+                            cout << "┃ mineradores, escavadores e guardas das regiões mais profundas das minas,  ┃\n";
+                            cout << "┃ forjas e fundições subterrâneas.                                          ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 9:
-                            cout << "\nTemplate 9.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - AUTÔNOMO ( ):                                                           ┃\n";
+                            cout << "┃ Máquinas semiautônomas originalmente desenvolvidas por humanos e anões,   ┃\n";
+                            cout << "┃ após a expulsão desses povos das Terras do Fogo e Ferro, a Horda de Aço   ┃\n";
+                            cout << "┃ conseguiu recuperar exemplares, estudar sua construção e eventualmente    ┃\n";
+                            cout << "┃ produzir suas próprias versões. Existem diversos modelos de Autônomos     ┃\n";
+                            cout << "┃ conhecidos, e o modelo mais comum nas instalações da Horda é o Atlas.     ┃\n";
+                            cout << "┃ Ele possui um torso metálico de formato humanoide conectado a uma base    ┃\n";
+                            cout << "┃ sustentada por quatro pernas articuladas, lembrando vagamente uma aranha. ┃\n";
+                            cout << "┃ Seus braços terminam em garras mecânicas, e sua cabeça abriga um único e  ┃\n";
+                            cout << "┃ grande olho mecânico. O Atlas pode desempenhar funções de transporte de   ┃\n";
+                            cout << "┃ materiais e operações logísticas, mas também pode ser empregado           ┃\n";
+                            cout << "┃ diretamente como unidade de combate.                                      ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 10:
-                            cout << "\nTemplate 10.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - ESCÓRIA ( ):                                                           ┃\n";
+                            cout << "┃ Os Escórias são humanos capturados pela Horda de Aço e submetidos a      ┃\n";
+                            cout << "┃ experimentos para fundir carne e metal em um único organismo. O objetivo ┃\n";
+                            cout << "┃ original dessas pesquisas era criar trabalhadores e soldados capazes de  ┃\n";
+                            cout << "┃ suportar condições extremas para qualquer ser vivo comum, incorporando   ┃\n";
+                            cout << "┃ próteses mecânicas e outros componentes artificiais diretamente ao corpo.┃\n";
+                            cout << "┃ Os resultados, porém, raramente corresponderam às expectativas, com a    ┃\n";
+                            cout << "┃ maioria dos indivíduos não sobrevivendo aos processos, muito dos outros  ┃\n";
+                            cout << "┃ dos sobreviventes perderam a sanidade ou sofreram deformações severas.   ┃\n";
+                            cout << "┃ Apenas uma pequena parcela conseguiu permanecer funcional após as        ┃\n";
+                            cout << "┃ modificações. Eles são empregados em tarefas extremamente perigosas, como┃\n";
+                            cout << "┃ a manutenção de fornalhas e o transporte de materiais em áreas perigosas.┃\n";
+                            cout << "┃ Já aqueles considerados inadequados costumam ser relegados a trabalhos   ┃\n";
+                            cout << "┃ degradantes ou utilizados como bucha de canhão. A aparência de um Escória┃\n";
+                            cout << "┃ varia de acordo com os implantes e os danos sofridos durante sua         ┃\n";
+                            cout << "┃ transformação; membros mecânicos e placas metálicas fundidas à pele são  ┃\n";
+                            cout << "┃ características comuns entre esses infelizes. O termo 'Escória' deriva do┃\n";
+                            cout << "┃ subproduto gerado durante o processo de fundição dos minérios: uma massa ┃\n";
+                            cout << "┃ de impurezas que flutua sobre o metal líquido na forma de uma espuma     ┃\n";
+                            cout << "┃ escura.                                                                  ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                         case 11:
-                            cout << "\nTemplate 11.";
+                            new_line("┏","━","┓",40);
+                            cout << "┃ - CORAÇÃO DA FORJA - FLAGELO DO DRAGÃO ( ):                              ┃\n";
+                            cout << "┃ O Flagelo do Dragão é um gigantesco mecha projetado pelo próprio Victor e┃\n";
+                            cout << "┃ considerado a maior realização da engenharia da Horda de Aço. Construído ┃\n";
+                            cout << "┃ nas profundezas das grandes fundições e armado com diversos protótipos de┃\n";
+                            cout << "┃ armamentos experimentais, sua estrutura bípede colossal combina placas de┃\n";
+                            cout << "┃ aço reforçadas, articulações hidráulicas e tecnologias que muitos        ┃\n";
+                            cout << "┃ acreditavam ser impossíveis de reproduzir. Ainda pouco se sabe sobre suas┃\n";
+                            cout << "┃ capacidades completas. O Flagelo do Dragão, porém, não foi concebido     ┃\n";
+                            cout << "┃ apenas como uma arma de destruição. Para Victor, ele representa um ideal:┃\n";
+                            cout << "┃ um símbolo do futuro que a Horda de Aço pretende construir e da          ┃\n";
+                            cout << "┃ superioridade da engenharia sobre as tradições e magias do passado.      ┃\n";
+                            new_line("┗","━","┛",40);
                         break;
 
                     }
@@ -580,13 +748,14 @@ void codex_render(GAME &game){
 //------------------------------------------------------------------//
             if (game.menu.optionVertical == 7) { // HISTÓRIA
                 new_line("┏","━","┓",80);
-                cout << "┃ CONTEXTO:                                                                                      ┃\n";
+                cout << "┃                                                                                ┃\n";
+                cout << "┃ CONTEXTO:                                                                      ┃\n";
                 cout << "┃ - No mundo de [TEMPLATE], existe um arquipélago composto por três continentes: ┃\n";
                 cout << "┃   os Reinos do Oeste, o reino dos humanos; os Reinos do Norte, o reino dos     ┃\n";
                 cout << "┃   anões; e as Terras Selvagens, um continente localizado a leste, onde vivem   ┃\n";
                 cout << "┃   diversas raças tradicionalmente hostis tanto aos humanos quanto aos anões,   ┃\n";
-                cout << "┃   como goblins, kobolds, orcs, ogros, trolls e trogloditas. Ao longo da   ┃\n";
-                cout << "┃   história, inúmeros conflitos ocorreram entre os três continentes. Na última   ┃\n";
+                cout << "┃   como goblins, kobolds, orcs, ogros, trolls e trogloditas. Ao longo da        ┃\n";
+                cout << "┃   história, inúmeros conflitos ocorreram entre os três continentes. Na última  ┃\n";
                 cout << "┃   grande guerra, uma aliança entre humanos e anões devastou quase              ┃\n";
                 cout << "┃   completamente as Terras Selvagens, e quase todas as raças que ali viviam     ┃\n";
                 cout << "┃   foram forçadas a se submeter aos termos impostos pelas outras duas nações.   ┃\n";
@@ -595,7 +764,7 @@ void codex_render(GAME &game){
                 cout << "┃   conhecidas como Terras do Fogo e Ferro, devido às inúmeras operações de      ┃\n";
                 cout << "┃   mineração e metalurgia que hoje dominam a região.                            ┃\n";
                 new_line("┣","━","┫",80);
-                cout << "┃ A REBELIÃO DA BIGORNA E ASCENSÃO DA HORDA DE AÇO:                                              ┃\n";
+                cout << "┃ A REBELIÃO DA BIGORNA E ASCENSÃO DA HORDA DE AÇO:                              ┃\n";
                 cout << "┃ - Um certo kobold, cujo nome foi perdido ao longo da história, lutou na última ┃\n";
                 cout << "┃   guerra e encontrou alguns livros pertencentes a uma caravana humana que      ┃\n";
                 cout << "┃   havia sido emboscada em uma floresta. Esses livros narravam a história de    ┃\n";
@@ -624,7 +793,7 @@ void codex_render(GAME &game){
                 cout << "┃   servindo como trabalhadores ou tropas descartáveis, porém extremamente       ┃\n";
                 cout << "┃   perigosas.                                                                   ┃\n";
                 new_line("┣","━","┫",80);
-                cout << "┃ VOCÊ:                                                                                          ┃\n";
+                cout << "┃ VOCÊ:                                                                          ┃\n";
                 cout << "┃ - Você foi um dos soldados que tentou resistir desesperadamente contra as      ┃\n";
                 cout << "┃   investidas da Horda de Aço, mas foi capturado, e teve o mesmo destino de se  ┃\n";
                 cout << "┃   tornar um Escória, e pior ainda, você foi descartado, apresentando sinais    ┃\n";
