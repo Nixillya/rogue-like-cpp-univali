@@ -14,13 +14,16 @@ void play(GAME &game){
     cout<<"\ec";
     srand(time(0)); 
     create_map(game);
-    while(game.play==true && game.next==false){
+    while(true){
         if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
             show_inventory(game);
         }else{
             render_map(game);
         }
         move_player(game);
+        if(!game.play || game.next){
+            return;
+        }
         move_monsters(game);
     }
 }
