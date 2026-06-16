@@ -944,9 +944,10 @@ void move_monsters(GAME &game){
                     int defended = rand()%game.map.player.attributes.defense;
                     if(game.map.player.inventory[0][1].id==2){
                         if(rand()%4==0){ // 25%
-                            defended += rand()%game.map.player.attributes.defense;
+                            defended += rand()%game.map.player.attributes.defense+1;
                             if(rand()%20==0){ // 5% de quebrar
                                 game.map.player.inventory[0][1].id = 0;
+                                game.map.player.inventory[0][1].cursed = false;
                             }
                         }
                     }
@@ -956,6 +957,7 @@ void move_monsters(GAME &game){
                             defended = 1;
                             if(rand()%4==0){ // 25%
                                 game.map.player.inventory[0][1].id = 0;
+                                game.map.player.inventory[0][1].cursed = false;
                             }
                         }
                     }
@@ -1263,6 +1265,7 @@ void move_player(GAME &game){
                                     game.map.player.inventory[0][x].hp = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].hp;
                                     game.map.player.inventory[0][x].intelligence = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].intelligence;
                                     game.map.player.inventory[0][x].strength = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength;
+                                    game.map.player.inventory[0][x].cursed = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].cursed;
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id = 0;
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].defense = 0;
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].dexterity = 0;
@@ -1270,6 +1273,7 @@ void move_player(GAME &game){
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].hp = 0;
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].intelligence = 0;
                                     game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength = 0;
+                                    game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].cursed = false;
                                     if(game.map.player.inventory[0][x].id==3){
                                         game.map.player.attributes.hpMax+=game.map.player.inventory[0][x].hp;
                                         game.map.player.attributes.defense+=game.map.player.inventory[0][x].defense;
@@ -1301,6 +1305,7 @@ void move_player(GAME &game){
                                 attack += rand()%game.map.player.attributes.strength;
                                 if(rand()%25==0){ // 4%
                                     game.map.player.inventory[0][0].id==0;
+                                    game.map.player.inventory[0][1].cursed = false;
                                 }
                             }
                         }
@@ -1312,6 +1317,7 @@ void move_player(GAME &game){
                                         attack++;
                                         if(rand()%50==0){ // 2%
                                             game.map.player.inventory[0][0].id==0;
+                                            game.map.player.inventory[0][1].cursed = false;
                                         }
                                     }else{
                                         break;
@@ -1319,6 +1325,7 @@ void move_player(GAME &game){
                                 }
                                 if(rand()%50==0){ // 2%
                                     game.map.player.inventory[0][0].id==0;
+                                    game.map.player.inventory[0][1].cursed = false;
                                 }
                             }
                         }
@@ -1327,11 +1334,13 @@ void move_player(GAME &game){
                                 attack += rand()%game.map.player.attributes.intelligence+1;
                                 if(rand()%50==0){ // 2%
                                     game.map.player.inventory[0][0].id==0;
+                                    game.map.player.inventory[0][1].cursed = false;
                                 }
                                 if(rand()%2==0){
                                     if(rand()%2==0){
                                         if(rand()%50==0){ // 2%
                                             game.map.player.inventory[0][0].id==0;
+                                            game.map.player.inventory[0][1].cursed = false;
                                         }
                                         attack += rand()%game.map.player.attributes.intelligence+1;
                                     }else{
@@ -1557,7 +1566,19 @@ void create_map(GAME &game){
         int y = rand()%MAPSIZEY;
         int x = rand()%MAPSIZEX;
 
-        if(game.map.tiles[y][x]==FREEBLOCK && (y != game.map.player.pos.Y || x != game.map.player.pos.X)){
+        bool livre = (
+            game.map.tiles[y-1][x] == FREEBLOCK &&
+            game.map.tiles[y+1][x] == FREEBLOCK &&
+            game.map.tiles[y][x-1] == FREEBLOCK &&
+            game.map.tiles[y][x+1] == FREEBLOCK &&
+
+            game.map.tiles[y-1][x+1] == FREEBLOCK &&
+            game.map.tiles[y+1][x-1] == FREEBLOCK &&
+            game.map.tiles[y-1][x-1] == FREEBLOCK &&
+            game.map.tiles[y+1][x+1] == FREEBLOCK
+        );
+
+        if(game.map.tiles[y][x]==FREEBLOCK && (y != game.map.player.pos.Y || x != game.map.player.pos.X) && livre){
             game.map.tiles[y][x] = NPCBLOCK;
             break;
         }
@@ -1782,14 +1803,12 @@ void show_inventory(GAME &game){
         cout<<"┃";
         for(int x=0;x<3;x++){
             cout<<" ";
-            if(game.map.player.inventory[y][x].cursed){
-                cout<<"\e[38;5;9m";
-            }
             if(y==game.map.player.inventorySelection.Y && x==game.map.player.inventorySelection.X){
+                cout<<"\e[38;5;255m\e[48;5;237m";
+            }
+            if(y==0){
                 if(game.map.player.inventory[y][x].cursed){
-                    cout<<"\e[38;5;9m\e[48;5;237m";
-                }else{
-                    cout<<"\e[38;5;255m\e[48;5;237m";
+                    cout<<"\e[38;5;9m";
                 }
             }
             if(game.map.player.inventory[y][x].id==0){
