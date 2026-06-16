@@ -235,7 +235,7 @@ void codex_render(GAME &game){
         case 13: // Input (ENTER)
             if (game.menu.optionVertical == 4) { //COMO JOGAR
                 new_line("┏","━","┓",46);
-                cout << "┃ Controles:                                   ┃\n";
+                cout << "┃ Controles (funcionam no inventário também):  ┃\n";
                 cout << "┃                                              ┃\n";
                 cout << "┃                Cima                          ┃\n";
                 cout << "┃                 ^                            ┃\n";
@@ -245,7 +245,9 @@ void codex_render(GAME &game){
                 cout << "┃               Baixo                          ┃\n";
                 cout << "┃                                              ┃\n";
                 new_line("┣","━","┫",46);
-                cout << "┃ Iventário -> I                               ┃\n";
+                cout << "┃ Iventário > I                                ┃\n";
+                new_line("┣","━","┫",46);
+                cout << "┃ Enter > Interagir com coisas.                ┃\n";
                 new_line("┗","━","┛",46);
                 cout << "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ OBJETIVO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n";
                 cout << "┃                                                                                ┃\n";
@@ -263,15 +265,17 @@ void codex_render(GAME &game){
                 cout << "┃ - Se tiver sorte, sobreviverá à queda para o próximo andar (e perderá uma      ┃\n";
                 cout << "┃  quantidade considerável de vida). Porém, também existe a chance de morrer     ┃\n";
                 cout << "┃  instantaneamente.                                                             ┃\n";
-                cout << "┃ - Os andares possuem armadilhas (por cortesia dos Kobolds) e elas podem        ┃\n";
-                cout << "┃  causar danos tanto a você quanto aos monstros.                                ┃\n";
+                cout << "┃ - Os andares possuem armadilhas (por cortesia dos Kobolds), o dano de uma      ┃\n";
+                cout << "┃  é baseado no número do andar atual.                                           ┃\n";
                 cout << "┃ - À medida que você adentra as profundezas da Fundição, o calor infernal da    ┃\n";
                 cout << "┃  Forja ficará cada vez mais intenso. Cuidado para não cair no mar de ferro     ┃\n";
                 cout << "┃  derretido do último andar...                                                  ┃\n";
                 cout << "┃                                                                                ┃\n";
                 cout << "┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ MONSTROS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n";
                 cout << "┃                                                                                ┃\n";
-                cout << "┃ - Template.                                                                    ┃\n";
+                cout << "┃ - Certos monstros possuem afinidades com certos atributos, e tem a chance de   ┃\n";
+                cout << "┃   receberem um ponto de atributo com base na afinidade deles.                  ┃\n";
+                cout << "┃ - Os monstros andam aleatóriamente pelos andares.                              ┃\n";
                 cout << "┃                                                                                ┃\n";
                 cout << "┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ PONTUAÇÃO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n";
                 cout << "┃                                                                                ┃\n";
@@ -283,32 +287,27 @@ void codex_render(GAME &game){
                 cout << "┃ - O seu personagem possui 3 atributos e 3 status.                              ┃\n";
                 cout << "┃                                                                                ┃\n";
                 cout << "┃ - ATRIBUTOS:                                                                   ┃\n";
-                cout << "┃ - Força (Strength): Determina quanto dano você pode causar e também sua        ┃\n";
-                cout << "┃  quantidade de vida.                                                           ┃\n";
+                cout << "┃ - Força (Strength): Determina quanto dano você pode causar.                    ┃\n";
                 cout << "┃ - Destreza (Dexterity): Determina sua velocidade de caminhada.                 ┃\n";
                 cout << "┃ - Inteligência (Intelligence): Determina seu raio de visão no mapa.            ┃\n";
                 cout << "┃                                                                                ┃\n";
                 cout << "┃ - STATUS:                                                                      ┃\n";
                 cout << "┃ - HP (Pontos de Vida): Determina sua vida. Se chegar a 0, bem, você já         ┃\n";
-                cout << "┃  sabe como é.                                                                  ┃\n";
-                cout << "┃ - HPMAX (Pontos de Vida Máximos): Determina o quanto de vida você pode         ┃\n";
-                cout << "┃  ter. Quanto mais, mais pancadas pode levar sem ir para a vala.                ┃\n";
+                cout << "┃   sabe como é.                                                                 ┃\n";
                 cout << "┃ - Defense (Defesa): Determina quanto dano você pode bloquear.                  ┃\n";
                 cout << "┃                                                                                ┃\n";
-                cout << "┃ - Quando você inicia uma run, pode alocar 4 pontos em qualquer atributo. Ao    ┃\n";
-                cout << "┃  subir de nível, porém, só poderá distribuir novos pontos ao descer (ou        ┃\n";
-                cout << "┃  cair) para um novo andar.                                                     ┃\n";
+                cout << "┃ - Quando você inicia uma run, pode alocar 5 pontos em qualquer atributo. Ao    ┃\n";
+                cout << "┃  subir de nível, porém, só poderá distribuir novos pontos ao descer para um    ┃\n";
+                cout << "┃  novo andar.                                                                   ┃\n";
                 cout << "┃                                                                                ┃\n";
                 cout << "┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ITENS E ARMAS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n";
                 cout << "┃                                                                                ┃\n";
-                cout << "┃ - As armas aumentam alguns dos seus atributos. Elas podem ser encontradas      ┃\n";
-                cout << "┃  em baús espalhados pelos andares. Você pode equipar uma arma diferente        ┃\n";
-                cout << "┃  abrindo seu inventário e selecionando-a.                                      ┃\n";
-                cout << "┃ - Poções de vida são vitais para sua jornada, pois são o único meio de         ┃\n";
-                cout << "┃  recuperar HP. Uma poção restaura completamente sua vida, mas elas são         ┃\n";
-                cout << "┃  raras e valiosas. Por isso, faça um bom racionamento de suas poções.          ┃\n";
+                cout << "┃ - As armas possuem uma chance de realizar um efeito especial, e também possuem ┃\n";
+                cout << "┃   uma pequena chance de quebrarem. Para equipar um item ou arma, abra o        ┃\n";
+                cout << "┃   inventário, selecione a arma ou item, e aperte 'Enter' para equipa-lo, para  ┃\n";
+                cout << "┃   desequipar uma arma ou item, selecione-o e aperte 'Enter'.                   ┃\n";
                 cout << "┃                                                                                ┃\n";
-                new_line("┗","━","┛",46);
+                new_line("┗","━","┛",80);
                 getch();
                 cout << "\ec";
             }
@@ -360,62 +359,75 @@ void codex_render(GAME &game){
                     switch (game.menu.optionHorizontal) {
                         case 1:
                         new_line("┏","━","┓",80);
-                            cout << "┃  - Espada Longa (|):                                                           ┃\n";
+                            cout << "┃  - Espada Longa (󰓥):                                                           ┃\n";
                             cout << "┃ Um lâmina forjada em aço pelos melhores orcs que a Horda pode oferecer,        ┃\n";
                             cout << "┃ pesada e implacável nas mãos de um guerreiro determinado.                      ┃\n";
-                            cout << "┃ (Arma equipável. Aumenta a Força do jogador em 'X').                           ┃\n";
+                            cout << "┃ Tem 75% de somar um valor aleatório baseado na sua força +1, 4% de quebrar.    ┃\n";
                             new_line("┣","━","┫",80);
-                            cout << "┃ - Adagas (=):                                                                  ┃\n";
+                            cout << "┃ - Adagas (󰧼):                                                                  ┃\n";
                             cout << "┃ Um par de lâminas que, na verdade, são presas de um troll, amoladas ao ponto   ┃\n";
                             cout << "┃ de cortarem facilmente até o menor toque. É uma tradição dos trolls cortarem   ┃\n";
                             cout << "┃ as próprias presas e criarem suas próprias adagas, como uma forma de provar    ┃\n";
                             cout << "┃ ser um guerreiro capaz e digno.                                                ┃\n";
                             cout << "┃ Lâminas gêmeas, leves e equilibradas, feitas a partir de presas de Troll,      ┃\n";
                             cout << "┃ perfeitas para cortes rápidos antes que o inimigo possa reagir.                ┃\n";
-                            cout << "┃ (Arma equipável. Aumenta a Destreza do jogador em 'X').                        ┃\n";
+                            cout << "┃ Tem 50% de somar um valor aleatório baseado na sua destreza e entra num loop   ┃\n";
+                            cout << "┃ de 50% +1 no dano e tem 2% de chance de quebrar ao fazer os dois.              ┃\n";
                             new_line("┣","━","┫",80);
                             cout << "┃ - Cajado Elétrico (󱡄):                                                         ┃\n";
                             cout << "┃ Esculpido em madeira antiga, possui um Núcleo Laser de um Autônomo acoplado    ┃\n";
                             cout << "┃ em um capacitador, capaz de disparar feixes de energia pura concentrada. Um    ┃\n";
                             cout << "┃ protótipo que serve para demonstrar a engenharia e ambição dos Kobolds para    ┃\n";
                             cout << "┃ superar a tecnologia dos humanos e anões.                                      ┃\n";
-                            cout << "┃ (Arma de ataque à distância. Aumenta a Inteligência do jogador em 'X').        ┃\n";
+                            cout << "┃ Tem 50% de somar um valor aleatório baseado na sua inteligência e fazer isso   ┃\n";
+                            cout << "┃ novamente, mas, diminuindo ou somando, tem 2% de quebrar ao fazer os dois.     ┃\n";
                             new_line("┗","━","┛",80);
                         break;
 
                         case 2:
                             new_line("┏","━","┓",80);
-                            cout << "┃ - Poção Regenerativa ( ):                                                      ┃\n";
+                            cout << "┃ - Poção Regenerativa (󱄰):                                                      ┃\n";
                             cout << "┃ Uma bebida medicinal criada pelos Trogloditas, capaz de curar até os piores    ┃\n";
                             cout << "┃ ferimentos. Apesar dos Trogloditas não serem lá muito inteligentes, eles       ┃\n";
                             cout << "┃ possuem uma sabedoria nata para sobreviver até nos ambientes mais hostis, e    ┃\n";
                             cout << "┃ essa poção é um exemplo; criada através de alquimia, misturando cogumelos,     ┃\n";
                             cout << "┃ partes de Slimes e outros ingredientes, para criar uma bebida que deixa        ┃\n";
                             cout << "┃ diversos médicos no chinelo.                                                   ┃\n";
-                            cout << "┃ (Recupera 'X' de vida do jogador).                                             ┃\n";
+                            cout << "┃ Recupera uma quantidade de vida de acordo com número do anda onde foi obtida.  ┃\n";
                             new_line("┣","━","┫",80);
-                            cout << "┃ -  Anel Encantado ( ):                                                         ┃\n";
+                            cout << "┃ - Anel Encantado ():                                                          ┃\n";
                             cout << "┃ Uma joia antiga gravada com runas atemporais, que parecem mudar de forma a     ┃\n";
                             cout << "┃ cada olhar, um dos poucos itens mágicos que ainda sobrevivem nos dias de hoje. ┃\n";
-                            cout << "┃ (Concede um bônus em um atributo aleatório ao jogador).                        ┃\n";
+                            cout << "┃ Equipar o anel lhe concede +1 atributo ou status aleatório.                    ┃\n";
                             new_line("┣","━","┫",80);
-                            cout << "┃ -  Poção de Teleporte ( ):                                                     ┃\n";
+                            cout << "┃ - Poção de Teleporte (󱄮):                                                      ┃\n";
                             cout << "┃ Outro exemplo das incríveis habilidades de alquimia dos Trogloditas, um        ┃\n";
                             cout << "┃ líquido violeta e instável produzido utilizando secreções de Slime e ferro     ┃\n";
                             cout << "┃ derretido. Não se sabe exatamente os detalhes do procedimento e funcionamento  ┃\n";
                             cout << "┃ da poção; é especulado que eles utilizem algum ingrediente mágico secreto.     ┃\n";
                             cout << "┃ (Ao ser consumida, teleporta o jogador para um local aleatório do mapa).       ┃\n";
                             new_line("┣","━","┫",80);
-                            cout << "┃ -  Escudo de Batalha ( ):                                                      ┃\n";
+                            cout << "┃ - Escudo de Batalha (󰒘):                                                       ┃\n";
                             cout << "┃ De tamanho médio, feito com metal resistente e escamas de guerreiros de elite  ┃\n";
                             cout << "┃ Kobolds, é incrivelmente resistente a ataques perfurantes e contundentes, e    ┃\n";
                             cout << "┃ com certeza protegerá o usuário de qualquer ataque.                            ┃\n";
-                            cout << "┃ (Equipável. Aumenta a Armadura do jogador em 'X').                             ┃\n";
-                            cout << "┃ -  Totem da Ressurreição ( ):                                                  ┃\n";
+                            cout << "┃ 50% de somar um valor aleatório da sua defesa +1 e 5% quebrar ao fazer isso.   ┃\n";
+                            new_line("┣","━","┫",80);
+                            cout << "┃ - Escudo de Defletor (󰂪):                                                      ┃\n";
+                            cout << "┃ Um escudo mecânico que usa uma tecnlogia experimental de repulsão, que, em     ┃\n";
+                            cout << "┃ teoria, é capaz de defletir ataques, e faze-los voltar para o agressor.        ┃\n";
+                            cout << "┃ 25% de dar dano no inimigo baseado na sua defesa, 25% de quebrar ao fazer isso.┃\n";
+                            new_line("┣","━","┫",80);
+                            cout << "┃ - Pergaminho de Conhecimento ():                                              ┃\n";
+                            cout << "┃ Apesar da Horda de Aço não utilizar tanta magia, o Pergaminho é utilizado para ┃\n";
+                            cout << "┃ treinar rapidamente soldados em pouco tempo.                                   ┃\n";
+                            cout << "┃ Usa-lo concede +1 ou -1 em algum atributo ou status aleatório.                 ┃\n";
+                            new_line("┣","━","┫",80);
+                            cout << "┃ - Totem da Ressurreição ():                                                   ┃\n";
                             cout << "┃ Um totem de um dragão mecânico esculpido em obsidiana com detalhes em prata,   ┃\n";
                             cout << "┃ um dos poucos itens mágicos produzidos pela Horda de Aço, e mais raro ainda    ┃\n";
                             cout << "┃ por seus efeitos: Salvar um ser vivo da morte.                                 ┃\n";
-                            cout << "┃ (Impede que você morra, não precisa estar equipado para surtir efeito).        ┃\n";
+                            cout << "┃ Impede que você morra, precisa estar equipado para surtir efeito.              ┃\n";
                             new_line("┗","━","┛",80);
                         break;
 
@@ -553,7 +565,7 @@ void codex_render(GAME &game){
                     switch (game.menu.optionHorizontal) {
                         case 1:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - SLIME ( ):                                                               ┃\n";
+                            cout << "┃ - SLIME (󰛹):                                                               ┃\n";
                             cout << "┃ 'Slime' é um termo informal e popular utilizado para descrever 'criaturas' ┃\n";
                             cout << "┃ que, na verdade, consistem em um aglomerado de micro-organismos            ┃\n";
                             cout << "┃ unicelulares reunidos em uma massa amorfa semelhante a uma bolha, não se   ┃\n";
@@ -572,7 +584,7 @@ void codex_render(GAME &game){
 
                         case 2:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - GOBLIM ( ):                                                              ┃\n";
+                            cout << "┃ - GOBLIM ():                                                              ┃\n";
                             cout << "┃ Pequenos humanoides de pele esverdeada, os goblins são criaturas           ┃\n";
                             cout << "┃ relativamente fracas e conhecidas por sua natureza cautelosa, muitas vezes ┃\n";
                             cout << "┃ confundida com covardia. Ainda assim, não hesitam em lutar quando          ┃\n";
@@ -596,7 +608,7 @@ void codex_render(GAME &game){
 
                         case 3:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - KOBOLDS ( ):                                                             ┃\n";
+                            cout << "┃ - KOBOLDS ():                                                             ┃\n";
                             cout << "┃ Pequenos humanoides escamosos, geralmente de coloração alaranjada com tons ┃\n";
                             cout << "┃ vermelhos e aparência dracônica, os kobolds afirmam ser descendentes dos   ┃\n";
                             cout << "┃ antigos dragões, hoje considerados extintos, em razão dessa crença,        ┃\n";
@@ -617,7 +629,7 @@ void codex_render(GAME &game){
 
                         case 4:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - ORCS ( ):                                                                ┃\n";
+                            cout << "┃ - ORCS (󰶏):                                                                ┃\n";
                             cout << "┃ Grandes humanoides de pele verde-oliva e durões, os orcs são combatentes   ┃\n";
                             cout << "┃ temíveis por sua força física, mas o que realmente os distingue de outras  ┃\n";
                             cout << "┃ raças guerreiras é o respeito que demonstram pela honra e coragem em       ┃\n";
@@ -635,7 +647,7 @@ void codex_render(GAME &game){
 
                         case 5:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - CICLOPES ( ):                                                            ┃\n";
+                            cout << "┃ - CICLOPES ():                                                            ┃\n";
                             cout << "┃ Gigantes humanoides de pele verde-escura, corpo massivo, os ciclopes       ┃\n";
                             cout << "┃ possuem apenas um único olho no centro do rosto. Geralmente gordos e de    ┃\n";
                             cout << "┃ intelecto limitado, são criaturas temidas por sua força descomunal e por   ┃\n";
@@ -653,7 +665,7 @@ void codex_render(GAME &game){
 
                         case 6:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - TROLLS ( ):                                                              ┃\n";
+                            cout << "┃ - TROLLS ():                                                              ┃\n";
                             cout << "┃ Humanoides médios de pele verde-azulada escura, os trolls possuem corpos   ┃\n";
                             cout << "┃ esguios, o que lhes confere uma agilidade que seus outros 'primos' mais    ┃\n";
                             cout << "┃ brutos não possuem. Em termos intelectuais, trolls e orcs apresentam       ┃\n";
@@ -668,7 +680,7 @@ void codex_render(GAME &game){
 
                         case 7:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - MÍMICOS ( ):                                                             ┃\n";
+                            cout << "┃ - MÍMICOS (󰜦):                                                             ┃\n";
                             cout << "┃ Criaturas de natureza estranha e aparentemente amorfa, os mímicos possuem  ┃\n";
                             cout << "┃ a capacidade de assumir a aparência de um baú comum. Sua origem permanece  ┃\n";
                             cout << "┃ desconhecida, embora existam teorias que afirmem que foram criados pela    ┃\n";
@@ -687,7 +699,7 @@ void codex_render(GAME &game){
 
                         case 8:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - TROGLODITA ( ):                                                          ┃\n";
+                            cout << "┃ - TROGLODITA ():                                                          ┃\n";
                             cout << "┃ Grandes criaturas reptilianas cobertas por escamas brancas e               ┃\n";
                             cout << "┃ avermelhadas, embora não sejam conhecidas por sua inteligência,            ┃\n";
                             cout << "┃ compensam essa limitação com força física, resistência e selvageria. É     ┃\n";
@@ -707,7 +719,7 @@ void codex_render(GAME &game){
 
                         case 9:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - AUTÔNOMO ( ):                                                            ┃\n";
+                            cout << "┃ - AUTÔNOMO (󰢻):                                                            ┃\n";
                             cout << "┃ Máquinas semiautônomas originalmente desenvolvidas por humanos e anões,    ┃\n";
                             cout << "┃ após a expulsão desses povos das Terras do Fogo e Ferro, a Horda de Aço    ┃\n";
                             cout << "┃ conseguiu recuperar exemplares, estudar sua construção e eventualmente     ┃\n";
@@ -724,7 +736,7 @@ void codex_render(GAME &game){
 
                         case 10:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - ESCÓRIA ( ):                                                             ┃\n";
+                            cout << "┃ - ESCÓRIA ():                                                             ┃\n";
                             cout << "┃ Os Escórias são humanos capturados pela Horda de Aço e submetidos a        ┃\n";
                             cout << "┃ experimentos para fundir carne e metal em um único organismo. O objetivo   ┃\n";
                             cout << "┃ original dessas pesquisas era criar trabalhadores e soldados capazes de    ┃\n";
@@ -749,7 +761,7 @@ void codex_render(GAME &game){
 
                         case 11:
                             new_line("┏","━","┓",76);
-                            cout << "┃ - CORAÇÃO DA FORJA - FLAGELO DO DRAGÃO ( ):                                ┃\n";
+                            cout << "┃ - CORAÇÃO DA FORJA - FLAGELO DO DRAGÃO ():                                ┃\n";
                             cout << "┃ O Flagelo do Dragão é um gigantesco mecha projetado pelo próprio Victor e  ┃\n";
                             cout << "┃ considerado a maior realização da engenharia da Horda de Aço. Construído   ┃\n";
                             cout << "┃ nas profundezas das grandes fundições e armado com diversos protótipos de  ┃\n";
@@ -798,9 +810,8 @@ void codex_render(GAME &game){
 //------------------------------------------------------------------//
             if (game.menu.optionVertical == 7) { // HISTÓRIA
                 new_line("┏","━","┓",80);
-                cout << "┃                                                                                ┃\n";
                 cout << "┃ CONTEXTO:                                                                      ┃\n";
-                cout << "┃ - No mundo de [TEMPLATE], existe um arquipélago composto por três continentes: ┃\n";
+                cout << "┃ - No mundo de Farlands, existe um arquipélago composto por três continentes:   ┃\n";
                 cout << "┃   os Reinos do Oeste, o reino dos humanos; os Reinos do Norte, o reino dos     ┃\n";
                 cout << "┃   anões; e as Terras Selvagens, um continente localizado a leste, onde vivem   ┃\n";
                 cout << "┃   diversas raças tradicionalmente hostis tanto aos humanos quanto aos anões,   ┃\n";
@@ -1560,7 +1571,7 @@ void create_map(GAME &game){
         }
     }
 
-    // spawn do sacer em lugar aleatório
+    // spawn do sacerdote em lugar aleatório
 
     while(true){
         int y = rand()%MAPSIZEY;
@@ -1966,10 +1977,10 @@ void render_map(GAME &game){
                                 cout<<"\e[38;5;202m";
                             }
                             if(game.map.monsters[monster].id==3){ // ORC
-                                cout<<"\e[38;5;34mR";
+                                cout<<"\e[38;5;34m󰶏";
                             }
-                            if(game.map.monsters[monster].id==4){ // OGRO
-                                cout<<"\e[38;5;106mH";
+                            if(game.map.monsters[monster].id==4){ // CICLOPE
+                                cout<<"\e[38;5;106m";
                             }
                             if(game.map.monsters[monster].id==5){ // TROLL
                                 cout<<"\e[38;5;53m";
@@ -1981,13 +1992,13 @@ void render_map(GAME &game){
                                 cout<<"\e[38;5;227m";
                             }
                             if(game.map.monsters[monster].id==8){ // AUTONOMO
-                                cout<<"\e[38;5;214m󱚝";
+                                cout<<"\e[38;5;214m󰢻";
                             }
                             if(game.map.monsters[monster].id==9){ // ESCORIA
-                                cout<<"\e[38;5;52mE";
+                                cout<<"\e[38;5;52m";
                             }
                             if(game.map.monsters[monster].id==10){ // BOSS
-                                cout<<"\e[38;5;3m";
+                                cout<<"\e[38;5;3m";
                             }
                             cout<<"\e[0m";
                         }
