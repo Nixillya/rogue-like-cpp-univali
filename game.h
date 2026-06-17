@@ -306,6 +306,9 @@ void codex_render(GAME &game){
                 cout << "┃   uma pequena chance de quebrarem. Para equipar um item ou arma, abra o        ┃\n";
                 cout << "┃   inventário, selecione a arma ou item, e aperte 'Enter' para equipa-lo, para  ┃\n";
                 cout << "┃   desequipar uma arma ou item, selecione-o e aperte 'Enter'.                   ┃\n";
+                cout << "┃ - Há uma chance de obter um item amaldiçoado. Itens amaldiçoados não podem ser ┃\n";
+                cout << "┃   desequipados, a não ser que quebrem (todas as armas tem uma pequena chance   ┃\n";
+                cout << "┃   de quebrarem).                                                               ┃\n";
                 cout << "┃                                                                                ┃\n";
                 new_line("┗","━","┛",80);
                 getch();
