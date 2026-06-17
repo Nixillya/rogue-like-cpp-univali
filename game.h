@@ -1508,19 +1508,32 @@ void create_map(GAME &game){
     while(true){
         int tamY = rand()%5+2;
         int tamX = rand()%5+2;
+        if(game.map.floor==11){
+            tamY = 15;
+            tamX = 15;
+        }
         for(int y=-tamY;y<tamY;y++){
             for(int x=-tamX;x<tamX;x++){
                 if(Y+y>=0 && Y+y<MAPSIZEY && X+x>=0 && X+x<MAPSIZEX){
                     if(!(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1)){
                         game.map.tiles[Y+y][X+x] = FREEBLOCK;
+                        if(rand()%10==0){
+                            game.map.tiles[Y+y][X+x] = EMPTY;
+                        }
                     }
-                    if(game.map.tiles[Y+y][X+x]==EMPTY){
-                        if(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1){
-                            game.map.tiles[Y+y][X+x] = SOLIDBLOCK;
+                    if(game.map.floor!=11){
+                        if(game.map.tiles[Y+y][X+x]==EMPTY){
+                            if(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1){
+                                game.map.tiles[Y+y][X+x] = SOLIDBLOCK;
+                            }
                         }
                     }
                 }
             }
+        }
+        game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] = FREEBLOCK;
+        if(game.map.floor==11){
+            break;
         }
         if(i>=game.map.floor*2){
             if(rand()%2==0){
@@ -1562,36 +1575,38 @@ void create_map(GAME &game){
         }
         i++;
     }
-    while(true){
-        int y = rand()%MAPSIZEY;
-        int x = rand()%MAPSIZEX;
-        if(game.map.tiles[y][x]==FREEBLOCK){
-            game.map.tiles[y][x] = KEYBLOCK;
-            break;
+    if(game.map.floor!=11){
+        while(true){
+            int y = rand()%MAPSIZEY;
+            int x = rand()%MAPSIZEX;
+            if(game.map.tiles[y][x]==FREEBLOCK){
+                game.map.tiles[y][x] = KEYBLOCK;
+                break;
+            }
         }
-    }
 
-    // spawn do sacerdote em lugar aleatório
+        // spawn do sacerdote em lugar aleatório
 
-    while(true){
-        int y = rand()%MAPSIZEY;
-        int x = rand()%MAPSIZEX;
+        while(true){
+            int y = rand()%MAPSIZEY;
+            int x = rand()%MAPSIZEX;
 
-        bool livre = (
-            game.map.tiles[y-1][x] == FREEBLOCK &&
-            game.map.tiles[y+1][x] == FREEBLOCK &&
-            game.map.tiles[y][x-1] == FREEBLOCK &&
-            game.map.tiles[y][x+1] == FREEBLOCK &&
+            bool livre = (
+                game.map.tiles[y-1][x] == FREEBLOCK &&
+                game.map.tiles[y+1][x] == FREEBLOCK &&
+                game.map.tiles[y][x-1] == FREEBLOCK &&
+                game.map.tiles[y][x+1] == FREEBLOCK &&
 
-            game.map.tiles[y-1][x+1] == FREEBLOCK &&
-            game.map.tiles[y+1][x-1] == FREEBLOCK &&
-            game.map.tiles[y-1][x-1] == FREEBLOCK &&
-            game.map.tiles[y+1][x+1] == FREEBLOCK
-        );
+                game.map.tiles[y-1][x+1] == FREEBLOCK &&
+                game.map.tiles[y+1][x-1] == FREEBLOCK &&
+                game.map.tiles[y-1][x-1] == FREEBLOCK &&
+                game.map.tiles[y+1][x+1] == FREEBLOCK
+            );
 
-        if(game.map.tiles[y][x]==FREEBLOCK && (y != game.map.player.pos.Y || x != game.map.player.pos.X) && livre){
-            game.map.tiles[y][x] = NPCBLOCK;
-            break;
+            if(game.map.tiles[y][x]==FREEBLOCK && (y != game.map.player.pos.Y || x != game.map.player.pos.X) && livre){
+                game.map.tiles[y][x] = NPCBLOCK;
+                break;
+            }
         }
     }
 
@@ -1599,13 +1614,29 @@ void create_map(GAME &game){
         MONSTER resetMonsters[50];
         game.map.monsters[monster] = resetMonsters[monster];
     }
+    bool bossSpawned = false;
     for(int monster=0;monster<50;monster++){
-        if(rand()%(11-game.map.floor)==0 || monster==0){
+        int floor = game.map.floor;
+        if(floor>10){
+            floor = 10;
+        }
+        if(rand()%(11-floor)==0 || monster==0){
             int posY;
             int posX;
             bool success = false;
             int attPoints = (game.map.player.nivel*2)+(game.map.floor);
             game.map.monsters[monster].id = rand()%game.map.floor;
+            if(game.map.monsters[monster].id==10 && bossSpawned){
+                while(game.map.monsters[monster].id==10){
+                    game.map.monsters[monster].id = rand()%game.map.floor;
+                }
+            }
+            if(game.map.floor==11 && !bossSpawned){
+                game.map.monsters[monster].id = 10;
+            }
+            if(game.map.monsters[monster].id==10){
+                bossSpawned = true;
+            }
             while(attPoints>0){
                 int attribute = rand()%5;
                 if(rand()%4==0){
@@ -1728,34 +1759,36 @@ void create_map(GAME &game){
             continue;
         }
     }
-    for(int item=0;item<10;item++){
-        game.map.items[item].Y = -1;
-        game.map.items[item].X = -1;
-    }
-    for(int item=0;item<10;item++){
-        if(rand()%10==0 || item==0){
-            while(true){
-                int posY = rand()%MAPSIZEY;
-                int posX = rand()%MAPSIZEX;
-                game.map.items[item].Y = posY;
-                game.map.items[item].X = posX;
-                bool success = true;
-                for(int otherItem=0;otherItem<10;otherItem++){
-                    if(otherItem==item){
-                        continue;
+    if(game.map.floor!=11){
+        for(int item=0;item<10;item++){
+            game.map.items[item].Y = -1;
+            game.map.items[item].X = -1;
+        }
+        for(int item=0;item<10;item++){
+            if(rand()%10==0 || item==0){
+                while(true){
+                    int posY = rand()%MAPSIZEY;
+                    int posX = rand()%MAPSIZEX;
+                    game.map.items[item].Y = posY;
+                    game.map.items[item].X = posX;
+                    bool success = true;
+                    for(int otherItem=0;otherItem<10;otherItem++){
+                        if(otherItem==item){
+                            continue;
+                        }
+                        if(game.map.items[item].Y==game.map.items[otherItem].Y && game.map.items[item].X==game.map.items[otherItem].X){
+                            success = false;
+                            break;
+                        }
                     }
-                    if(game.map.items[item].Y==game.map.items[otherItem].Y && game.map.items[item].X==game.map.items[otherItem].X){
-                        success = false;
-                        break;
+                    if(success){
+                        if(game.map.tiles[posY][posX]==FREEBLOCK){
+                            break;
+                        }
+                    }else{
+                        game.map.items[item].Y = -1;
+                        game.map.items[item].X = -1;
                     }
-                }
-                if(success){
-                    if(game.map.tiles[posY][posX]==FREEBLOCK){
-                        break;
-                    }
-                }else{
-                    game.map.items[item].Y = -1;
-                    game.map.items[item].X = -1;
                 }
             }
         }
