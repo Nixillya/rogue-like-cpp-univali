@@ -14,12 +14,11 @@ void play(GAME &game){
     cout<<"\ec";
     srand(time(0)); 
     create_map(game);
+    game.map.player.attributes.hp = 999;
+    game.map.player.attributes.hpMax = 999;
+    game.map.player.attributes.strength = 999;
     while(true){
-        if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
-            show_inventory(game);
-        }else{
-            render_map(game);
-        }
+        render_map(game);
         move_player(game);
         if(!game.play || game.next){
             return;
@@ -33,6 +32,10 @@ int main(){
     static GAME game;
     while(game.exit==false){
         if(game.play==false){
+            if(game.next){
+                cout<<"\ec";
+                game.next = false;
+            }
             MAP map;
             game.map = map;
             menu(game);

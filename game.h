@@ -76,7 +76,7 @@ struct MAP{
     int tiles[MAPSIZEY][MAPSIZEX];
     int memory[MAPSIZEY][MAPSIZEX];
     POS items[10];
-    int floor = 1;
+    int floor = 11;
     PLAYER player;
     MONSTER monsters[50];
 };
@@ -900,26 +900,37 @@ void send_message(GAME &game,string message,int time){
 
 void move_monsters(GAME &game){
     int blocks[4] = {FREEBLOCK,STAIRBLOCK,KEYBLOCK,TRAPBLOCK};
+    bool win = true;
     for(int monster=0;monster<50;monster++){
         if(game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X]==KEYBLOCK){
             game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X] = FREEBLOCK;
             game.map.monsters[monster].key = true;
         }
         if(game.map.monsters[monster].attributes.hp<1){
-            if(game.map.monsters[monster].alive==true){
-                if(game.map.monsters[monster].id==0){
-                    game.map.monsters[monster].id = 1;
-                }
+            if(game.map.monsters[monster].alive){
+                game.map.monsters[monster].id++;
                 game.map.player.exp += rand()%game.map.monsters[monster].id+1;
                 game.map.player.gold += rand()%game.map.monsters[monster].id+1; 
                 game.map.monsters[monster].alive = false;
                 if(game.map.monsters[monster].key){
-                    game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X] = KEYBLOCK;
                     game.map.monsters[monster].key = false;
+                    if(game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X]==FREEBLOCK){
+                        game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X] = KEYBLOCK;
+                    }else{
+                        while(true){
+                            int y = rand()%MAPSIZEY;
+                            int x = rand()%MAPSIZEX;
+                            if(game.map.tiles[y][x]==FREEBLOCK){
+                                game.map.tiles[y][x] = KEYBLOCK;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
-        if(game.map.monsters[monster].alive==true){
+        if(game.map.monsters[monster].alive){
+            win = false;
             if((clock()-game.map.monsters[monster].clockSpeed)>1000/game.map.monsters[monster].attributes.dexterity){
                 game.map.monsters[monster].clockSpeed = clock();
                 POS targetPos = {0,0};
@@ -953,10 +964,10 @@ void move_monsters(GAME &game){
                 if(game.map.monsters[monster].pos.Y+targetPos.Y==game.map.player.pos.Y && game.map.monsters[monster].pos.X+targetPos.X==game.map.player.pos.X){
                     success = false;
                     int attack = rand()%game.map.monsters[monster].attributes.strength+1;
-                    int defended = rand()%game.map.player.attributes.defense;
+                    int defended = (rand()%game.map.player.attributes.defense+1);
                     if(game.map.player.inventory[0][1].id==2){
                         if(rand()%4==0){ // 25%
-                            defended += rand()%game.map.player.attributes.defense+1;
+                            defended += (rand()%game.map.player.attributes.defense+1);
                             if(rand()%20==0){ // 5% de quebrar
                                 game.map.player.inventory[0][1].id = 0;
                                 game.map.player.inventory[0][1].cursed = false;
@@ -1003,6 +1014,29 @@ void move_monsters(GAME &game){
             game.map.monsters[monster].pos.X=-1;
         }
     }
+    if(win){
+        cout<<"\e[23;1H";
+        cout<<"VITORIA!";
+        int timeClock = clock();
+        while(clock()-timeClock<2000){
+            if(kbhit()){
+                getch();
+            }
+        }
+        getch();
+        game.play = false;
+        game.next = true;
+        return;
+    }
+    if(game.map.floor==11){
+        if(game.map.monsters[0].attributes.hp<1){
+            for(int monster=0;monster<50;monster++){
+                game.map.monsters[monster].attributes.hp = 0;
+                game.map.monsters[monster].pos.Y = -1;
+                game.map.monsters[monster].pos.X = -1;
+            }
+        }
+    }
 }
 
 void move_player(GAME &game){
@@ -1044,7 +1078,6 @@ void move_player(GAME &game){
     if(kbhit()){
         game.map.player.keyInput = getch();
         if((clock()-game.map.player.clockSpeed)>1000/game.map.player.attributes.dexterity){
-            
             if(game.map.player.exp>=game.map.player.nextExp){
                 game.map.player.exp = 0;
                 game.map.player.attPoints++;
@@ -1141,8 +1174,8 @@ void move_player(GAME &game){
                                 if(game.map.items[item].Y==game.map.player.pos.Y && game.map.items[item].X==game.map.player.pos.X){
                                     game.map.items[item].Y = -1;
                                     game.map.items[item].Y = -1;
-                                    for(int y=1;y<3;y++){
-                                        for(int x=0;x<2;x++){
+                                    for(int y=1;y<4;y++){
+                                        for(int x=0;x<3;x++){
                                             if(game.map.player.inventory[y][x].id==0){
                                                 game.map.player.inventory[y][x].id = rand()%10+1;
                                                 game.map.player.inventory[y][x].heal = 0;
@@ -1379,8 +1412,8 @@ void move_player(GAME &game){
                         int attack = rand()%game.map.player.attributes.strength+1;
                         if(game.map.player.inventory[0][0].id==1){
                             if(rand()%4!=0){ // 75%
-                                attack += rand()%game.map.player.attributes.strength;
-                                if(rand()%25==0){ // 4%
+                                attack += rand()%(game.map.player.attributes.strength+1);
+                                if(rand()%20==0){ // 5%
                                     game.map.player.inventory[0][0].id==0;
                                     game.map.player.inventory[0][1].cursed = false;
                                 }
@@ -1388,20 +1421,16 @@ void move_player(GAME &game){
                         }
                         if(game.map.player.inventory[0][0].id==4){
                             if(rand()%2==0){ // 50%
-                                attack += rand()%game.map.player.attributes.dexterity;
-                                attack -= rand()%game.map.player.attributes.dexterity;
+                                attack += rand()%(game.map.player.attributes.dexterity+1);
+                                attack -= rand()%(game.map.player.attributes.dexterity+1);
                                 while(true){
                                     if(rand()%2==0){ // 50%
                                         attack++;
-                                        if(rand()%50==0){ // 2%
-                                            game.map.player.inventory[0][0].id==0;
-                                            game.map.player.inventory[0][1].cursed = false;
-                                        }
                                     }else{
                                         break;
                                     }
                                 }
-                                if(rand()%50==0){ // 2%
+                                if(rand()%20==0){ // 5%
                                     game.map.player.inventory[0][0].id==0;
                                     game.map.player.inventory[0][1].cursed = false;
                                 }
@@ -1409,25 +1438,21 @@ void move_player(GAME &game){
                         }
                         if(game.map.player.inventory[0][0].id==5){
                             if(rand()%2==0){ // 50%
-                                attack += rand()%game.map.player.attributes.intelligence+1;
-                                if(rand()%50==0){ // 2%
-                                    game.map.player.inventory[0][0].id==0;
-                                    game.map.player.inventory[0][1].cursed = false;
-                                }
+                                attack += rand()%(game.map.player.attributes.intelligence+1);
                                 if(rand()%2==0){
                                     if(rand()%2==0){
-                                        if(rand()%50==0){ // 2%
-                                            game.map.player.inventory[0][0].id==0;
-                                            game.map.player.inventory[0][1].cursed = false;
-                                        }
-                                        attack += rand()%game.map.player.attributes.intelligence+1;
+                                        attack += rand()%(game.map.player.attributes.intelligence+1);
                                     }else{
                                         attack -= rand()%game.map.player.attributes.intelligence;
                                     }
                                 }
+                                if(rand()%20==0){ // 5%
+                                    game.map.player.inventory[0][0].id==0;
+                                    game.map.player.inventory[0][1].cursed = false;
+                                }
                             }
                         }
-                        int defended = rand()%game.map.monsters[monster].attributes.defense;
+                        int defended = rand()%(game.map.monsters[monster].attributes.defense+1);
                         if(defended==0){
                             if(rand()%(100/game.map.monsters[monster].attributes.intelligence)==0){
                                 defended = rand()%game.map.player.attributes.defense+1;
@@ -1683,7 +1708,7 @@ void create_map(GAME &game){
             int posY;
             int posX;
             bool success = false;
-            int attPoints = (game.map.player.nivel*2)+(game.map.floor);
+            int attPoints = (game.map.player.nivel+game.map.floor)*2;
             game.map.monsters[monster].id = rand()%game.map.floor;
             if(game.map.monsters[monster].id>=10){
                 game.map.monsters[monster].id = rand()%10;
@@ -1808,12 +1833,15 @@ void create_map(GAME &game){
             continue;
         }
     }
+    for(int item=0;item<10;item++){
+        game.map.items[item].Y = -1;
+        game.map.items[item].X = -1;
+    }
     if(game.map.floor!=11){
         for(int item=0;item<10;item++){
-            game.map.items[item].Y = -1;
-            game.map.items[item].X = -1;
-        }
-        for(int item=0;item<10;item++){
+            if(item>game.map.floor){
+                break;
+            }
             if(rand()%10==0 || item==0){
                 while(true){
                     int posY = rand()%MAPSIZEY;
@@ -1995,6 +2023,10 @@ int simulate_vision(GAME &game,int y,int x,int i=0){
 }
 
 void render_map(GAME &game){
+    if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
+        show_inventory(game);
+        return;
+    }
     cout << "\e[?25l\e[H";
     cout << "\e[1;1H";
     int vision = 10;
