@@ -47,6 +47,7 @@ struct PLAYER{
     int attPoints = 5;
     int nivel = 1;
     int points = 0;
+    int gold = 0;
     int exp = 0;
     int nextExp = 2;
     int keyInput = 0;
@@ -911,6 +912,7 @@ void move_monsters(GAME &game){
                     game.map.monsters[monster].id = 1;
                 }
                 game.map.player.exp += rand()%game.map.monsters[monster].id+1;
+                game.map.player.gold += rand()%game.map.monsters[monster].id+1; 
                 game.map.monsters[monster].alive = false;
                 if(game.map.monsters[monster].key){
                     game.map.tiles[game.map.monsters[monster].pos.Y][game.map.monsters[monster].pos.X] = KEYBLOCK;
@@ -2107,8 +2109,10 @@ void render_map(GAME &game){
     cout<<"\e[7;"<<((vision+1)*2)+1<<"H";
     cout<<"ANDAR: "<<game.map.floor;
     cout<<"\e[8;"<<((vision+1)*2)+1<<"H";
-    cout<<"NIVEL: "<<game.map.player.nivel;
+    cout<<"MOEDAS DE OURO: "<<game.map.player.gold;
     cout<<"\e[9;"<<((vision+1)*2)+1<<"H";
+    cout<<"NIVEL: "<<game.map.player.nivel;
+    cout<<"\e[10;"<<((vision+1)*2)+1<<"H";
     if(game.map.player.exp>=game.map.player.nextExp){
         cout<<"\e[38;5;3m";
     }
