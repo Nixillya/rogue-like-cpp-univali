@@ -1191,6 +1191,7 @@ void move_player(GAME &game){
                         }
                         if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==STAIRBLOCK){
                             if(game.map.player.key){
+                                game.map.player.gold += 50;
                                 game.next = true;
                                 game.map.floor++;
                                 send_message(game,"DESCENDO...",2000);
