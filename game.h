@@ -1646,7 +1646,11 @@ void move_player(GAME &game){
                                 }
                             }
                             if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==6){
-                                game.map.player.attributes.hp += game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal;
+                                if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].cursed){
+                                    game.map.player.attributes.hp -= game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal;
+                                }else{
+                                    game.map.player.attributes.hp += game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal;
+                                }
                                 clear_slot(game,game.map.player.inventorySelection.Y,game.map.player.inventorySelection.X);
                                 if(game.map.player.attributes.hp>game.map.player.attributes.hpMax){
                                     game.map.player.attributes.hp = game.map.player.attributes.hpMax;
@@ -1736,8 +1740,8 @@ void move_player(GAME &game){
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void put_attributes(GAME &game){
     cout << "\e[?25l\e[H";
-    cout << "\e[1;1H";
-    cout<<"PONTOS DE ATRIBUTOS: "<<game.map.player.attPoints<<" ";
+    cout << "\e[2;1H";
+    cout<<"┃ PONTOS DE ATRIBUTOS: "<<game.map.player.attPoints<<" ";
     cout<<"\n\n";
     if(game.attSelection<0){
         game.attSelection = 0;
@@ -1746,33 +1750,33 @@ void put_attributes(GAME &game){
         game.attSelection = 4;
     }
     if(game.attSelection==0){
-        cout<<" \e[93mHP: "<<game.map.player.attributes.hpMax<<" \e[0m";
+        cout<<"┃  \e[93mHP: "<<game.map.player.attributes.hp<<"/"<<game.map.player.attributes.hpMax<<"   \e[0m";
     }else{
-        cout<<"HP: "<<game.map.player.attributes.hpMax<<" ";
+        cout<<"┃ HP: "<<game.map.player.attributes.hpMax<<"   ";
     }
     cout<<"\n";
     if(game.attSelection==1){
-        cout<<" \e[93mDEFESA: "<<game.map.player.attributes.defense<<" \e[0m";
+        cout<<"┃  \e[93mDEFESA: "<<game.map.player.attributes.defense<<"   \e[0m";
     }else{
-        cout<<"DEFESA: "<<game.map.player.attributes.defense<<" ";
+        cout<<"┃ DEFESA: "<<game.map.player.attributes.defense<<"   ";
     }
     cout<<"\n";
     if(game.attSelection==2){
-        cout<<" \e[93mFORÇA: "<<game.map.player.attributes.strength<<" \e[0m";
+        cout<<"┃  \e[93mFORÇA: "<<game.map.player.attributes.strength<<"   \e[0m";
     }else{
-        cout<<"FORÇA: "<<game.map.player.attributes.strength<<" ";
+        cout<<"┃ FORÇA: "<<game.map.player.attributes.strength<<"   ";
     }
     cout<<"\n";
     if(game.attSelection==3){
-        cout<<" \e[93mINTELIGENCIA: "<<game.map.player.attributes.intelligence<<" \e[0m";
+        cout<<"┃  \e[93mINTELIGENCIA: "<<game.map.player.attributes.intelligence<<"   \e[0m";
     }else{
-        cout<<"INTELIGENCIA: "<<game.map.player.attributes.intelligence<<" ";
+        cout<<"┃ INTELIGENCIA: "<<game.map.player.attributes.intelligence<<"   ";
     }
     cout<<"\n";
     if(game.attSelection==4){
-        cout<<" \e[93mDESTREZA: "<<game.map.player.attributes.dexterity<<" \e[0m";
+        cout<<"┃  \e[93mDESTREZA: "<<game.map.player.attributes.dexterity<<"   \e[0m";
     }else{
-        cout<<"DESTREZA: "<<game.map.player.attributes.dexterity<<" ";
+        cout<<"┃ DESTREZA: "<<game.map.player.attributes.dexterity<<"   ";
     }
     if(game.map.player.attPoints>0){
         int key = getch();
@@ -1834,6 +1838,15 @@ void create_map(GAME &game){
     game.next = false;
     game.map.player.key = false;
     if(!game.map.player.fallen){
+        new_line("┏","━","┓",30);
+        new_line("┃"," ","┃",30);
+        new_line("┃"," ","┃",30);
+        new_line("┃"," ","┃",30);
+        new_line("┃"," ","┃",30);
+        new_line("┃"," ","┃",30);
+        new_line("┃"," ","┃",30);
+        new_line("┃"," ","┃",30);
+        new_line("┗","━","┛",30);
         while(true){
             put_attributes(game);
             if(game.map.player.attPoints<=0){
@@ -1842,6 +1855,8 @@ void create_map(GAME &game){
             }
         }
     }
+    cout<<"\ec";
+    cout<<"CARREGANDO...";
     if(game.map.player.attPoints<=0){
         game.map.player.clockSpeed = clock();
         while((clock()-game.map.player.clockSpeed)<1000){}
@@ -1944,13 +1959,9 @@ void create_map(GAME &game){
                 break;
             }
         }
-
-        // spawn do sacerdote em lugar aleatório
-
-        while(true){
+        for(int i=0;i<250000;i++){
             int y = rand()%MAPSIZEY;
             int x = rand()%MAPSIZEX;
-
             bool livre = (
                 game.map.tiles[y-1][x] == FREEBLOCK &&
                 game.map.tiles[y+1][x] == FREEBLOCK &&
@@ -1962,7 +1973,6 @@ void create_map(GAME &game){
                 game.map.tiles[y-1][x-1] == FREEBLOCK &&
                 game.map.tiles[y+1][x+1] == FREEBLOCK
             );
-
             if(game.map.tiles[y][x]==FREEBLOCK && (y != game.map.player.pos.Y || x != game.map.player.pos.X) && livre){
                 game.map.tiles[y][x] = NPCBLOCK;
                 break;
@@ -2095,7 +2105,7 @@ void create_map(GAME &game){
                 }
                 attPoints--;
             }
-            while(!success){
+            for(int i=0;i<250000;i++){
                 posY = rand()%MAPSIZEY;
                 posX = rand()%MAPSIZEX;
                 if(game.map.tiles[posY][posX]==FREEBLOCK){
@@ -2110,12 +2120,19 @@ void create_map(GAME &game){
                         success = false;
                     }
                 }
+                if(success){
+                    break;
+                }
             }
             if(success){
                 game.map.monsters[monster].pos.Y = posY;
                 game.map.monsters[monster].pos.X = posX;
                 game.map.monsters[monster].attributes.hp = game.map.monsters[monster].attributes.hpMax;
                 game.map.monsters[monster].alive = true;
+            }else{
+                game.map.monsters[monster].pos.Y = -1;
+                game.map.monsters[monster].pos.X = -1;
+                game.map.monsters[monster].alive = false;
             }
         }else{
             continue;
@@ -2131,7 +2148,7 @@ void create_map(GAME &game){
                 if(item+1>game.map.floor){
                     break;
                 }
-                while(true){
+                for(int i=0;i<250000;i++){
                     int posY = rand()%MAPSIZEY;
                     int posX = rand()%MAPSIZEX;
                     game.map.items[item].Y = posY;
@@ -2161,15 +2178,11 @@ void create_map(GAME &game){
     // --- GERADOR DE ARMADILHAS ANTI STUN LOCK (ANTI-LOCK / TIMEOUT) ---
     int qtdArmadilhas = (rand()%game.map.floor+1)*3;
     int armadilhasCriadas = 0;
-
     while(armadilhasCriadas < qtdArmadilhas){
-        int tentatives = 0; // Sistema-Timeout integrado (impedir que crashe se n conseguir achar espaço pras armadilhas)
         bool colocou = false;
-
-        while(tentatives < 25000){
+        for(int i=0;i<250000;i++){
             int posY = rand()%MAPSIZEY;
             int posX = rand()%MAPSIZEX;
-
             if(game.map.tiles[posY][posX] == FREEBLOCK){
                 bool livre = (
                     game.map.tiles[posY-1][posX] == FREEBLOCK &&
@@ -2182,7 +2195,6 @@ void create_map(GAME &game){
                     game.map.tiles[posY-1][posX-1] == FREEBLOCK &&
                     game.map.tiles[posY+1][posX+1] == FREEBLOCK
                 );
-
                 if(livre){
                     game.map.tiles[posY][posX] = TRAPBLOCK;
                     armadilhasCriadas++;
@@ -2190,7 +2202,6 @@ void create_map(GAME &game){
                     break;
                 }
             }
-            tentatives++;
         }
         // Se após 1000 tentativas o mapa atual não tiver espaço grande o bastante,
         // quebra o loop principal para impedir que o jogo trave infinitamente.
