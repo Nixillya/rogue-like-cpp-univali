@@ -1037,13 +1037,9 @@ void render_map(GAME &game){
                 if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==KEYBLOCK){
                     cout<<"\e[48;5;246m\e[38;5;3m";
                 }
-
-                //cout do sacer
-
                 if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==NPCBLOCK){
-                    cout<<"\e[48;5;246m\e[38;5;121m";
+                    cout<<"\e[48;5;246m\e[38;5;121m@";
                 }
-
                 for(int item=0;item<10;item++){
                     if(game.map.items[item].Y==game.map.player.pos.Y+y && game.map.items[item].X==game.map.player.pos.X+x){
                         cout<<"\e[1D\e[38;5;13m󰜦";
@@ -1456,18 +1452,14 @@ void move_player(GAME &game){
                 }
                 if(game.map.player.keyInput==13){
                     if(!game.map.player.inventoryOpened){
-
-                        // codigo do sacerdote:
-
                         bool achouSacerdote = (
                             game.map.tiles[game.map.player.pos.Y-1][game.map.player.pos.X] == NPCBLOCK ||
                             game.map.tiles[game.map.player.pos.Y+1][game.map.player.pos.X] == NPCBLOCK ||
                             game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X-1] == NPCBLOCK ||
                             game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X+1] == NPCBLOCK
                         );
-
                         if(achouSacerdote){
-                            game.map.player.attributes.hp += game.map.floor; // quantidade da cura ( a gente pode mudar isso depois se tiver op)
+                            game.map.player.attributes.hp += game.map.floor; // quantidade da cura
                             if(game.map.player.attributes.hp > game.map.player.attributes.hpMax){
                                 game.map.player.attributes.hp = game.map.player.attributes.hpMax; // pra n passar da vida máxima
                             }
@@ -1491,28 +1483,28 @@ void move_player(GAME &game){
                                             game.map.items[item].Y = -1;
                                             clear_slot(game,y,x);
                                             game.map.player.inventory[y][x].id = rand()%10+1;
-                                            if(rand()%4==0){
-                                                game.map.player.inventory[y][x].id = 6;
-                                            }
                                             if(rand()%20==0){
                                                 game.map.player.inventory[y][x].cursed = true;
+                                            }
+                                            if(rand()%4==0){
+                                                game.map.player.inventory[y][x].id = 6;
                                             }
                                             if(game.map.player.inventory[y][x].id==3){
                                                 int attribute = rand()%5;
                                                 if(attribute==0){
-                                                    game.map.player.inventory[y][x].hp = rand()%game.map.floor;
+                                                    game.map.player.inventory[y][x].hp = rand()%game.map.floor+1;
                                                 }
                                                 if(attribute==1){
-                                                    game.map.player.inventory[y][x].strength = rand()%game.map.floor;
+                                                    game.map.player.inventory[y][x].strength = rand()%game.map.floor+1;
                                                 }
                                                 if(attribute==2){
-                                                    game.map.player.inventory[y][x].defense = rand()%game.map.floor;
+                                                    game.map.player.inventory[y][x].defense = rand()%game.map.floor+1;
                                                 }
                                                 if(attribute==3){
-                                                    game.map.player.inventory[y][x].dexterity = rand()%game.map.floor;
+                                                    game.map.player.inventory[y][x].dexterity = rand()%game.map.floor+1;
                                                 }
                                                 if(attribute==4){
-                                                    game.map.player.inventory[y][x].intelligence = rand()%game.map.floor;
+                                                    game.map.player.inventory[y][x].intelligence = rand()%game.map.floor+1;
                                                 }
                                             }
                                             if(game.map.player.inventory[y][x].id==6){
@@ -1574,46 +1566,22 @@ void move_player(GAME &game){
                             }
                             if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==10){
                                 game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id = 0;
-                                int value = 0;
-                                if(rand()%2==0){
-                                    value++;
-                                }else{
-                                    value--;
-                                }
                                 int attribute = rand()%5;
                                 if(attribute==0){
-                                    game.map.player.attributes.hp+=value;
-                                    game.map.player.attributes.hpMax+=value;
-                                    if(game.map.player.attributes.hp<1){
-                                        game.map.player.attributes.hp = 1;
-                                    }
-                                    if(game.map.player.attributes.hpMax<1){
-                                        game.map.player.attributes.hpMax = 1;
-                                    }
+                                    game.map.player.attributes.hp++;
+                                    game.map.player.attributes.hpMax++;
                                 }
                                 if(attribute==1){
-                                    game.map.player.attributes.defense+=value;
-                                    if(game.map.player.attributes.defense<1){
-                                        game.map.player.attributes.defense = 1;
-                                    }
+                                    game.map.player.attributes.defense++;
                                 }
                                 if(attribute==2){
-                                    game.map.player.attributes.strength+=value;
-                                    if(game.map.player.attributes.strength<1){
-                                        game.map.player.attributes.strength = 1;
-                                    }
+                                    game.map.player.attributes.strength++;
                                 }
                                 if(attribute==3){
-                                    game.map.player.attributes.intelligence+=value;
-                                    if(game.map.player.attributes.intelligence<1){
-                                        game.map.player.attributes.intelligence = 1;
-                                    }
+                                    game.map.player.attributes.intelligence++;
                                 }
                                 if(attribute==4){
-                                    game.map.player.attributes.dexterity+=value;
-                                    if(game.map.player.attributes.dexterity<1){
-                                        game.map.player.attributes.dexterity = 1;
-                                    }
+                                    game.map.player.attributes.dexterity++;
                                 }
                             }
                             if(game.map.player.inventorySelection.Y==0){
