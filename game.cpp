@@ -14,9 +14,6 @@ void play(GAME &game){
     cout<<"\ec";
     srand(time(0)); 
     create_map(game);
-    game.map.player.attributes.hp = 999;
-    game.map.player.attributes.hpMax = 999;
-    game.map.player.attributes.strength = 999;
     while(true){
         render_map(game);
         move_player(game);
