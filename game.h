@@ -116,17 +116,17 @@ void menu_render(GAME &game){
         cout << "┃ [JOGAR]        ┃\n";
     }
     if (game.menu.optionVertical == 5) {
-        cout << "┃ > \e[93m[CODEX]\e[0m      ┃\n";
+        cout << "┃ \e[93m> [CODEX]\e[0m      ┃\n";
     } else {
         cout << "┃ [CODEX]        ┃\n";
     }
     if (game.menu.optionVertical == 6) {
-        cout << "┃ > \e[93m[CRÉDITOS]\e[0m   ┃\n";
+        cout << "┃ \e[93m> [CRÉDITOS]\e[0m   ┃\n";
     } else {
         cout << "┃ [CRÉDITOS]     ┃\n";
     }
     if (game.menu.optionVertical == 7) {
-        cout << "┃ > \e[93m[SAIR]\e[0m       ┃\n";
+        cout << "┃ \e[93m> [SAIR]\e[0m       ┃\n";
     } else {
         cout << "┃ [SAIR]         ┃\n";
     }
@@ -190,27 +190,27 @@ void codex_render(GAME &game){
     new_line("┃     ","CODEX","     ┃",1);
     new_line("┣","━","┫",15);
     if (game.menu.optionVertical == 4) {
-        cout << "┃ > [COMO JOGAR]┃\n";
+        cout << "┃ \e[93m> [COMO JOGAR]\e[0m┃\n";
     } else {
         cout << "┃ [COMO JOGAR]  ┃\n";
     }
     if (game.menu.optionVertical == 5) {
-        cout << "┃ > [ITENS]     ┃\n";
+        cout << "┃ \e[93m> [ITENS]\e[0m     ┃\n";
     } else {
         cout << "┃ [ITENS]       ┃\n";
     }
     if (game.menu.optionVertical == 6) {
-        cout << "┃ > [BESTIÁRIO] ┃\n";
+        cout << "┃ \e[93m> [BESTIÁRIO]\e[0m ┃\n";
     } else {
         cout << "┃ [BESTIÁRIO]   ┃\n";
     }
     if (game.menu.optionVertical == 7) {
-        cout << "┃ > [HISTÓRIA]  ┃\n";
+        cout << "┃ \e[93m> [HISTÓRIA]\e[0m  ┃\n";
     } else {
         cout << "┃ [HISTÓRIA]    ┃\n";
     }
     if (game.menu.optionVertical == 8) {
-        cout << "┃ > [VOLTAR]    ┃\n";
+        cout << "┃ \e[93m> [VOLTAR]\e[0m    ┃\n";
     } else {
         cout << "┃ [VOLTAR]      ┃\n";
     }
@@ -884,6 +884,304 @@ void codex_render(GAME &game){
     }
 }
 
+void show_inventory(GAME &game){
+    cout << "\e[?25l\e[H";
+    cout << "\e[1;1H";
+    new_line("┏","━","┓",3*3);
+    for(int y=0;y<4;y++){
+        if(y==1){
+            new_line("┣","━","┫",3*3);
+        }
+        cout<<"┃";
+        for(int x=0;x<3;x++){
+            cout<<" ";
+            if(y==game.map.player.inventorySelection.Y && x==game.map.player.inventorySelection.X){
+                cout<<"\e[38;5;255m\e[48;5;237m";
+            }
+            if(y==0){
+                if(game.map.player.inventory[y][x].cursed){
+                    cout<<"\e[38;5;9m";
+                }
+            }
+            if(game.map.player.inventory[y][x].id==0){
+                cout<<" ";
+            }
+            if(game.map.player.inventory[y][x].id==1){
+                cout<<"󰓥"; // ESPADA
+            }
+            if(game.map.player.inventory[y][x].id==2){
+                cout<<"󰒘"; // ESCUDO
+            }
+            if(game.map.player.inventory[y][x].id==3){
+                cout<<""; // ANEL
+            }
+            if(game.map.player.inventory[y][x].id==4){
+                cout<<"󰧼"; // ADAGA
+            }
+            if(game.map.player.inventory[y][x].id==5){
+                cout<<"󱡄"; // CAJADO
+            }
+            if(game.map.player.inventory[y][x].id==6){
+                cout<<"󱄰"; // POÇÃO DE CURA
+            }
+            if(game.map.player.inventory[y][x].id==7){
+                cout<<"󱄮"; // POÇÃO DE TELEPORTE
+            }
+            if(game.map.player.inventory[y][x].id==8){
+                cout<<"󰂪"; // ESCUDO REFLETOR
+            }
+            if(game.map.player.inventory[y][x].id==9){
+                cout<<""; // TOTEM
+            }
+            if(game.map.player.inventory[y][x].id==10){
+                cout<<""; // PERGAMINHO
+            }
+            cout<<"\e[0m ";
+        }
+        cout<<"\e[0m┃\n";
+    }
+    new_line("┗","━","┛",3*3);
+    cout<<"\e[1;12H";
+    cout<<"HP: "<<game.map.player.attributes.hp<<"/"<<game.map.player.attributes.hpMax<<"   ";
+    cout<<"\e[2;12H";
+    cout<<"DEFESA: "<<game.map.player.attributes.defense<<"   ";
+    cout<<"\e[3;12H";
+    cout<<"FORÇA: "<<game.map.player.attributes.strength<<"   ";
+    cout<<"\e[4;12H";
+    cout<<"INTELIGENCIA: "<<game.map.player.attributes.intelligence<<"   ";
+    cout<<"\e[5;12H";
+    cout<<"DESTREZA: "<<game.map.player.attributes.dexterity<<"   ";
+}
+
+int simulate_vision(GAME &game,int y,int x,int i=0){
+    if(i>=1){
+        if(rand()%2==0){
+            if(y<0){
+                y--;
+            }else{
+                y++;
+            }
+        }
+        if(rand()%2==0){
+            if(x<0){
+                x--;
+            }else{
+                x++;
+            }
+        }
+    }
+    if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]!=SOLIDBLOCK){
+        i++;
+        game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
+        if(i<game.map.player.attributes.intelligence){
+            simulate_vision(game,y,x,i);
+        }
+    }
+    game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
+    return 0;
+}
+
+void render_map(GAME &game){
+    if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
+        show_inventory(game);
+        return;
+    }
+    cout << "\e[?25l\e[H";
+    cout << "\e[1;1H";
+    int vision = 10;
+    if(game.map.player.attributes.hp<0){
+        game.map.player.attributes.hp = 0;
+    }
+    for(int y=-1;y<=1;y++){
+        for(int x=-1;x<=1;x++){
+            simulate_vision(game,y,x);
+        }
+    }
+    new_line("┏","━","┓",vision*2);
+    for(int y=-vision;y<vision;y++){
+        cout<<"┃";
+        for(int x=-vision;x<vision;x++){
+            if(game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x]==1){
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
+                    if(game.map.floor==11){
+                        if(rand()%2==0){
+                            cout<<"\e[48;5;202m ";
+                        }else{
+                            if(rand()%2==0){
+                                cout<<"\e[48;5;208m ";
+                            }else{
+                                cout<<"\e[48;5;202m ";
+                            }
+                        }
+                            
+                    }else{
+                        cout<<"\e[0m ";
+                    }
+                }
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==FREEBLOCK){
+                    cout<<"\e[48;5;246m ";
+                }
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==SOLIDBLOCK){
+                    cout<<"\e[48;5;242m ";
+                }
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==STAIRBLOCK){
+                    if(!game.map.player.key){
+                        cout<<"\e[48;5;246m\e[38;5;255m󱠟";
+                    }else{
+                        cout<<"\e[48;5;246m\e[38;5;255m󱊾";
+                    }
+                }
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==TRAPBLOCK){
+                    cout<<"\e[48;5;246m\e[38;5;247m";
+                }
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==KEYBLOCK){
+                    cout<<"\e[48;5;246m\e[38;5;3m";
+                }
+
+                //cout do sacer
+
+                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==NPCBLOCK){
+                    cout<<"\e[48;5;246m\e[38;5;121m";
+                }
+
+                for(int item=0;item<10;item++){
+                    if(game.map.items[item].Y==game.map.player.pos.Y+y && game.map.items[item].X==game.map.player.pos.X+x){
+                        cout<<"\e[1D\e[38;5;13m󰜦";
+                    }
+                }
+                if(y==0 && x==0){
+                    cout<<"\e[1D";
+                    if(game.map.player.attributes.hp<1){
+                        cout<<"\e[38;5;255m󰮢";
+                    }else{
+                        cout<<"\e[38;5;255m@";
+                    }
+                }
+                for(int monster=0;monster<50;monster++){
+                    if(game.map.monsters[monster].alive){
+                        if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+y && game.map.monsters[monster].pos.X==game.map.player.pos.X+x){
+                            cout<<"\e[1D";
+                            if(game.map.monsters[monster].attacked==true){
+                                cout<<"\e[48;5;1m";
+                                game.map.monsters[monster].attacked = false;
+                            }
+                            if(game.map.monsters[monster].id==0){ // SLIME
+                                cout<<"\e[38;5;31m󰛹";
+                            }
+                            if(game.map.monsters[monster].id==1){ // GOBLIN
+                                cout<<"\e[38;5;46m";
+                            }
+                            if(game.map.monsters[monster].id==2){ // KOBOLD
+                                cout<<"\e[38;5;202m";
+                            }
+                            if(game.map.monsters[monster].id==3){ // ORC
+                                cout<<"\e[38;5;34m󰶏";
+                            }
+                            if(game.map.monsters[monster].id==4){ // CICLOPE
+                                cout<<"\e[38;5;106m";
+                            }
+                            if(game.map.monsters[monster].id==5){ // TROLL
+                                cout<<"\e[38;5;53m";
+                            }
+                            if(game.map.monsters[monster].id==6){ // MIMICO
+                                cout<<"\e[38;5;13m󰜦";
+                            }
+                            if(game.map.monsters[monster].id==7){ // TROGLODITA
+                                cout<<"\e[38;5;227m";
+                            }
+                            if(game.map.monsters[monster].id==8){ // AUTONOMO
+                                cout<<"\e[38;5;214m󰢻";
+                            }
+                            if(game.map.monsters[monster].id==9){ // ESCORIA
+                                cout<<"\e[38;5;52m";
+                            }
+                            if(game.map.monsters[monster].id==10){ // BOSS
+                                cout<<"\e[38;5;232m";
+                            }
+                            cout<<"\e[0m";
+                        }
+                    }
+                }
+            }else{
+                if(!game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
+                    cout<<"\e[48;5;234m ";
+                }else{
+                    cout<<"\e[0m ";
+                }
+            }
+        }
+        cout<<"\e[0m┃\n";
+    }
+    new_line("┗","━","┛",vision*2);
+    cout<<"\e[1;"<<((vision+1)*2)+1<<"H";
+    new_line("┏","━","┓",10);
+    cout<<"\e[2;"<<((vision+1)*2)+1<<"H┃";
+    int bar=0;
+    for(bar=bar;bar<((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10);bar++){
+        cout<<"\e[48;5;40m ";
+    }
+    if(((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10)<0){
+        cout<<"\e[48;5;40m ";
+    }
+    for(bar=bar;bar<10;bar++){
+        cout<<"\e[0m ";
+    }
+    cout<<"\e[0m┃ "<<game.map.player.attributes.hp<<"/"<<game.map.player.attributes.hpMax<<"   ";
+    cout<<"\e[3;"<<((vision+1)*2)+1<<"H";
+    new_line("┗","━","┛",10);
+    cout<<"\e[4;"<<((vision+1)*2)+1<<"H";
+    new_line("┏","━","┓",3*3);
+    cout<<"\e[5;"<<((vision+1)*2)+1<<"H┃";
+    for(int x=0;x<3;x++){
+        cout<<" ";
+        if(game.map.player.inventory[0][x].cursed){
+            cout<<"\e[38;5;9m";
+        }
+        if(game.map.player.inventory[0][x].id==0){
+            cout<<" ";
+        }
+        if(game.map.player.inventory[0][x].id==1){
+            cout<<"󰓥"; // ESPADA
+        }
+        if(game.map.player.inventory[0][x].id==2){
+            cout<<"󰒘"; // ESCUDO
+        }
+        if(game.map.player.inventory[0][x].id==3){
+            cout<<""; // ANEL
+        }
+        if(game.map.player.inventory[0][x].id==4){
+            cout<<"󰧼"; // ADAGA
+        }
+        if(game.map.player.inventory[0][x].id==5){
+            cout<<"󱡄"; // CAJADO
+        }
+        if(game.map.player.inventory[0][x].id==8){
+            cout<<"󰂪"; // ESCUDO REFLETOR
+        }
+        if(game.map.player.inventory[0][x].id==9){
+            cout<<""; // TOTEM
+        }
+        cout<<"\e[0m ";
+    }
+    cout<<"\e[0m┃";
+    if(game.map.player.key){
+        cout<<" \e[38;5;3m\e[0m";
+    }
+    cout<<"\e[6;"<<((vision+1)*2)+1<<"H";
+    new_line("┗","━","┛",3*3);
+    cout<<"\e[7;"<<((vision+1)*2)+1<<"H";
+    cout<<"ANDAR: "<<game.map.floor;
+    cout<<"\e[8;"<<((vision+1)*2)+1<<"H";
+    cout<<"NIVEL: "<<game.map.player.nivel;
+    cout<<"\e[9;"<<((vision+1)*2)+1<<"H";
+    if(game.map.player.exp>=game.map.player.nextExp){
+        cout<<"\e[38;5;3m";
+    }
+    cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nextExp<<"\e[0m      ";
+    cout<<"\e[10;"<<((vision+1)*2)+1<<"H";
+    cout<<"OURO: "<<game.map.player.gold;
+}
+
 void send_message(GAME &game,string message,int time){
     cout<<"\e[23;1H";
     cout<<message;
@@ -997,6 +1295,7 @@ void move_monsters(GAME &game){
                     }
                     game.map.player.attributes.hp-=(attack-defended);
                     game.map.player.inventoryOpened = false;
+                    render_map(game);
                     send_message(game,"\e[38;5;9mDANO RECEBIDO: "+to_string(attack-defended)+"\e[0m",1000);
                 }
                 for(int otherMonster=0;otherMonster<50;otherMonster++){
@@ -1017,8 +1316,9 @@ void move_monsters(GAME &game){
             game.map.monsters[monster].pos.X=-1;
         }
     }
-    if(game.map.floor==11){
+    if(game.map.floor==6){
         if(win){
+            render_map(game);
             cout<<"\e[23;1H";
             cout<<"VITORIA!";
             int timeClock = clock();
@@ -1029,16 +1329,13 @@ void move_monsters(GAME &game){
             }
             getch();
             game.play = false;
-            game.next = true;
             return;
         }
-        if(game.map.floor==11){
-            if(game.map.monsters[0].attributes.hp<1){
-                for(int monster=0;monster<50;monster++){
-                    game.map.monsters[monster].attributes.hp = 0;
-                    game.map.monsters[monster].pos.Y = -1;
-                    game.map.monsters[monster].pos.X = -1;
-                }
+        if(game.map.monsters[0].attributes.hp<1){
+            for(int monster=0;monster<50;monster++){
+                game.map.monsters[monster].attributes.hp = 0;
+                game.map.monsters[monster].pos.Y = -1;
+                game.map.monsters[monster].pos.X = -1;
             }
         }
     }
@@ -1198,29 +1495,21 @@ void move_player(GAME &game){
                                                     game.map.player.inventory[y][x].cursed = true;
                                                 }
                                                 if(game.map.player.inventory[y][x].id==3){
-                                                    int bonus = 1;
-                                                    while(true){
-                                                        if(rand()%2==0){
-                                                            bonus++;
-                                                        }else{
-                                                            break;
-                                                        }
-                                                    }
                                                     int attribute = rand()%5;
                                                     if(attribute==0){
-                                                        game.map.player.inventory[y][x].hp = rand()%game.map.floor+bonus;
+                                                        game.map.player.inventory[y][x].hp = rand()%game.map.floor;
                                                     }
                                                     if(attribute==1){
-                                                        game.map.player.inventory[y][x].strength = rand()%game.map.floor+bonus;
+                                                        game.map.player.inventory[y][x].strength = rand()%game.map.floor;
                                                     }
                                                     if(attribute==2){
-                                                        game.map.player.inventory[y][x].defense = rand()%game.map.floor+bonus;
+                                                        game.map.player.inventory[y][x].defense = rand()%game.map.floor;
                                                     }
                                                     if(attribute==3){
-                                                        game.map.player.inventory[y][x].dexterity = rand()%game.map.floor+bonus;
+                                                        game.map.player.inventory[y][x].dexterity = rand()%game.map.floor;
                                                     }
                                                     if(attribute==4){
-                                                        game.map.player.inventory[y][x].intelligence = rand()%game.map.floor+bonus;
+                                                        game.map.player.inventory[y][x].intelligence = rand()%game.map.floor;
                                                     }
                                                 }
                                                 if(game.map.player.inventory[y][x].id==6){
@@ -1553,8 +1842,10 @@ void put_attributes(GAME &game){
         }
         if(key==13){
             if(game.attSelection==0){
-                game.map.player.attributes.hpMax++;
-                game.map.player.attributes.hp++;
+                int hp = game.map.player.attributes.hpMax;
+                int hpUpgrade = rand()%hp+1;
+                game.map.player.attributes.hpMax+=hpUpgrade;
+                game.map.player.attributes.hp+=hpUpgrade;
             }
             if(game.attSelection==1){
                 game.map.player.attributes.defense++;
@@ -1576,8 +1867,6 @@ void put_attributes(GAME &game){
 void create_map(GAME &game){
     if(game.next==true){
         game.map.player.attPoints++;
-        game.map.player.attributes.hp+=rand()%(game.map.floor+1);
-        game.map.player.attributes.hpMax+=rand()%(game.map.floor+1);;
     }
     game.next = false;
     game.map.player.key = false;
@@ -1598,7 +1887,7 @@ void create_map(GAME &game){
         for(int x=0;x<MAPSIZEX;x++){
             game.map.tiles[y][x] = EMPTY;
             game.map.memory[y][x] = 0;
-            if(game.map.floor==11){
+            if(game.map.floor==6){
                 game.map.memory[y][x] = 1;
             }
             if(y==0 || x==0 || y==MAPSIZEY-1 || x==MAPSIZEX-1){
@@ -1614,7 +1903,7 @@ void create_map(GAME &game){
     while(true){
         int tamY = rand()%5+2;
         int tamX = rand()%5+2;
-        if(game.map.floor==11){
+        if(game.map.floor==6){
             tamY = 25;
             tamX = 25;
         }
@@ -1623,13 +1912,13 @@ void create_map(GAME &game){
                 if(Y+y>=0 && Y+y<MAPSIZEY && X+x>=0 && X+x<MAPSIZEX){
                     if(!(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1)){
                         game.map.tiles[Y+y][X+x] = FREEBLOCK;
-                        if(game.map.floor==11){
+                        if(game.map.floor==6){
                             if(rand()%10==0){
                                 game.map.tiles[Y+y][X+x] = EMPTY;
                             }
                         }
                     }
-                    if(game.map.floor!=11){
+                    if(game.map.floor!=6){
                         if(game.map.tiles[Y+y][X+x]==EMPTY){
                             if(y==-tamY || y==tamY-1 || x==-tamX || x==tamX-1){
                                 game.map.tiles[Y+y][X+x] = SOLIDBLOCK;
@@ -1640,7 +1929,7 @@ void create_map(GAME &game){
             }
         }
         game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] = FREEBLOCK;
-        if(game.map.floor==11){
+        if(game.map.floor==6){
             break;
         }
         if(i>=game.map.floor*2){
@@ -1683,7 +1972,7 @@ void create_map(GAME &game){
         }
         i++;
     }
-    if(game.map.floor!=11){
+    if(game.map.floor!=6){
         while(true){
             int y = rand()%MAPSIZEY;
             int x = rand()%MAPSIZEX;
@@ -1723,7 +2012,7 @@ void create_map(GAME &game){
         game.map.monsters[monster] = resetMonsters[monster];
     }
     for(int monster=0;monster<50;monster++){
-        int floor = game.map.floor;
+        int floor = game.map.floor*2;
         if(floor>10){
             floor = 10;
         }
@@ -1732,11 +2021,8 @@ void create_map(GAME &game){
             int posX;
             bool success = false;
             int attPoints = (game.map.player.nivel+game.map.floor)*2;
-            game.map.monsters[monster].id = rand()%game.map.floor;
-            if(game.map.monsters[monster].id>=10){
-                game.map.monsters[monster].id = rand()%10;
-            }
-            if(game.map.floor==11 && monster==0){
+            game.map.monsters[monster].id = rand()%floor;
+            if(game.map.floor==6 && monster==0){
                 game.map.monsters[monster].id = 10;
             }
             while(attPoints>0){
@@ -1810,11 +2096,15 @@ void create_map(GAME &game){
                         continue;
                     }
                     if(rand()%2==0){
+                        attribute = 2;
+                    }
+                    if(rand()%2==0){
                         attribute = 0;
                     }
                 }
                 if(attribute==0){
-                    game.map.monsters[monster].attributes.hpMax+=1;
+                    int hp = game.map.monsters[monster].attributes.hpMax;
+                    game.map.monsters[monster].attributes.hpMax+=rand()%hp+1;
                 }
                 if(attribute==1){
                     game.map.monsters[monster].attributes.defense+=1;
@@ -1860,12 +2150,12 @@ void create_map(GAME &game){
         game.map.items[item].Y = -1;
         game.map.items[item].X = -1;
     }
-    if(game.map.floor!=11){
+    if(game.map.floor!=6){
         for(int item=0;item<10;item++){
-            if(item>game.map.floor){
-                break;
-            }
-            if(rand()%10==0 || item==0){
+            if(rand()%4==0 || item==0){
+                if(item+1>game.map.floor){
+                    break;
+                }
                 while(true){
                     int posY = rand()%MAPSIZEY;
                     int posX = rand()%MAPSIZEX;
@@ -1894,14 +2184,14 @@ void create_map(GAME &game){
         }
     }
     // --- GERADOR DE ARMADILHAS ANTI STUN LOCK (ANTI-LOCK / TIMEOUT) ---
-    int qtdArmadilhas = rand()%game.map.floor+1;
+    int qtdArmadilhas = (rand()%game.map.floor+1)*3;
     int armadilhasCriadas = 0;
 
     while(armadilhasCriadas < qtdArmadilhas){
         int tentatives = 0; // Sistema-Timeout integrado (impedir que crashe se n conseguir achar espaço pras armadilhas)
         bool colocou = false;
 
-        while(tentatives < 1000){
+        while(tentatives < 25000){
             int posY = rand()%MAPSIZEY;
             int posX = rand()%MAPSIZEX;
 
@@ -1946,302 +2236,4 @@ void create_map(GAME &game){
         }
     }
     game.map.player.fallen = false;
-}
-
-void show_inventory(GAME &game){
-    cout << "\e[?25l\e[H";
-    cout << "\e[1;1H";
-    new_line("┏","━","┓",3*3);
-    for(int y=0;y<4;y++){
-        if(y==1){
-            new_line("┣","━","┫",3*3);
-        }
-        cout<<"┃";
-        for(int x=0;x<3;x++){
-            cout<<" ";
-            if(y==game.map.player.inventorySelection.Y && x==game.map.player.inventorySelection.X){
-                cout<<"\e[38;5;255m\e[48;5;237m";
-            }
-            if(y==0){
-                if(game.map.player.inventory[y][x].cursed){
-                    cout<<"\e[38;5;9m";
-                }
-            }
-            if(game.map.player.inventory[y][x].id==0){
-                cout<<" ";
-            }
-            if(game.map.player.inventory[y][x].id==1){
-                cout<<"󰓥"; // ESPADA
-            }
-            if(game.map.player.inventory[y][x].id==2){
-                cout<<"󰒘"; // ESCUDO
-            }
-            if(game.map.player.inventory[y][x].id==3){
-                cout<<""; // ANEL
-            }
-            if(game.map.player.inventory[y][x].id==4){
-                cout<<"󰧼"; // ADAGA
-            }
-            if(game.map.player.inventory[y][x].id==5){
-                cout<<"󱡄"; // CAJADO
-            }
-            if(game.map.player.inventory[y][x].id==6){
-                cout<<"󱄰"; // POÇÃO DE CURA
-            }
-            if(game.map.player.inventory[y][x].id==7){
-                cout<<"󱄮"; // POÇÃO DE TELEPORTE
-            }
-            if(game.map.player.inventory[y][x].id==8){
-                cout<<"󰂪"; // ESCUDO REFLETOR
-            }
-            if(game.map.player.inventory[y][x].id==9){
-                cout<<""; // TOTEM
-            }
-            if(game.map.player.inventory[y][x].id==10){
-                cout<<""; // PERGAMINHO
-            }
-            cout<<"\e[0m ";
-        }
-        cout<<"\e[0m┃\n";
-    }
-    new_line("┗","━","┛",3*3);
-    cout<<"\e[1;12H";
-    cout<<"HP: "<<game.map.player.attributes.hp<<"/"<<game.map.player.attributes.hpMax<<"   ";
-    cout<<"\e[2;12H";
-    cout<<"DEFESA: "<<game.map.player.attributes.defense<<"   ";
-    cout<<"\e[3;12H";
-    cout<<"FORÇA: "<<game.map.player.attributes.strength<<"   ";
-    cout<<"\e[4;12H";
-    cout<<"INTELIGENCIA: "<<game.map.player.attributes.intelligence<<"   ";
-    cout<<"\e[5;12H";
-    cout<<"DESTREZA: "<<game.map.player.attributes.dexterity<<"   ";
-}
-
-int simulate_vision(GAME &game,int y,int x,int i=0){
-    if(i>=1){
-        if(rand()%2==0){
-            if(y<0){
-                y--;
-            }else{
-                y++;
-            }
-        }
-        if(rand()%2==0){
-            if(x<0){
-                x--;
-            }else{
-                x++;
-            }
-        }
-    }
-    if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]!=SOLIDBLOCK){
-        i++;
-        game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
-        if(i<game.map.player.attributes.intelligence){
-            simulate_vision(game,y,x,i);
-        }
-    }
-    game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x] = 1;
-    return 0;
-}
-
-void render_map(GAME &game){
-    if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
-        show_inventory(game);
-        return;
-    }
-    cout << "\e[?25l\e[H";
-    cout << "\e[1;1H";
-    int vision = 10;
-    if(game.map.player.attributes.hp<0){
-        game.map.player.attributes.hp = 0;
-    }
-    for(int y=-1;y<=1;y++){
-        for(int x=-1;x<=1;x++){
-            simulate_vision(game,y,x);
-        }
-    }
-    new_line("┏","━","┓",vision*2);
-    for(int y=-vision;y<vision;y++){
-        cout<<"┃";
-        for(int x=-vision;x<vision;x++){
-            if(game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x]==1){
-                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
-                    if(game.map.floor==11){
-                        if(rand()%2==0){
-                            cout<<"\e[48;5;202m ";
-                        }else{
-                            if(rand()%2==0){
-                                cout<<"\e[48;5;208m ";
-                            }else{
-                                cout<<"\e[48;5;202m ";
-                            }
-                        }
-                            
-                    }else{
-                        cout<<"\e[0m ";
-                    }
-                }
-                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==FREEBLOCK){
-                    cout<<"\e[48;5;246m ";
-                }
-                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==SOLIDBLOCK){
-                    cout<<"\e[48;5;242m ";
-                }
-                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==STAIRBLOCK){
-                    if(!game.map.player.key){
-                        cout<<"\e[48;5;246m\e[38;5;255m󱠟";
-                    }else{
-                        cout<<"\e[48;5;246m\e[38;5;255m󱊾";
-                    }
-                }
-                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==TRAPBLOCK){
-                    cout<<"\e[48;5;246m\e[38;5;247m";
-                }
-                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==KEYBLOCK){
-                    cout<<"\e[48;5;246m\e[38;5;3m";
-                }
-
-                //cout do sacer
-
-                if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==NPCBLOCK){
-                    cout<<"\e[48;5;246m\e[38;5;121m";
-                }
-
-                for(int item=0;item<10;item++){
-                    if(game.map.items[item].Y==game.map.player.pos.Y+y && game.map.items[item].X==game.map.player.pos.X+x){
-                        cout<<"\e[1D\e[38;5;13m󰜦";
-                    }
-                }
-                if(y==0 && x==0){
-                    cout<<"\e[1D";
-                    if(game.map.player.attributes.hp<1){
-                        cout<<"\e[38;5;255m󰮢";
-                    }else{
-                        cout<<"\e[38;5;255m@";
-                    }
-                }
-                for(int monster=0;monster<50;monster++){
-                    if(game.map.monsters[monster].alive){
-                        if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+y && game.map.monsters[monster].pos.X==game.map.player.pos.X+x){
-                            cout<<"\e[1D";
-                            if(game.map.monsters[monster].attacked==true){
-                                cout<<"\e[48;5;1m";
-                                game.map.monsters[monster].attacked = false;
-                            }
-                            if(game.map.monsters[monster].id==0){ // SLIME
-                                cout<<"\e[38;5;31m󰛹";
-                            }
-                            if(game.map.monsters[monster].id==1){ // GOBLIN
-                                cout<<"\e[38;5;46m";
-                            }
-                            if(game.map.monsters[monster].id==2){ // KOBOLD
-                                cout<<"\e[38;5;202m";
-                            }
-                            if(game.map.monsters[monster].id==3){ // ORC
-                                cout<<"\e[38;5;34m󰶏";
-                            }
-                            if(game.map.monsters[monster].id==4){ // CICLOPE
-                                cout<<"\e[38;5;106m";
-                            }
-                            if(game.map.monsters[monster].id==5){ // TROLL
-                                cout<<"\e[38;5;53m";
-                            }
-                            if(game.map.monsters[monster].id==6){ // MIMICO
-                                cout<<"\e[38;5;13m󰜦";
-                            }
-                            if(game.map.monsters[monster].id==7){ // TROGLODITA
-                                cout<<"\e[38;5;227m";
-                            }
-                            if(game.map.monsters[monster].id==8){ // AUTONOMO
-                                cout<<"\e[38;5;214m󰢻";
-                            }
-                            if(game.map.monsters[monster].id==9){ // ESCORIA
-                                cout<<"\e[38;5;52m";
-                            }
-                            if(game.map.monsters[monster].id==10){ // BOSS
-                                cout<<"\e[38;5;232m";
-                            }
-                            cout<<"\e[0m";
-                        }
-                    }
-                }
-            }else{
-                if(!game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
-                    cout<<"\e[48;5;234m ";
-                }else{
-                    cout<<"\e[0m ";
-                }
-            }
-        }
-        cout<<"\e[0m┃\n";
-    }
-    new_line("┗","━","┛",vision*2);
-    cout<<"\e[1;"<<((vision+1)*2)+1<<"H";
-    new_line("┏","━","┓",10);
-    cout<<"\e[2;"<<((vision+1)*2)+1<<"H┃";
-    int bar=0;
-    for(bar=bar;bar<((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10);bar++){
-        cout<<"\e[48;5;40m ";
-    }
-    if(((game.map.player.attributes.hp/game.map.player.attributes.hpMax)*10)<0){
-        cout<<"\e[48;5;40m ";
-    }
-    for(bar=bar;bar<10;bar++){
-        cout<<"\e[0m ";
-    }
-    cout<<"\e[0m┃ "<<game.map.player.attributes.hp<<"/"<<game.map.player.attributes.hpMax<<"   ";
-    cout<<"\e[3;"<<((vision+1)*2)+1<<"H";
-    new_line("┗","━","┛",10);
-    cout<<"\e[4;"<<((vision+1)*2)+1<<"H";
-    new_line("┏","━","┓",3*3);
-    cout<<"\e[5;"<<((vision+1)*2)+1<<"H┃";
-    for(int x=0;x<3;x++){
-        cout<<" ";
-        if(game.map.player.inventory[0][x].cursed){
-            cout<<"\e[38;5;9m";
-        }
-        if(game.map.player.inventory[0][x].id==0){
-            cout<<" ";
-        }
-        if(game.map.player.inventory[0][x].id==1){
-            cout<<"󰓥"; // ESPADA
-        }
-        if(game.map.player.inventory[0][x].id==2){
-            cout<<"󰒘"; // ESCUDO
-        }
-        if(game.map.player.inventory[0][x].id==3){
-            cout<<""; // ANEL
-        }
-        if(game.map.player.inventory[0][x].id==4){
-            cout<<"󰧼"; // ADAGA
-        }
-        if(game.map.player.inventory[0][x].id==5){
-            cout<<"󱡄"; // CAJADO
-        }
-        if(game.map.player.inventory[0][x].id==8){
-            cout<<"󰂪"; // ESCUDO REFLETOR
-        }
-        if(game.map.player.inventory[0][x].id==9){
-            cout<<""; // TOTEM
-        }
-        cout<<"\e[0m ";
-    }
-    cout<<"\e[0m┃";
-    if(game.map.player.key){
-        cout<<" \e[38;5;3m\e[0m";
-    }
-    cout<<"\e[6;"<<((vision+1)*2)+1<<"H";
-    new_line("┗","━","┛",3*3);
-    cout<<"\e[7;"<<((vision+1)*2)+1<<"H";
-    cout<<"ANDAR: "<<game.map.floor;
-    cout<<"\e[8;"<<((vision+1)*2)+1<<"H";
-    cout<<"NIVEL: "<<game.map.player.nivel;
-    cout<<"\e[9;"<<((vision+1)*2)+1<<"H";
-    if(game.map.player.exp>=game.map.player.nextExp){
-        cout<<"\e[38;5;3m";
-    }
-    cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nextExp<<"\e[0m      ";
-    cout<<"\e[10;"<<((vision+1)*2)+1<<"H";
-    cout<<"OURO: "<<game.map.player.gold;
 }

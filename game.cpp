@@ -21,6 +21,9 @@ void play(GAME &game){
             return;
         }
         move_monsters(game);
+        if(!game.play || game.next){
+            return;
+        }
     }
 }
 
@@ -29,10 +32,6 @@ int main(){
     static GAME game;
     while(game.exit==false){
         if(game.play==false){
-            if(game.next){
-                cout<<"\ec";
-                game.next = false;
-            }
             MAP map;
             game.map = map;
             menu(game);
