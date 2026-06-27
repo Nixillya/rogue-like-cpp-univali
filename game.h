@@ -83,7 +83,8 @@ struct MAP{
 
 struct MENU{
     int optionVertical = 4;
-    int optionHorizontal = 1;;
+    int optionHorizontal = 1;
+    bool menuDificuldade = true;
 };
 
 struct GAME{
@@ -93,6 +94,7 @@ struct GAME{
     bool pause = false;
     bool next = false;
     bool codex = false;
+    int difficulty = 0;
     MAP map;
     MENU menu;
 };
@@ -106,6 +108,7 @@ void new_line(string x, string y, string z,int size){
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void menu_render(GAME &game){
+    game.menu.menuDificuldade = true;
     cout << "\e[?25l\e[H";
     new_line("┏","━","┓",16);
     new_line("┃   ","ROGUE-LIKE","   ┃",1);
@@ -147,9 +150,63 @@ void menu_render(GAME &game){
                 }
                 break;
         case 13: // Input (ENTER)
-            if (game.menu.optionVertical == 4) {
-                cout << "\ec";
-                game.play = true;
+            if (game.menu.optionVertical == 4) { // JOGAR
+                game.menu.optionVertical = 1;
+                while (game.menu.menuDificuldade == true) {
+                    cout << "\e[?25l\e[1;18H";
+                    new_line("┏","━","┓",24);
+                    cout << "\e[2;18H";
+                    if (game.menu.optionVertical == 1) {
+                        cout << "┃\e[93m  [Dificuldade Facil]   \e[0m┃\n";
+                    } else {
+                        cout << "┃ [Dificuldade Facil]    ┃\n";
+                    }
+                    if (game.menu.optionVertical == 2) {
+                        cout << "┃\e[93m  [Dificuldade Medía]   \e[0m┃\n";
+                    } else {
+                        cout << "┃ [Dificuldade Medía]    ┃\n";
+                    }
+                    if (game.menu.optionVertical == 3) {
+                        cout << "┃\e[93m  [Dificuldade Dificil] \e[0m┃\n";
+                    } else {
+                        cout << "┃ [Dificuldade Dificil]  ┃\n";
+                    }
+                    new_line("┗","━","┛",24);
+                    cout << "\e[?25l\e[1;18H";
+                    int key = getch();
+                    switch(key) {
+                        case 119: // Cima
+                        game.menu.optionVertical--;
+                        if (game.menu.optionVertical < 1) {
+                            game.menu.optionVertical = 3;
+                        }
+                        break;
+
+                        case 115: // Baixo
+                        game.menu.optionVertical++;
+                        if (game.menu.optionVertical > 3) {
+                            game.menu.optionVertical = 1;
+                        }
+                        break;
+
+                        case 13: // Imput
+                        if (game.menu.optionVertical == 1) {
+                            game.play = true;
+                            game.difficulty = 1;
+                            game.menu.menuDificuldade = false;
+                        }
+                        if (game.menu.optionVertical == 2) {
+                            game.play = true;
+                            game.difficulty = 2; 
+                            game.menu.menuDificuldade = false;
+                        }
+                        if (game.menu.optionVertical == 3) {
+                            game.play = true;
+                            game.difficulty = 3;
+                            game.menu.menuDificuldade = false;
+                        }
+                    }
+                }
             }
             if (game.menu.optionVertical == 5) {
                 cout << "\ec";
@@ -2127,6 +2184,14 @@ void create_map(GAME &game){
             if(success){
                 game.map.monsters[monster].pos.Y = posY;
                 game.map.monsters[monster].pos.X = posX;
+
+                int bonus = game.difficulty - 1; // Aplica o bônus de atributos aos monstros de acordo com a dificuldade.
+
+                game.map.monsters[monster].attributes.hpMax += bonus;
+                game.map.monsters[monster].attributes.defense += bonus;
+                game.map.monsters[monster].attributes.strength += bonus;
+                game.map.monsters[monster].attributes.intelligence += bonus;
+                game.map.monsters[monster].attributes.dexterity += bonus;
                 game.map.monsters[monster].attributes.hp = game.map.monsters[monster].attributes.hpMax;
                 game.map.monsters[monster].alive = true;
             }else{
