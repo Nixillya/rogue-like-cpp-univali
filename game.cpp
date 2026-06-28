@@ -12,6 +12,13 @@ void menu(GAME &game){
 
 void play(GAME &game){
     cout<<"\ec";
+    // Hack mode
+    // game.map.player.attributes.hpMax = 999;
+    // game.map.player.attributes.hp = 999;
+    // game.map.player.attributes.defense = 999; 
+    // game.map.player.attributes.strength = 999;
+    // game.map.player.attributes.intelligence = 999;
+    // game.map.player.attributes.dexterity = 999;
     srand(time(0)); 
     create_map(game);
     while(true){

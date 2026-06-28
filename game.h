@@ -48,6 +48,7 @@ struct PLAYER{
     int attPoints = 5;
     int nivel = 1;
     int gold = 0;
+    string name;
     int exp = 0;
     int nextExp = 2;
     int keyInput = 0;
@@ -106,6 +107,70 @@ void new_line(string x, string y, string z,int size){
     }
     cout<<z<<endl;
 }
+
+void mostrar_pontos(){ // Mostra os pontos (código reutilizado do Bomberman, e made by Nixillya)
+    int pointsMax = 0;
+    string ignore;
+    ifstream file;
+
+    // Conta quantos pontos tem no arquivo para definir o tamanho dos arrays
+    file.open("Score.txt");
+
+    string nome;
+    int ponto;
+
+    pointsMax = 0;
+
+    if(file.is_open()){
+        while(file >> nome >> ponto){
+            pointsMax++;
+        }
+    }
+
+    file.close();
+    
+    string nomes[pointsMax];
+    int pontos[pointsMax];
+
+    // Lê o arquivo novamente, mas dessa vez armazena os pontos e os nomes em arrays para depois ordenar e mostrar na tela
+    file.open("Score.txt");
+    if(file.is_open()){
+        int j = 0;
+
+        while(file >> nomes[j] >> pontos[j]){
+            j++;
+        }
+    }
+    file.close();
+
+    // Ordena os pontos e os nomes, ele procura o maior ponto e coloca na posição correta, depois repete o processo para o próximo ponto até ordenar todoss os pontos
+    for(int id=0; id<pointsMax; id++){
+        int idAlto = id;
+        int maiorPonto = pontos[id];
+        for(int i=id; i<pointsMax; i++){
+            if(pontos[i]>maiorPonto){
+                maiorPonto = pontos[i];
+                idAlto = i;
+            }
+        }
+        if(idAlto<pointsMax){
+            int auxPonto = pontos[idAlto];
+            string auxNome = nomes[idAlto];
+            pontos[idAlto] = pontos[id];
+            nomes[idAlto] = nomes[id];
+            pontos[id] = auxPonto;
+            nomes[id] = auxNome;
+        }
+    }
+    cout<<"\e[10;1H";
+    cout<<"\nPontuações:"<<endl<<endl;
+    if(pointsMax==0){
+        cout<<"    Nenhuma pontuação registrada"<<endl;
+    }
+    for(int i=0; i<pointsMax; i++){
+        cout<<"    "<<i+1<<" - "<<nomes[i] <<"   \e[38;5;46m"<<pontos[i]<<"\e[0m\n";
+    }
+}
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void menu_render(GAME &game){
     game.menu.menuDificuldade = true;
@@ -129,6 +194,11 @@ void menu_render(GAME &game){
         cout << "┃ [CRÉDITOS]     ┃\n";
     }
     if (game.menu.optionVertical == 7) {
+        cout << "┃ \e[93m> [RANK]\e[0m       ┃\n";
+    } else {
+        cout << "┃ [RANK]         ┃\n";
+    }
+    if (game.menu.optionVertical == 8) {
         cout << "┃ \e[93m> [SAIR]\e[0m       ┃\n";
     } else {
         cout << "┃ [SAIR]         ┃\n";
@@ -140,22 +210,28 @@ void menu_render(GAME &game){
         case 119: // Ir para cima
             game.menu.optionVertical--;
             if (game.menu.optionVertical < 4) {
-                game.menu.optionVertical = 7;
+                game.menu.optionVertical = 8;
             }
             break;
         case 115: // Ir para baixo
                 game.menu.optionVertical++;
-                if (game.menu.optionVertical > 7) {
+                if (game.menu.optionVertical > 8) {
                     game.menu.optionVertical = 4;
                 }
                 break;
         case 13: // Input (ENTER)
             if (game.menu.optionVertical == 4) { // JOGAR
+                cout << "\e[9;1H";
+                cout << "\n\n Nome: ";
+                cin >> game.map.player.name;
+                cout << "\ec";
                 game.menu.optionVertical = 1;
                 while (game.menu.menuDificuldade == true) {
+                    cout << "\ec"; 
+                    cout << "\e[?25l";
+                    cout << "\e[1;18H"; // Precisa arrumar isso depois
                     cout << "\e[?25l\e[1;18H";
-                    new_line("┏","━","┓",24);
-                    cout << "\e[2;18H";
+                    new_line("┏","━","┓",24); 
                     if (game.menu.optionVertical == 1) {
                         cout << "┃\e[93m  [Dificuldade Facil]   \e[0m┃\n";
                     } else {
@@ -234,9 +310,14 @@ void menu_render(GAME &game){
                 cout << "\ec";
             }
             if (game.menu.optionVertical == 7) {
+                mostrar_pontos();
+                getch();
+                cout << "\ec";
+            }
+
+            if (game.menu.optionVertical == 8) {
                 game.exit = true;
             }
-            break;
     }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1384,6 +1465,11 @@ void move_monsters(GAME &game){
             render_map(game);
             cout<<"\e[23;1H";
             cout<<"VITORIA!";
+            fstream file; // Salva um arquivo com a pontuação do player
+            file.open("Score.txt", ios::app);
+            file << game.map.player.name << "\n";
+            file << game.map.player.gold << "\n";
+            file.close();
             int timeClock = clock();
             while(clock()-timeClock<2000){
                 if(kbhit()){
@@ -1392,6 +1478,7 @@ void move_monsters(GAME &game){
             }
             getch();
             game.play = false;
+            cout<<"\ec";
             return;
         }
         if(game.map.monsters[0].attributes.hp<1){
