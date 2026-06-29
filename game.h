@@ -4,6 +4,8 @@
 #include <time.h>
 #include <string>
 #include <fstream>
+#include <SFML/Audio.hpp>
+#include <map>
 
 #define MAPSIZEX 500
 #define MAPSIZEY 500
@@ -18,6 +20,21 @@
 #define DOORBLOCK 7
 
 using namespace std;
+using namespace sf;
+
+inline map<string, SoundBuffer> gameBuffers;
+inline map<string, Sound*> gameSounds;
+
+inline void playSound(string nomeSom, string caminhoArquivo) {
+    if (gameBuffers.find(nomeSom) == gameBuffers.end()) {
+        if (!gameBuffers[nomeSom].loadFromFile(caminhoArquivo)) {
+            cout << "ERRO: Não foi possível carregar o arquivo: " << caminhoArquivo << endl;
+            return;
+        }
+        gameSounds[nomeSom] = new Sound(gameBuffers[nomeSom]);
+    }
+    gameSounds[nomeSom]->play();
+}
 
 struct POS{
     int X = -1;
@@ -48,6 +65,8 @@ struct PLAYER{
     int attPoints = 5;
     int nivel = 1;
     int gold = 0;
+    clock_t timerStart;
+    clock_t tempoPausado = 0;
     string name;
     int exp = 0;
     int nextExp = 2;
@@ -93,6 +112,8 @@ struct GAME{
     bool exit = false;
     bool play = false;
     bool pause = false;
+    bool pauseTudo = false;
+    clock_t pauseTudoClock;
     bool next = false;
     bool codex = false;
     int difficulty = 0;
@@ -128,7 +149,7 @@ void mostrar_pontos(){ // Mostra os pontos (código reutilizado do Bomberman, e 
     }
 
     file.close();
-    
+
     string nomes[pointsMax];
     int pontos[pointsMax];
 
@@ -227,11 +248,11 @@ void menu_render(GAME &game){
                 cout << "\ec";
                 game.menu.optionVertical = 1;
                 while (game.menu.menuDificuldade == true) {
-                    cout << "\ec"; 
+                    cout << "\ec";
                     cout << "\e[?25l";
                     cout << "\e[1;18H"; // Precisa arrumar isso depois
                     cout << "\e[?25l\e[1;18H";
-                    new_line("┏","━","┓",24); 
+                    new_line("┏","━","┓",24);
                     if (game.menu.optionVertical == 1) {
                         cout << "┃\e[93m  [Dificuldade Facil]   \e[0m┃\n";
                     } else {
@@ -267,16 +288,19 @@ void menu_render(GAME &game){
 
                         case 13: // Imput
                         if (game.menu.optionVertical == 1) {
+                            game.map.player.timerStart = clock();
                             game.play = true;
                             game.difficulty = 1;
                             game.menu.menuDificuldade = false;
                         }
                         if (game.menu.optionVertical == 2) {
+                            game.map.player.timerStart = clock();
                             game.play = true;
-                            game.difficulty = 2; 
+                            game.difficulty = 2;
                             game.menu.menuDificuldade = false;
                         }
                         if (game.menu.optionVertical == 3) {
+                            game.map.player.timerStart = clock();
                             game.play = true;
                             game.difficulty = 3;
                             game.menu.menuDificuldade = false;
@@ -515,7 +539,7 @@ void codex_render(GAME &game){
                             cout << "┃ Tem 50% de somar um valor aleatório baseado na sua destreza e entra num loop   ┃\n";
                             cout << "┃ de 50% +1 no dano e tem 2% de chance de quebrar ao fazer os dois.              ┃\n";
                             new_line("┣","━","┫",80);
-                            cout << "┃ - Cajado Elétrico (󱡄):                                                         ┃\n";
+                            cout << "┃ - Cajado Elétrico (🪄):                                                         ┃\n";
                             cout << "┃ Esculpido em madeira antiga, possui um Núcleo Laser de um Autônomo acoplado    ┃\n";
                             cout << "┃ em um capacitador, capaz de disparar feixes de energia pura concentrada. Um    ┃\n";
                             cout << "┃ protótipo que serve para demonstrar a engenharia e ambição dos Kobolds para    ┃\n";
@@ -1046,30 +1070,38 @@ void show_inventory(GAME &game){
             }
             if(game.map.player.inventory[y][x].id==1){
                 cout<<"󰓥"; // ESPADA
+
             }
             if(game.map.player.inventory[y][x].id==2){
                 cout<<"󰒘"; // ESCUDO
+
             }
             if(game.map.player.inventory[y][x].id==3){
                 cout<<""; // ANEL
+
             }
             if(game.map.player.inventory[y][x].id==4){
                 cout<<"󰧼"; // ADAGA
+
             }
             if(game.map.player.inventory[y][x].id==5){
                 cout<<"󱡄"; // CAJADO
             }
             if(game.map.player.inventory[y][x].id==6){
                 cout<<"󱄰"; // POÇÃO DE CURA
+
             }
             if(game.map.player.inventory[y][x].id==7){
                 cout<<"󱄮"; // POÇÃO DE TELEPORTE
+
             }
             if(game.map.player.inventory[y][x].id==8){
                 cout<<"󰂪"; // ESCUDO REFLETOR
+
             }
             if(game.map.player.inventory[y][x].id==9){
                 cout<<""; // TOTEM
+
             }
             if(game.map.player.inventory[y][x].id==10){
                 cout<<""; // PERGAMINHO
@@ -1119,7 +1151,24 @@ int simulate_vision(GAME &game,int y,int x,int i=0){
     return 0;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    string getPlayerAvatar(GAME &game) {
+
+                    int armaID = game.map.player.inventory[0][0].id;
+                    if(game.map.player.attributes.hp < 1) return "󰮢";
+                    if(armaID == 1) return ""; // Espada
+                    if(armaID == 5) return "󱅻"; // Cajado
+                    if(armaID == 4) return ""; // Adaga
+                    return "";
+                }
+
+
 void render_map(GAME &game){
+    int tempo = (clock() - game.map.player.timerStart - game.map.player.tempoPausado) / CLOCKS_PER_SEC;
+
+    int horas = tempo / 3600;
+    int minutos = (tempo % 3600) / 60;
+    int segundos = tempo % 60;
     if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
         show_inventory(game);
         return;
@@ -1151,7 +1200,7 @@ void render_map(GAME &game){
                                 cout<<"\e[48;5;202m ";
                             }
                         }
-                            
+
                     }else{
                         cout<<"\e[0m ";
                     }
@@ -1176,21 +1225,20 @@ void render_map(GAME &game){
                     cout<<"\e[48;5;246m\e[38;5;3m";
                 }
                 if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==NPCBLOCK){
-                    cout<<"\e[48;5;246m\e[38;5;121m@";
+                    cout<<"\e[48;5;246m\e[38;5;121m";
                 }
                 for(int item=0;item<10;item++){
                     if(game.map.items[item].Y==game.map.player.pos.Y+y && game.map.items[item].X==game.map.player.pos.X+x){
                         cout<<"\e[1D\e[38;5;13m󰜦";
                     }
                 }
-                if(y==0 && x==0){
-                    cout<<"\e[1D";
-                    if(game.map.player.attributes.hp<1){
-                        cout<<"\e[38;5;255m󰮢";
-                    }else{
-                        cout<<"\e[38;5;255m@";
+
+
+                   if(y==0 && x==0){
+                    cout << "\e[1D"; // Volta uma casa
+                    cout << "\e[38;5;255m" << getPlayerAvatar(game) << "\e[0m";
                     }
-                }
+
                 for(int monster=0;monster<50;monster++){
                     if(game.map.monsters[monster].alive){
                         if(game.map.monsters[monster].pos.Y==game.map.player.pos.Y+y && game.map.monsters[monster].pos.X==game.map.player.pos.X+x){
@@ -1310,6 +1358,21 @@ void render_map(GAME &game){
     cout<<"EXP: "<<game.map.player.exp<<"/"<<game.map.player.nextExp<<"\e[0m      ";
     cout<<"\e[10;"<<((vision+1)*2)+1<<"H";
     cout<<"OURO: "<<game.map.player.gold;
+    cout<<"\e[11;"<<((vision+1)*2)+1<<"H";
+    cout<<"TEMPO: ";
+    if(horas < 10) cout<<"0";
+    cout << horas <<":";
+
+    if(minutos < 10) cout<<"0";
+    cout << minutos <<":";
+
+    if(segundos < 10) cout<<"0";
+    cout << segundos;
+
+    if(game.pauseTudo){
+    cout << "\e[13;"<<((vision+1)*2)+1<<"H";
+    cout << "\e[38;5;226m=== PAUSADO ===\e[0m";
+    }
 }
 
 void send_message(GAME &game,string message,int time){
@@ -1341,6 +1404,9 @@ void clear_slot(GAME &game,int y,int x){
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void move_monsters(GAME &game){
+    if(game.pauseTudo){
+    return;
+    }
     int blocks[4] = {FREEBLOCK,STAIRBLOCK,KEYBLOCK,TRAPBLOCK};
     bool win = true;
     for(int monster=0;monster<50;monster++){
@@ -1350,9 +1416,40 @@ void move_monsters(GAME &game){
         }
         if(game.map.monsters[monster].attributes.hp<1){
             if(game.map.monsters[monster].alive){
+                if(game.map.monsters[monster].id == 0) {
+                playSound("morte_slime", "Sounds/slime_morte.wav");
+            }
+            else if(game.map.monsters[monster].id == 3) {
+                playSound("morte_orc", "Sounds/orc_morte.wav");
+            }
+
+            else if(game.map.monsters[monster].id == 5) {
+                playSound("morte_troll", "Sounds/troll_morte.ogg");
+            }
+            else if(game.map.monsters[monster].id == 1) {
+                playSound("morte_goblin", "Sounds/goblin_morte.wav");
+            }
+             else if(game.map.monsters[monster].id == 2) {
+                playSound("morte_kobold", "Sounds/kobold_morte.ogg");
+            }
+
+             else if(game.map.monsters[monster].id == 4) {
+                playSound("morte_ciclope", "Sounds/ciclope_morte.ogg");
+            }
+             else if(game.map.monsters[monster].id == 7) {
+                playSound("morte_troglodita", "Sounds/troglodita_morte.wav");
+            }
+             else if(game.map.monsters[monster].id == 9) {
+                playSound("morte_escoria", "Sounds/escoria_morte.wav");
+            }
+             else if(game.map.monsters[monster].id == 8) {
+                playSound("morte_autonomo", "Sounds/autonomo_morte.wav");
+            }
+
+
                 game.map.monsters[monster].id++;
                 game.map.player.exp += rand()%game.map.monsters[monster].id+1;
-                game.map.player.gold += rand()%game.map.monsters[monster].id+1; 
+                game.map.player.gold += rand()%game.map.monsters[monster].id+1;
                 game.map.monsters[monster].alive = false;
                 if(game.map.monsters[monster].key){
                     game.map.monsters[monster].key = false;
@@ -1437,11 +1534,19 @@ void move_monsters(GAME &game){
                     if(defended>attack){
                         defended = attack;
                     }
+                    int danoReal = attack - defended;
+
+
                     game.map.player.attributes.hp-=(attack-defended);
                     game.map.player.inventoryOpened = false;
-                    render_map(game);
-                    send_message(game,"\e[38;5;9mDANO RECEBIDO: "+to_string(attack-defended)+"\e[0m",1000);
+                    if (danoReal > 0) {
+                        render_map(game);
+                        playSound("dano_recebido", "Sounds/dano_recebido.wav");
+                        send_message(game, "\e[38;5;9mDANO RECEBIDO: " + to_string(danoReal) + "\e[0m", 1000);
+                    }
+
                 }
+
                 for(int otherMonster=0;otherMonster<50;otherMonster++){
                     if(otherMonster==monster){
                         continue;
@@ -1477,8 +1582,8 @@ void move_monsters(GAME &game){
                 }
             }
             getch();
-            game.play = false;
             cout<<"\ec";
+            game.play = false;
             return;
         }
         if(game.map.monsters[0].attributes.hp<1){
@@ -1490,8 +1595,26 @@ void move_monsters(GAME &game){
         }
     }
 }
+
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void move_player(GAME &game){
+    if(game.pauseTudo){
+    if(kbhit()){
+        game.map.player.keyInput = getch();
+
+        if(game.map.player.keyInput=='e' || game.map.player.keyInput=='E'){
+            game.pauseTudo = false;
+
+            game.map.player.clockSpeed = clock();
+
+            for(int i=0;i<50;i++){
+                game.map.monsters[i].clockSpeed = clock();
+            }
+        }
+    }
+    return;
+    }
     if(game.map.player.attributes.hp<1){
         if(game.map.player.inventory[0][2].id==9){
             game.map.player.attributes.hp = 1;
@@ -1516,7 +1639,8 @@ void move_player(GAME &game){
             }
             return;
         }
-        send_message(game,"MORREU",3000);
+        playSound("Morto", "Sounds/morte.wav");
+        send_message(game,"MORREU",4000);
         cout<<"\ec";
         game.play = false;
         return;
@@ -1533,11 +1657,27 @@ void move_player(GAME &game){
         if(rand()%2==0){
             game.map.player.attributes.hp -= 1;
         }
+        playSound("caindo", "Sounds/caindo.wav");
         send_message(game,"CAINDO...",2000);
         return;
     }
     if(kbhit()){
         game.map.player.keyInput = getch();
+        if(game.map.player.keyInput=='e' || game.map.player.keyInput=='E'){
+            game.pauseTudo = !game.pauseTudo;
+            if(game.pauseTudo) {
+                game.pauseTudoClock = clock();
+
+            } else {
+
+                game.map.player.tempoPausado += clock() - game.pauseTudoClock;
+                game.map.player.clockSpeed = clock();
+                for(int i=0;i<50;i++){
+                    game.map.monsters[i].clockSpeed = clock();
+                }
+            }
+            return;
+        }
         if((clock()-game.map.player.clockSpeed)>1000/game.map.player.attributes.dexterity){
             if(game.map.player.exp>=game.map.player.nextExp){
                 game.map.player.exp = 0;
@@ -1553,20 +1693,25 @@ void move_player(GAME &game){
                 if(block==2 && rand()%10!=0){
                     continue;
                 }
-                if(game.map.player.keyInput==119){
+                if(game.map.player.keyInput==119){        // cima passo
                     if(game.map.player.inventoryOpened){
                         game.map.player.inventorySelection.Y--;
                     }
                     if(game.map.tiles[game.map.player.pos.Y-1][game.map.player.pos.X]==blocks[block]){
                         targetPos.Y--;
+                    playSound("passo", "Sounds/passo.ogg");
                     }
+
+
                 }
                 if(game.map.player.keyInput==115){
                     if(game.map.player.inventoryOpened){
                         game.map.player.inventorySelection.Y++;
+
                     }
                     if(game.map.tiles[game.map.player.pos.Y+1][game.map.player.pos.X]==blocks[block]){
                         targetPos.Y++;
+                    playSound("passo", "Sounds/passo.ogg");
                     }
                 }
                 if(game.map.player.keyInput==97){
@@ -1575,6 +1720,7 @@ void move_player(GAME &game){
                     }
                     if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X-1]==blocks[block]){
                         targetPos.X--;
+                    playSound("passo", "Sounds/passo.ogg");
                     }
                 }
                 if(game.map.player.keyInput==100){
@@ -1583,12 +1729,14 @@ void move_player(GAME &game){
                     }
                     if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X+1]==blocks[block]){
                         targetPos.X++;
+                    playSound("passo", "Sounds/passo.ogg");
                     }
                 }
                 if(game.map.player.keyInput==105){
                     cout<<"\ec";
                     if(game.map.player.inventoryOpened == false){
                         game.map.player.inventoryOpened = true;
+                    playSound("inventario", "Sounds/inventario.wav");
                     }else{
                         game.map.player.inventoryOpened = false;
                     }
@@ -1614,11 +1762,13 @@ void move_player(GAME &game){
                                     }
                                 }
                             }
+                            playSound("Heal", "Sounds/Heal.wav");
                             send_message(game,"\e[38;5;10mCURANDO...\e[0m",1000);
                             return;
                         }
                         for(int item=0;item<10;item++){
                             if(game.map.items[item].Y==game.map.player.pos.Y && game.map.items[item].X==game.map.player.pos.X){
+                                playSound("abrir_bau", "Sounds/bau.wav"); // bau
                                 for(int y=1;y<4;y++){
                                     for(int x=0;x<3;x++){
                                         if(game.map.player.inventory[y][x].id==0){
@@ -1664,12 +1814,14 @@ void move_player(GAME &game){
                         if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==KEYBLOCK){
                             game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] = FREEBLOCK;
                             game.map.player.key = true;
+                            playSound("pegar_chave", "Sounds/chave.wav");
                         }
                         if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==STAIRBLOCK){
                             if(game.map.player.key){
                                 game.map.player.gold += 50;
                                 game.next = true;
                                 game.map.floor++;
+                                playSound("descendo", "Sounds/escada.wav"); //escadas
                                 send_message(game,"DESCENDO...",2000);
                                 return;
                             }
@@ -1707,6 +1859,7 @@ void move_player(GAME &game){
                                         break;
                                     }
                                 }
+                            playSound("teleporte", "Sounds/equip_pot_tp.wav");
                             }
                             if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==10){
                                 game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id = 0;
@@ -1727,6 +1880,7 @@ void move_player(GAME &game){
                                 if(attribute==4){
                                     game.map.player.attributes.dexterity++;
                                 }
+                                playSound("pergaminho", "Sounds/pergaminho.ogg");
                             }
                             if(game.map.player.inventorySelection.Y==0){
                                 if(!game.map.player.inventory[0][game.map.player.inventorySelection.X].cursed){
@@ -1764,10 +1918,12 @@ void move_player(GAME &game){
                             if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==2 || game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==8){
                                 equip = true;
                                 x = 1;
+                                playSound("escudo", "Sounds/equip_shield.wav");
                             }
                             if(game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==3 || game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].id==9){
                                 equip = true;
                                 x = 2;
+                                playSound("acessório", "Sounds/equip_acessorio.wav");
                             }
                             if(equip){
                                 if(game.map.player.inventory[0][x].id==0){
@@ -1780,6 +1936,17 @@ void move_player(GAME &game){
                                     game.map.player.inventory[0][x].strength = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].strength;
                                     game.map.player.inventory[0][x].cursed = game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].cursed;
                                     clear_slot(game,game.map.player.inventorySelection.Y,game.map.player.inventorySelection.X);
+                                    int novoId = game.map.player.inventory[0][x].id;
+                                        if (game.map.player.inventory[0][x].cursed) {
+                                                playSound("maldição", "Sounds/cursed.ogg");
+                                            }
+
+                                    else{
+                                    if(novoId == 1) playSound("espada", "Sounds/equip_espada.ogg");
+                                    else if(novoId == 4) playSound("adaga", "Sounds/equip_adaga.ogg");
+                                    else if(novoId == 5) playSound("cajado", "Sounds/equip_cajado.wav");
+                                    }
+
                                     if(game.map.player.inventory[0][x].id==3){
                                         game.map.player.attributes.hpMax+=game.map.player.inventory[0][x].hp;
                                         game.map.player.attributes.defense+=game.map.player.inventory[0][x].defense;
@@ -1796,6 +1963,7 @@ void move_player(GAME &game){
                                     game.map.player.attributes.hp += game.map.player.inventory[game.map.player.inventorySelection.Y][game.map.player.inventorySelection.X].heal;
                                 }
                                 clear_slot(game,game.map.player.inventorySelection.Y,game.map.player.inventorySelection.X);
+                                playSound("pot_cura", "Sounds/equip_pot_cura.wav");
                                 if(game.map.player.attributes.hp>game.map.player.attributes.hpMax){
                                     game.map.player.attributes.hp = game.map.player.attributes.hpMax;
                                 }
@@ -1862,7 +2030,31 @@ void move_player(GAME &game){
                         if(defended>attack){
                             defended = attack;
                         }
+                        int dano_causado = attack - defended;
                         game.map.monsters[monster].attributes.hp-=(attack-defended);
+                        if (dano_causado > 0) {
+
+                        int id_arma_equipada = game.map.player.inventory[0][0].id;
+
+
+                        switch (id_arma_equipada) {
+                            case 1:
+                                playSound("Espada Pesada" , "Sounds/som_espada_hit.wav");
+                                break;
+                            case 4:
+                                playSound("Adaga", "Sounds/som_adaga_hit.wav");
+                                break;
+                            case 5:
+                                playSound("Cajado", "Sounds/som_cajado_hit.wav");
+                                break;
+                            default:
+                                playSound("Hit", "Sounds/som_hit.wav");
+                                break;
+                        }
+                    }           else {
+
+                            playSound("missHit", "Sounds/miss_hit.wav");
+                    }
                         send_message(game,"\e[38;5;46mDANO CAUSADO: "+to_string(attack-defended)+"\e[0m",1000);
                         success = false;
                     }
@@ -1873,6 +2065,7 @@ void move_player(GAME &game){
                     if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] == TRAPBLOCK){
                         game.map.player.attributes.hp -= game.map.floor;
                         game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X] = FREEBLOCK;
+                    playSound("armadilha", "Sounds/trap.wav");        // armadilha som
                     }
                 }
             }else{
