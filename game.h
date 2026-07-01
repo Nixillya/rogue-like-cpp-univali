@@ -1444,14 +1444,19 @@ void move_monsters(GAME &game){
             int dropChance = rand() % 100;
             int itemId = 0;
 
-            if(game.map.monsters[monster].id == 0 && dropChance < 5) itemId = 7;      // Slime: 5% Teleporte
-            else if(game.map.monsters[monster].id == 1 && dropChance < 20) itemId = 4; // Goblin: 20% Adaga
-            else if(game.map.monsters[monster].id == 3 && dropChance < 20) itemId = 1; // Orc: 20% Espada
-            else if(game.map.monsters[monster].id == 8 && dropChance < 20) itemId = 5; // Autonomo: 20% Cajado
-            else if(game.map.monsters[monster].id == 9 && dropChance < 5) itemId = 9;  // Escoria: 5% Totem
-            else if(game.map.monsters[monster].id == 5 && dropChance < 10) itemId = 3; // Troll: 10% Anel
-            else if(game.map.monsters[monster].id == 6 && dropChance < 10) itemId = 10;// Mimico: 10% Pergaminho
-            else if(game.map.monsters[monster].id == 2 && dropChance < 5) itemId = 3;  // Kobold: 5% pot
+            int bonusDrop = 0;
+            if (game.difficulty == 1)      bonusDrop = 5;
+            else if (game.difficulty == 2) bonusDrop = 0;
+            else if (game.difficulty == 3) bonusDrop = -3;
+ 
+            if(game.map.monsters[monster].id == 0 && dropChance < (5 + bonusDrop)) itemId = 7;      // Slime: 5% Teleporte
+            else if(game.map.monsters[monster].id == 1 && dropChance < (20 + bonusDrop)) itemId = 4;  // Goblin: 20% Adaga
+            else if(game.map.monsters[monster].id == 3 && dropChance < (20 + bonusDrop)) itemId = 1;   // Orc: 20% Espada
+            else if(game.map.monsters[monster].id == 8 && dropChance < (20 + bonusDrop)) itemId = 5;  // Autonomo: 20% Cajado
+            else if(game.map.monsters[monster].id == 9 && dropChance < (5 + bonusDrop)) itemId = 9;  // Escoria: 5% Totem
+            else if(game.map.monsters[monster].id == 5 && dropChance < (10 + bonusDrop)) itemId = 3; // Troll: 10% Anel
+            else if(game.map.monsters[monster].id == 6 && dropChance < (10 + bonusDrop)) itemId = 10;// Mimico: 10% Pergaminho
+            else if(game.map.monsters[monster].id == 2 && dropChance < (5 + bonusDrop)) itemId = 3;  // Kobold: 5% pot
 
             if(itemId != 0) {
                 if(add_to_inventory(game, itemId)) {
