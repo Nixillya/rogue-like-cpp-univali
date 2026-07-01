@@ -17,7 +17,6 @@
 #define KEYBLOCK 4
 #define TRAPBLOCK 5 // definição para a trap
 #define NPCBLOCK 6
-#define DOORBLOCK 7
 
 using namespace std;
 using namespace sf;
@@ -65,8 +64,6 @@ struct PLAYER{
     int attPoints = 5;
     int nivel = 1;
     int gold = 0;
-    clock_t timerStart;
-    clock_t tempoPausado = 0;
     string name;
     int exp = 0;
     int nextExp = 2;
@@ -99,6 +96,10 @@ struct MAP{
     int floor = 1;
     PLAYER player;
     MONSTER monsters[50];
+    int time = clock();
+    int sec = 0;
+    int min = 0;
+    int hour = 0;
 };
 
 struct MENU{
@@ -111,9 +112,8 @@ struct GAME{
     int attSelection = 0;
     bool exit = false;
     bool play = false;
-    bool pause = false;
-    bool pauseTudo = false;
-    clock_t pauseTudoClock;
+
+    bool paused = false;
     bool next = false;
     bool codex = false;
     int difficulty = 0;
@@ -248,10 +248,7 @@ void menu_render(GAME &game){
                 cout << "\ec";
                 game.menu.optionVertical = 1;
                 while (game.menu.menuDificuldade == true) {
-                    cout << "\ec";
-                    cout << "\e[?25l";
-                    cout << "\e[1;18H"; // Precisa arrumar isso depois
-                    cout << "\e[?25l\e[1;18H";
+                    cout << "\e[?25l\e[1;1H";
                     new_line("┏","━","┓",24);
                     if (game.menu.optionVertical == 1) {
                         cout << "┃\e[93m  [Dificuldade Facil]   \e[0m┃\n";
@@ -269,41 +266,30 @@ void menu_render(GAME &game){
                         cout << "┃ [Dificuldade Dificil]  ┃\n";
                     }
                     new_line("┗","━","┛",24);
-                    cout << "\e[?25l\e[1;18H";
                     int key = getch();
-                    switch(key) {
-                        case 119: // Cima
+                    if(key==119){
                         game.menu.optionVertical--;
                         if (game.menu.optionVertical < 1) {
                             game.menu.optionVertical = 3;
                         }
-                        break;
-
-                        case 115: // Baixo
+                    }
+                    if(key==115){
                         game.menu.optionVertical++;
                         if (game.menu.optionVertical > 3) {
                             game.menu.optionVertical = 1;
                         }
-                        break;
-
-                        case 13: // Imput
+                    }
+                    if(key==13){
+                        game.play = true;
+                        game.menu.menuDificuldade = false;
                         if (game.menu.optionVertical == 1) {
-                            game.map.player.timerStart = clock();
-                            game.play = true;
                             game.difficulty = 1;
-                            game.menu.menuDificuldade = false;
                         }
                         if (game.menu.optionVertical == 2) {
-                            game.map.player.timerStart = clock();
-                            game.play = true;
                             game.difficulty = 2;
-                            game.menu.menuDificuldade = false;
                         }
                         if (game.menu.optionVertical == 3) {
-                            game.map.player.timerStart = clock();
-                            game.play = true;
                             game.difficulty = 3;
-                            game.menu.menuDificuldade = false;
                         }
                     }
                 }
@@ -1152,30 +1138,24 @@ int simulate_vision(GAME &game,int y,int x,int i=0){
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    string getPlayerAvatar(GAME &game) {
+string getPlayerAvatar(GAME &game) {
 
-                    int armaID = game.map.player.inventory[0][0].id;
-                    if(game.map.player.attributes.hp < 1) return "󰮢";
-                    if(armaID == 1) return ""; // Espada
-                    if(armaID == 5) return "󱅻"; // Cajado
-                    if(armaID == 4) return ""; // Adaga
-                    return "";
-                }
-
+                int armaID = game.map.player.inventory[0][0].id;
+                if(game.map.player.attributes.hp < 1) return "󰮢";
+                if(armaID == 1) return ""; // Espada
+                if(armaID == 5) return "󱅻"; // Cajado
+                if(armaID == 4) return ""; // Adaga
+                return "";
+            }
 
 void render_map(GAME &game){
-    int tempo = (clock() - game.map.player.timerStart - game.map.player.tempoPausado) / CLOCKS_PER_SEC;
-
-    int horas = tempo / 3600;
-    int minutos = (tempo % 3600) / 60;
-    int segundos = tempo % 60;
     if(game.map.player.inventoryOpened && game.map.player.attributes.hp>0){
         show_inventory(game);
         return;
     }
     cout << "\e[?25l\e[H";
     cout << "\e[1;1H";
-    int vision = 10;
+    int vision = 10; // <--- NÃO ALTERAR
     if(game.map.player.attributes.hp<0){
         game.map.player.attributes.hp = 0;
     }
@@ -1190,7 +1170,7 @@ void render_map(GAME &game){
         for(int x=-vision;x<vision;x++){
             if(game.map.memory[game.map.player.pos.Y+y][game.map.player.pos.X+x]==1){
                 if(game.map.tiles[game.map.player.pos.Y+y][game.map.player.pos.X+x]==EMPTY){
-                    if(game.map.floor==11){
+                    if(game.map.floor==6){
                         if(rand()%2==0){
                             cout<<"\e[48;5;202m ";
                         }else{
@@ -1360,16 +1340,16 @@ void render_map(GAME &game){
     cout<<"OURO: "<<game.map.player.gold;
     cout<<"\e[11;"<<((vision+1)*2)+1<<"H";
     cout<<"TEMPO: ";
-    if(horas < 10) cout<<"0";
-    cout << horas <<":";
+    if(game.map.hour < 10) cout<<"0";
+    cout << game.map.hour << ":";
 
-    if(minutos < 10) cout<<"0";
-    cout << minutos <<":";
+    if(game.map.min < 10) cout<<"0";
+    cout << game.map.min << ":";
 
-    if(segundos < 10) cout<<"0";
-    cout << segundos;
+    if(game.map.sec < 10) cout<<"0";
+    cout << game.map.sec;
 
-    if(game.pauseTudo){
+    if(game.paused){
     cout << "\e[13;"<<((vision+1)*2)+1<<"H";
     cout << "\e[38;5;226m=== PAUSADO ===\e[0m";
     }
@@ -1418,7 +1398,7 @@ bool add_to_inventory(GAME &game, int itemId) {
 
 
 void move_monsters(GAME &game){
-    if(game.pauseTudo){
+    if(game.paused){
     return;
     }
     int blocks[4] = {FREEBLOCK,STAIRBLOCK,KEYBLOCK,TRAPBLOCK};
@@ -1634,21 +1614,35 @@ void move_monsters(GAME &game){
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void move_player(GAME &game){
-    if(game.pauseTudo){
-    if(kbhit()){
-        game.map.player.keyInput = getch();
-
-        if(game.map.player.keyInput=='e' || game.map.player.keyInput=='E'){
-            game.pauseTudo = false;
-
-            game.map.player.clockSpeed = clock();
-
-            for(int i=0;i<50;i++){
-                game.map.monsters[i].clockSpeed = clock();
+    if(game.paused){
+        if(kbhit()){
+            game.map.player.keyInput = getch();
+            if(game.map.player.keyInput=='e'){
+                cout << "\e[13;23H";
+                cout << "\e[38;5;226m                \e[0m";
+                game.paused = false;
+                int pausedTime = clock();
+                game.map.time -= pausedTime;
+                game.map.player.clockSpeed -= pausedTime;
+                for(int i=0;i<50;i++){
+                    game.map.monsters[i].clockSpeed -= pausedTime;
+                }
             }
         }
-    }
-    return;
+        return;
+    }else{
+        if(clock()-game.map.time>1000){
+            game.map.time = clock();
+            game.map.sec++;
+            if(game.map.sec>59){
+                game.map.sec = 0;
+                game.map.min++;
+            }
+            if(game.map.min>59){
+                game.map.min = 0;
+                game.map.hour++;
+            }
+        }
     }
     if(game.map.player.attributes.hp<1){
         if(game.map.player.inventory[0][2].id==9){
@@ -1681,7 +1675,7 @@ void move_player(GAME &game){
         return;
     }
     if(game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X]==EMPTY){
-        if(game.map.floor==11){
+        if(game.map.floor==6){
             game.map.player.attributes.hp = 0;
             return;
         }
@@ -1698,19 +1692,8 @@ void move_player(GAME &game){
     }
     if(kbhit()){
         game.map.player.keyInput = getch();
-        if(game.map.player.keyInput=='e' || game.map.player.keyInput=='E'){
-            game.pauseTudo = !game.pauseTudo;
-            if(game.pauseTudo) {
-                game.pauseTudoClock = clock();
-
-            } else {
-
-                game.map.player.tempoPausado += clock() - game.pauseTudoClock;
-                game.map.player.clockSpeed = clock();
-                for(int i=0;i<50;i++){
-                    game.map.monsters[i].clockSpeed = clock();
-                }
-            }
+        if(game.map.player.keyInput=='e'){
+            game.paused = true;
             return;
         }
         if((clock()-game.map.player.clockSpeed)>1000/game.map.player.attributes.dexterity){
