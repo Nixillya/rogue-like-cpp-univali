@@ -1403,6 +1403,20 @@ void clear_slot(GAME &game,int y,int x){
     game.map.player.inventory[y][x].cursed = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+bool add_to_inventory(GAME &game, int itemId) {
+    for(int y = 1; y < 4; y++) {
+        for(int x = 0; x < 3; x++) {
+            if(game.map.player.inventory[y][x].id == 0) {
+                game.map.player.inventory[y][x].id = itemId;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 void move_monsters(GAME &game){
     if(game.pauseTudo){
     return;
@@ -1447,7 +1461,28 @@ void move_monsters(GAME &game){
             }
 
 
+            int dropChance = rand() % 100;
+            int itemId = 0;
+
+            if(game.map.monsters[monster].id == 0 && dropChance < 5) itemId = 7;      // Slime: 5% Teleporte
+            else if(game.map.monsters[monster].id == 1 && dropChance < 20) itemId = 4; // Goblin: 20% Adaga
+            else if(game.map.monsters[monster].id == 3 && dropChance < 20) itemId = 1; // Orc: 20% Espada
+            else if(game.map.monsters[monster].id == 8 && dropChance < 20) itemId = 5; // Autonomo: 20% Cajado
+            else if(game.map.monsters[monster].id == 9 && dropChance < 5) itemId = 9;  // Escoria: 5% Totem
+            else if(game.map.monsters[monster].id == 5 && dropChance < 10) itemId = 3; // Troll: 10% Anel
+            else if(game.map.monsters[monster].id == 6 && dropChance < 10) itemId = 10;// Mimico: 10% Pergaminho
+            else if(game.map.monsters[monster].id == 2 && dropChance < 5) itemId = 3;  // Kobold: 5% pot
+
+            if(itemId != 0) {
+                if(add_to_inventory(game, itemId)) {
+                    playSound("loot", "Sounds/loot.wav");
+                    send_message(game, "ITEM COLETADO!", 1000);
+                }
+            }
+
+                if (!(game.map.floor == 6 && monster == 0)) {
                 game.map.monsters[monster].id++;
+                }
                 game.map.player.exp += rand()%game.map.monsters[monster].id+1;
                 game.map.player.gold += rand()%game.map.monsters[monster].id+1;
                 game.map.monsters[monster].alive = false;
@@ -1566,7 +1601,7 @@ void move_monsters(GAME &game){
         }
     }
     if(game.map.floor==6){
-        if(win){
+            if(win){
             render_map(game);
             cout<<"\e[23;1H";
             cout<<"VITORIA!";
@@ -1751,7 +1786,7 @@ void move_player(GAME &game){
                             game.map.tiles[game.map.player.pos.Y][game.map.player.pos.X+1] == NPCBLOCK
                         );
                         if(achouSacerdote){
-                            game.map.player.attributes.hp += game.map.floor; // quantidade da cura
+                            game.map.player.attributes.hp = game.map.player.attributes.hpMax; // quantidade da cura
                             if(game.map.player.attributes.hp > game.map.player.attributes.hpMax){
                                 game.map.player.attributes.hp = game.map.player.attributes.hpMax; // pra n passar da vida máxima
                             }
@@ -2124,53 +2159,44 @@ void put_attributes(GAME &game){
             game.attSelection++;
         }
         if(key==13){
+            int valorUpgrade = 1;
+            if(game.difficulty == 1) valorUpgrade = 5;      // Facil
+            else if(game.difficulty == 2) valorUpgrade = 3; // Media
+            else if(game.difficulty == 3) valorUpgrade = 2; // Dificil
+
             if(game.attSelection==0){
-                int hp = game.map.player.attributes.hpMax;
-                if(game.map.player.firstAtt){
-                    hp++;
-                    game.map.player.firstAtt = false;
-                }
-                int hpUpgrade = rand()%hp+1;
-                game.map.player.attributes.hpMax+=hpUpgrade;
-                game.map.player.attributes.hp+=rand()%hpUpgrade+1;
+                game.map.player.attributes.hpMax += valorUpgrade;
+
             }
-            if(game.attSelection==1){
-                game.map.player.attributes.defense++;
-                if(game.map.player.firstAtt){
-                    game.map.player.attributes.defense++;
-                    game.map.player.firstAtt = false;
-                }
-            }
-            if(game.attSelection==2){
-                game.map.player.attributes.strength++;
-                if(game.map.player.firstAtt){
-                    game.map.player.attributes.strength++;
-                    game.map.player.firstAtt = false;
-                }
-            }
-            if(game.attSelection==3){
-                game.map.player.attributes.intelligence++;
-                if(game.map.player.firstAtt){
-                    game.map.player.attributes.intelligence++;
-                    game.map.player.firstAtt = false;
-                }
-            }
-            if(game.attSelection==4){
-                game.map.player.attributes.dexterity++;
-                if(game.map.player.firstAtt){
-                    game.map.player.attributes.dexterity++;
-                    game.map.player.firstAtt = false;
-                }
-            }
+            if(game.attSelection==1) game.map.player.attributes.defense += valorUpgrade;
+            if(game.attSelection==2) game.map.player.attributes.strength += valorUpgrade;
+            if(game.attSelection==3) game.map.player.attributes.intelligence += valorUpgrade;
+            if(game.attSelection==4) game.map.player.attributes.dexterity += valorUpgrade;
+
             game.map.player.attPoints--;
         }
     }
 }
+
+
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void create_map(GAME &game){
     if(game.next==true){
         game.map.player.firstAtt = true;
         game.map.player.attPoints++;
+
+    // --- BÔNUS DE HP MÁXIMO POR FASE ---
+
+
+        int bonusHp = 0;
+        if(game.difficulty == 1) bonusHp = 10;      // facil
+        else if(game.difficulty == 2) bonusHp = 5;  // media
+        else if(game.difficulty == 3) bonusHp = 2;  // dificil
+
+        game.map.player.attributes.hpMax += bonusHp;
+
+
     }
     game.next = false;
     game.map.player.key = false;
@@ -2198,6 +2224,8 @@ void create_map(GAME &game){
         game.map.player.clockSpeed = clock();
         while((clock()-game.map.player.clockSpeed)<1000){}
     }
+
+
     for(int y=0;y<MAPSIZEY;y++){
         for(int x=0;x<MAPSIZEX;x++){
             game.map.tiles[y][x] = EMPTY;
@@ -2210,6 +2238,8 @@ void create_map(GAME &game){
             }
         }
     }
+
+
     int Y = MAPSIZEY/2;
     int X = MAPSIZEX/2;
     game.map.player.pos.Y = Y;
@@ -2333,7 +2363,10 @@ void create_map(GAME &game){
             int attPoints = (game.map.player.nivel+game.map.floor)*2;
             game.map.monsters[monster].id = rand()%floor;
             if(game.map.floor==6 && monster==0){
-                game.map.monsters[monster].id = 10;
+            game.map.monsters[monster].id = 10;
+
+            game.map.monsters[monster].attributes.hp = game.map.monsters[monster].attributes.hpMax;
+
             }
             while(attPoints>0){
                 int attribute = rand()%5;
@@ -2415,6 +2448,14 @@ void create_map(GAME &game){
                 if(attribute==0){
                     int hp = game.map.monsters[monster].attributes.hpMax;
                     game.map.monsters[monster].attributes.hpMax+=rand()%hp+1;
+
+                if(game.map.monsters[monster].id == 10) {
+                    if(game.difficulty == 1) game.map.monsters[monster].attributes.hpMax = 500;
+                    else if(game.difficulty == 2) game.map.monsters[monster].attributes.hpMax = 800;
+                    else if(game.difficulty == 3) game.map.monsters[monster].attributes.hpMax = 1000;
+                }
+
+
                 }
                 if(attribute==1){
                     game.map.monsters[monster].attributes.defense++;
@@ -2520,6 +2561,7 @@ void create_map(GAME &game){
             }
         }
     }
+
     // --- GERADOR DE ARMADILHAS ANTI STUN LOCK (ANTI-LOCK / TIMEOUT) ---
     int qtdArmadilhas = (rand()%game.map.floor+1)*3;
     int armadilhasCriadas = 0;
